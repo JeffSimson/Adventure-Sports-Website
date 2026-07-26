@@ -1,0 +1,10 @@
+{
+  "name": "adventure-sports-website",
+  "private": true,
+  "version": "1.0.0",
+  "dependencies": {
+    "@netlify/blobs": "^10.0.0",
+    "@netlify/functions": "^4.2.5",
+    "@netlify/identity": "^2.0.1"
+  }
+}

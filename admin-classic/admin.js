@@ -10,7 +10,7 @@
   ];
 
   const shell=document.getElementById('ase-shell');
-  shell.innerHTML=`<header class="ase-topbar"><a class="ase-brand" href="#/collections/content"><img src="/uploads/branding/adventure-logo.png" alt="Adventure Sports"><div><strong>Adventure Sports Website Manager</strong><span>Website Administration Center</span></div></a><nav class="ase-top-actions"><a class="ase-top-btn" href="/" target="_blank" rel="noopener">↗ <span>View Website</span></a><a class="ase-top-btn" href="/admin-classic/" title="Open the saved previous admin">↶ <span>Classic Admin</span></a><a class="ase-top-btn primary" href="/admin/events-import.html">⚡ <span>Bulk Event Import</span></a></nav></header>`;
+  shell.innerHTML=`<header class="ase-topbar"><a class="ase-brand" href="#/collections/content"><img src="/uploads/branding/adventure-logo.png" alt="Adventure Sports"><div><strong>Adventure Sports Website Manager</strong><span>Website Administration Center</span></div></a><nav class="ase-top-actions"><a class="ase-top-btn" href="/" target="_blank" rel="noopener">↗ <span>View Website</span></a><a class="ase-top-btn primary" href="/admin-classic/events-import.html">⚡ <span>Bulk Event Import</span></a></nav></header>`;
 
   const loader=document.createElement('div');
   loader.className='ase-loader';
@@ -22,26 +22,9 @@
 
   dash.innerHTML=`
   <div class="ase-dashboard-wrap">
-    <section class="ase-command-center">
-      <div class="ase-command-main">
-        <span class="ase-kicker">● Adventure Sports Control Center</span>
-        <h1><span id="aseGreeting">Welcome</span>, <span id="aseUserName">Administrator</span> <span class="ase-wave">👋</span></h1>
-        <p>Everything important is right here. Make everyday updates, check what is coming next, and publish changes without digging through menus.</p>
-        <div class="ase-command-controls">
-          <label class="ase-command-field status-control"><span>Field Status</span><select id="aseTopFieldStatus"><option>OPEN</option><option>CLOSED</option><option>DELAYED</option><option>CHECK SCHEDULE</option></select></label>
-          <label class="ase-command-field announcement-control"><span>Announcement</span><input id="aseTopAnnouncement" type="text" placeholder="Type the message shown across the website"></label>
-          <button id="aseTopPublish" class="ase-command-publish" type="button"><span>✓</span><b>Publish Changes</b></button>
-        </div>
-        <div class="ase-command-actions"><span class="ase-command-actions-label">Quick Actions</span><div class="ase-command-action-grid">
-          <a href="#/collections/content/entries/events">＋ Add Event</a><a href="#/collections/content/entries/gallery">＋ Add Photo</a><button type="button" data-open-tab="contact">Change Hours</button><button type="button" data-open-tab="rentals">Edit Rentals</button><button type="button" data-open-tab="homepage">Update Homepage</button><a href="/" target="_blank" rel="noopener">↗ Open Live Site</a>
-        </div></div>
-      </div>
-      <aside class="ase-command-summary">
-        <div class="ase-command-summary-head"><div><span>Website Overview</span><strong><i class="ase-status-dot"></i> Online</strong></div><a href="/admin-classic/" title="Open the saved previous admin">Classic Admin</a></div>
-        <article class="ase-summary-stat today"><span>Today's Events</span><strong id="aseTodayEvents">—</strong><small id="aseTodayEventsNote">Checking today's schedule…</small></article>
-        <div class="ase-summary-pair"><article class="ase-summary-stat"><span>Gallery</span><strong id="aseOverviewGallery">—</strong><small>Published photos</small></article><article class="ase-summary-stat"><span>Upcoming Events</span><strong id="aseOverviewEvents">—</strong><small>Still on the calendar</small></article></div>
-        <article class="ase-next-event"><span>Next Tournament</span><strong id="aseOverviewNextEvent">Checking event schedule…</strong></article>
-      </aside>
+    <section class="ase-welcome">
+      <div class="ase-welcome-copy"><span class="ase-kicker">● Website Control Center</span><h1>Manage your website quickly and confidently.</h1><p>Use Quick Edit for everyday updates. Open a full section only for photos, events, long lists or advanced changes.</p></div>
+      <div class="ase-live-status"><span>Website connection</span><strong><i class="ase-status-dot"></i> Online & Connected</strong></div>
     </section>
 
     <section class="ase-quick-editor" aria-labelledby="quick-edit-title">
@@ -136,37 +119,13 @@
     <section class="ase-admin-grid">${sections.map(card).join('')}</section>
 
     <section class="ase-bottom-grid">
-      <div class="ase-panel"><div class="ase-panel-head"><h3>Helpful Shortcuts</h3><small>Less common tasks</small></div><div class="ase-quick-row"><a class="ase-quick" href="/admin/events-import.html"><b>⚡ Import Multiple Events</b><span>Add a full tournament schedule faster</span></a><a class="ase-quick" href="#/collections/content/entries/gallery"><b>＋ Add New Photos</b><span>Upload photos to the public gallery</span></a><a class="ase-quick" href="#/collections/content/entries/events"><b>＋ Add One Event</b><span>Create or update a single event</span></a></div></div>
+      <div class="ase-panel"><div class="ase-panel-head"><h3>Helpful Shortcuts</h3><small>Less common tasks</small></div><div class="ase-quick-row"><a class="ase-quick" href="/admin-classic/events-import.html"><b>⚡ Import Multiple Events</b><span>Add a full tournament schedule faster</span></a><a class="ase-quick" href="#/collections/content/entries/gallery"><b>＋ Add New Photos</b><span>Upload photos to the public gallery</span></a><a class="ase-quick" href="#/collections/content/entries/events"><b>＋ Add One Event</b><span>Create or update a single event</span></a></div></div>
       <aside class="ase-panel ase-publishing-panel"><div class="ase-panel-head"><h3>How Publishing Works</h3></div><div class="ase-tip"><span class="ase-tip-icon">1</span><div><b>Make your change</b><span>Use Quick Edit or open a detailed section.</span></div></div><div class="ase-tip"><span class="ase-tip-icon">2</span><div><b>Press Save or Publish</b><span>Your update is committed securely.</span></div></div><div class="ase-tip"><span class="ase-tip-icon">3</span><div><b>Wait for Netlify</b><span>The live site normally updates within a minute.</span></div></div></aside>
     </section>
   </div>`;
 
   const byId=id=>document.getElementById(id);
   const stateEl=byId('aseQuickState'), messageEl=byId('aseQuickMessage'), saveBtn=byId('aseQuickSave');
-
-  function updateGreeting(){
-    const hour=new Date().getHours();
-    const greeting=hour<12?'Good Morning':hour<17?'Good Afternoon':'Good Evening';
-    const greetingEl=byId('aseGreeting');
-    if(greetingEl)greetingEl.textContent=greeting;
-    let displayName='Administrator';
-    try{
-      const user=window.netlifyIdentity&&window.netlifyIdentity.currentUser?window.netlifyIdentity.currentUser():null;
-      if(user){
-        const metadata=user.user_metadata||{};
-        const rawName=metadata.full_name||metadata.name||metadata.display_name||'';
-        if(rawName.trim()){
-          displayName=rawName.trim().split(/\s+/)[0];
-        }else if(user.email){
-          displayName=user.email.split('@')[0].replace(/[._-]+/g,' ').replace(/\b\w/g,char=>char.toUpperCase());
-        }
-      }
-    }catch(error){console.warn('Could not read signed-in user name.',error)}
-    const nameEl=byId('aseUserName');
-    if(nameEl)nameEl.textContent=displayName;
-  }
-  function syncTopToQuick(){const ts=byId('aseTopFieldStatus'),ta=byId('aseTopAnnouncement'),s=byId('aseFieldStatus'),a=byId('aseAnnouncement');if(ts&&s)s.value=ts.value;if(ta&&a)a.value=ta.value}
-  function syncQuickToTop(){const ts=byId('aseTopFieldStatus'),ta=byId('aseTopAnnouncement'),s=byId('aseFieldStatus'),a=byId('aseAnnouncement');if(ts&&s)ts.value=s.value;if(ta&&a)ta.value=a.value}
   const files={
     site:{path:'content/site.json',data:null,original:null},
     rentals:{path:'content/rentals.json',data:null,original:null},
@@ -181,23 +140,6 @@
   function lines(value){return (value||'').split('\n').map(v=>v.trim()).filter(Boolean)}
   function setValue(id,value){const el=byId(id);if(el)el.value=value??''}
 
-  async function loadOverview(){
-    try{
-      const [er,gr]=await Promise.all([fetch('/content/events.json?overview='+Date.now(),{cache:'no-store'}),fetch('/content/gallery.json?overview='+Date.now(),{cache:'no-store'})]);
-      if(er.ok){
-        const d=await er.json(), list=Array.isArray(d)?d:(d.events||[]), now=new Date();
-        const todayKey=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');
-        const eventDate=e=>String(e.startDate||e.date||'').slice(0,10), eventEnd=e=>String(e.endDate||e.startDate||e.date||'').slice(0,10);
-        const todayEvents=list.filter(e=>{const s=eventDate(e),en=eventEnd(e);return s&&en&&s<=todayKey&&en>=todayKey});
-        const tc=byId('aseTodayEvents'),tn=byId('aseTodayEventsNote'); if(tc)tc.textContent=String(todayEvents.length); if(tn)tn.textContent=todayEvents.length?todayEvents.slice(0,2).map(e=>e.title||e.name||'Scheduled event').join(' • '):'No events scheduled for today';
-        const todayStart=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-        const upcoming=list.filter(e=>{const raw=e.endDate||e.startDate||e.date,dt=raw?new Date(String(raw).slice(0,10)+'T23:59:59'):null;return dt&&!isNaN(dt)&&dt>=todayStart}).sort((a,b)=>new Date(a.startDate||a.date)-new Date(b.startDate||b.date));
-        const c=byId('aseOverviewEvents'),n=byId('aseOverviewNextEvent'); if(c)c.textContent=String(upcoming.length); if(n){if(upcoming.length){const f=upcoming[0],title=f.title||f.name||'Upcoming event',date=f.date||f.startDate||'';n.textContent=title+(date?' — '+date:'')}else n.textContent='No upcoming events published'}
-      }
-      if(gr.ok){const d=await gr.json(),photos=Array.isArray(d)?d:(d.images||d.photos||d.gallery||[]),g=byId('aseOverviewGallery');if(g)g.textContent=String(photos.length)}
-    }catch(e){console.warn('Dashboard overview unavailable',e)}
-  }
-
   function populate(){
     const s=files.site.data||{},r=files.rentals.data||{},c=files.clubhouse.data||{},safe=files.safety.data||{};
     setValue('aseFieldStatus',s.fieldStatus||'OPEN'); setValue('aseAnnouncement',s.announcement);
@@ -210,20 +152,14 @@
     setValue('aseRentalsTitle',r.title); setValue('aseRentalRates',(r.rates||[]).join('\n')); setValue('aseRentalEmails',(r.emails||[]).join('\n'));
     setValue('aseClubhouseTitle',c.title); setValue('aseClubhouseTagline',c.tagline); setValue('aseClubhouseIntro',c.intro); setValue('aseClubhouseMenuUrl',c.menuUrl);
     setValue('aseSafetyWaiverUrl',safe.waiverUrl); setValue('aseInsurance',safe.insurance); setValue('aseUmpires',safe.umpires); setValue('aseEquipment',safe.equipment);
-    const os=byId('aseOverviewStatus'); if(os)os.textContent=s.fieldStatus||'OPEN';
-    setValue('aseTopFieldStatus',s.fieldStatus||'OPEN');
-    setValue('aseTopAnnouncement',s.announcement||'');
     stateEl.textContent='Ready to edit'; stateEl.className='ase-save-state ready';
   }
 
   async function loadAll(){
     try{
       await Promise.all(Object.values(files).map(async f=>{
-        const liveKey=f.path.replace('content/','').replace('.json','');
-        let r;
-        try{r=await fetch('/.netlify/functions/live-content?file='+encodeURIComponent(liveKey)+'&admin='+Date.now(),{cache:'no-store'})}catch(error){}
-        if(!r||!r.ok)r=await fetch('/'+f.path+'?admin='+Date.now(),{cache:'no-store'});
-        if(!r.ok)throw new Error('Could not load '+f.path);
+        const r=await fetch('/'+f.path+'?admin='+Date.now(),{cache:'no-store'});
+        if(!r.ok) throw new Error('Could not load '+f.path);
         f.data=await r.json(); f.original=JSON.stringify(f.data);
       }));
       populate();
@@ -262,20 +198,6 @@
     if(!user)throw new Error('Your login session expired. Refresh and log in again.');
     return user.jwt();
   }
-  async function saveInstant(key,newData,token){
-    const response=await fetch('/.netlify/functions/live-content',{
-      method:'PUT',
-      headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json','Accept':'application/json'},
-      body:JSON.stringify({file:key,data:newData})
-    });
-    if(!response.ok){
-      let detail='';
-      try{detail=(await response.json()).message||''}catch(error){}
-      throw new Error('Instant publish failed for '+key+' ('+response.status+'). '+detail);
-    }
-    return response.json();
-  }
-
   async function saveFile(key,newData,token){
     const f=files[key], api='/.netlify/git/github/contents/'+f.path;
     const current=await fetch(api+'?ref=main',{headers:{Authorization:'Bearer '+token}});
@@ -291,49 +213,28 @@
   }
 
   async function saveQuickChanges(){
-    saveBtn.disabled=true;
-    saveBtn.classList.add('saving');
-    stateEl.textContent='Publishing live…';
-    stateEl.className='ase-save-state saving';
-    setMessage('Publishing your changes to the live website…','working');
+    saveBtn.disabled=true; saveBtn.classList.add('saving');
+    stateEl.textContent='Checking changes…'; stateEl.className='ase-save-state saving';
+    setMessage('Checking and securely saving your updates…','working');
     try{
-      syncTopToQuick();
-      const updated=collect();
-      const changed=Object.keys(updated).filter(key=>JSON.stringify(updated[key])!==files[key].original);
+      const updated=collect(), changed=Object.keys(updated).filter(k=>JSON.stringify(updated[k])!==files[k].original);
       if(!changed.length){
-        stateEl.textContent='No changes to save';
-        stateEl.className='ase-save-state ready';
-        setMessage('Everything is already up to date.','success');
-        return;
+        stateEl.textContent='No changes to save'; stateEl.className='ase-save-state ready';
+        setMessage('Everything is already up to date.','success'); return;
       }
       const token=await getToken();
-      await Promise.all(changed.map(key=>saveInstant(key,updated[key],token)));
-      changed.forEach(key=>{
-        files[key].data=updated[key];
-        files[key].original=JSON.stringify(updated[key]);
-      });
-      const overviewStatus=byId('aseOverviewStatus');
-      if(overviewStatus)overviewStatus.textContent=updated.site.fieldStatus||'OPEN';
-      syncQuickToTop();
-      stateEl.textContent='Live now';
-      stateEl.className='ase-save-state success';
-      setMessage('Your changes are live now. GitHub backup is saving in the background.','success');
-      Promise.allSettled(changed.map(key=>saveFile(key,updated[key],token))).then(results=>{
-        const failed=results.filter(result=>result.status==='rejected');
-        if(failed.length){
-          setMessage('Changes are live, but '+failed.length+' GitHub backup update'+(failed.length===1?'':'s')+' failed. Try again later.','warning');
-        }else{
-          setMessage('Changes are live and the GitHub backup was saved successfully.','success');
-        }
-      });
+      for(const key of changed){
+        stateEl.textContent='Saving '+key+'…';
+        await saveFile(key,updated[key],token);
+      }
+      stateEl.textContent='Saved successfully'; stateEl.className='ase-save-state success';
+      setMessage('Saved '+changed.length+' section'+(changed.length===1?'':'s')+'! Netlify is publishing the update now.','success');
       setTimeout(()=>{stateEl.textContent='Ready to edit';stateEl.className='ase-save-state ready'},5000);
-    }catch(error){
-      stateEl.textContent='Publish failed';
-      stateEl.className='ase-save-state error';
-      setMessage(error.message,'error');
+    }catch(err){
+      stateEl.textContent='Save failed'; stateEl.className='ase-save-state error';
+      setMessage(err.message+' Any files saved before the error are already safe.','error');
     }finally{
-      saveBtn.disabled=false;
-      saveBtn.classList.remove('saving');
+      saveBtn.disabled=false; saveBtn.classList.remove('saving');
     }
   }
 
@@ -342,17 +243,7 @@
     document.querySelectorAll('.ase-tab-panel').forEach(p=>p.classList.toggle('active',p.dataset.panel===btn.dataset.tab));
   }));
   saveBtn.addEventListener('click',saveQuickChanges);
-  const topPublish=byId('aseTopPublish');if(topPublish)topPublish.addEventListener('click',()=>{syncTopToQuick();saveQuickChanges()});
-  const topStatus=byId('aseTopFieldStatus'),topAnnouncement=byId('aseTopAnnouncement');if(topStatus)topStatus.addEventListener('change',syncTopToQuick);if(topAnnouncement)topAnnouncement.addEventListener('input',syncTopToQuick);
-  const quickStatus=byId('aseFieldStatus'),quickAnnouncement=byId('aseAnnouncement');if(quickStatus)quickStatus.addEventListener('change',syncQuickToTop);if(quickAnnouncement)quickAnnouncement.addEventListener('input',syncQuickToTop);
-  document.querySelectorAll('[data-open-tab]').forEach(b=>b.addEventListener('click',()=>{const t=document.querySelector('.ase-tab[data-tab="'+b.dataset.openTab+'"]');if(t)t.click();const e=document.querySelector('.ase-quick-editor');if(e)e.scrollIntoView({behavior:'smooth',block:'start'})}));
-  updateGreeting();
-  if(window.netlifyIdentity){
-    window.netlifyIdentity.on('init',updateGreeting);
-    window.netlifyIdentity.on('login',updateGreeting);
-    window.netlifyIdentity.on('logout',updateGreeting);
-  }
-  loadAll(); loadOverview();
+  loadAll();
 
   byId('aseSearch').addEventListener('input',e=>{const q=e.target.value.trim().toLowerCase();document.querySelectorAll('.ase-admin-card').forEach(c=>c.style.display=(!q||c.dataset.name.includes(q)||c.textContent.toLowerCase().includes(q))?'':'none')});
   function isDashboard(){const h=location.hash.replace(/\/$/,'');return h===''||h==='#'||h==='#/collections/content'||h==='#/collections/content/entries'}

@@ -1,0 +1,1 @@
+Adventure Sports personalized dashboard with dynamic greeting for Jeff, top status and announcement controls, live counts, next tournament, quick actions, and /admin-classic/ backup.

@@ -21,7 +21,24 @@ function staticHomeFallback(){
 
 const esc = (s="") => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 const img = (s="") => !s ? "" : (s.startsWith("/") || s.startsWith("http") ? s : "/" + s);
-async function getJSON(path){ const r = await fetch(path+"?v="+Date.now()); if(!r.ok) throw new Error(path); return r.json(); }
+async function getJSON(path){
+  const liveFiles={
+    '/content/site.json':'site',
+    '/content/rentals.json':'rentals',
+    '/content/clubhouse.json':'clubhouse',
+    '/content/safety.json':'safety'
+  };
+  const key=liveFiles[path];
+  if(key){
+    try{
+      const live=await fetch('/.netlify/functions/live-content?file='+encodeURIComponent(key)+'&v='+Date.now(),{cache:'no-store'});
+      if(live.ok)return live.json();
+    }catch(error){console.warn('Using published content fallback.',error)}
+  }
+  const response=await fetch(path+'?v='+Date.now(),{cache:'no-store'});
+  if(!response.ok)throw new Error(path);
+  return response.json();
+}
 
 function todayISO(){
   const d = new Date();

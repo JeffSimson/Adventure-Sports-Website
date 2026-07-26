@@ -1,0 +1,193 @@
+
+backend:
+  name: git-gateway
+  branch: main
+
+site_url: "https://adventurenj.com"
+display_url: "https://adventurenj.com"
+logo_url: "/uploads/branding/adventure-logo.png"
+show_preview_links: true
+publish_mode: simple
+
+media_folder: "uploads"
+public_folder: "/uploads"
+
+collections:
+  - name: "content"
+    label: "Website Manager"
+    files:
+      - label: "Homepage & Facility Info"
+        name: "site"
+        description: "Update the homepage, field status, announcement, contact details, hours, links and slider photos."
+        file: "content/site.json"
+        format: "json"
+        fields:
+          - { label: "Complex Name", name: "name", widget: "string" }
+          - { label: "Legal Name", name: "legalName", widget: "string" }
+          - { label: "Homepage Headline", name: "headline", widget: "string" }
+          - { label: "Hero Button Text", name: "heroButtonText", widget: "string" }
+          - { label: "Logo", name: "logo", widget: "image" }
+          - { label: "Hero Background Image", name: "heroImage", widget: "image" }
+          - { label: "Address", name: "address", widget: "string" }
+          - { label: "Short Address", name: "shortAddress", widget: "string" }
+          - { label: "City State Zip", name: "cityStateZip", widget: "string" }
+          - { label: "Phone", name: "phone", widget: "string" }
+          - { label: "Email", name: "email", widget: "string" }
+          - { label: "Facebook Link", name: "facebook", widget: "string" }
+          - { label: "Hours", name: "hours", widget: "string" }
+          - { label: "Kitchen Hours", name: "kitchenHours", widget: "string" }
+          - label: "Field Status"
+            name: "fieldStatus"
+            widget: "select"
+            options: ["OPEN", "CLOSED", "DELAYED", "CHECK SCHEDULE"]
+          - { label: "Announcement", name: "announcement", widget: "text" }
+          - { label: "About Text", name: "about", widget: "text" }
+          - { label: "Parking Notes", name: "parking", widget: "text" }
+          - { label: "Waiver Link", name: "waiverUrl", widget: "string" }
+          - { label: "Menu Link", name: "menuUrl", widget: "string" }
+          - { label: "Discount Hotel Link", name: "discountHotelUrl", widget: "string", required: false }
+          - { label: "Video Streams Link", name: "videoStreamsUrl", widget: "string", required: false }
+          - { label: "Facility Map", name: "facilityMap", widget: "image" }
+          - label: "Facility Highlights"
+            name: "facilityHighlights"
+            widget: "list"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Text", name: "text", widget: "text" }
+          - label: "Plan Your Visit"
+            name: "planVisit"
+            widget: "list"
+            field: { label: "Item", name: "item", widget: "string" }
+          - label: "Why Choose Adventure"
+            name: "whyChoose"
+            widget: "list"
+            field: { label: "Reason", name: "reason", widget: "string" }
+          - label: "Homepage Slider Photos"
+            name: "homeSlider"
+            widget: "list"
+            field: { label: "Photo", name: "photo", widget: "image" }
+
+      - label: "Events & Registration"
+        name: "events"
+        description: "Add, edit, feature or remove tournaments and events. Use Bulk Event Import for several events at once."
+        file: "content/events.json"
+        format: "json"
+        fields:
+          - label: "Event Categories"
+            name: "categories"
+            widget: "list"
+            field: { label: "Category", name: "category", widget: "string" }
+          - label: "Events"
+            name: "events"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - label: "Category"
+                name: "category"
+                widget: "select"
+                options: ["Baseball", "Softball", "Flag Football", "Private Rentals", "Camps", "Tournaments"]
+              - { label: "Date / Time", name: "date", widget: "string" }
+              - { label: "Location", name: "location", widget: "string", required: false }
+              - { label: "Price", name: "price", widget: "string", required: false }
+              - { label: "Registration Link", name: "register", widget: "string", required: false }
+              - { label: "Image", name: "image", widget: "image", required: false }
+              - { label: "Logo", name: "logo", widget: "image", required: false }
+              - { label: "Description", name: "description", widget: "text", required: false }
+              - { label: "Show on Homepage Upcoming Events", name: "featured", widget: "boolean", default: false }
+
+      - label: "Partners & Resources"
+        name: "resources"
+        description: "Manage partner organizations, resource links and logos."
+        file: "content/resources.json"
+        format: "json"
+        fields:
+          - label: "Resources"
+            name: "resources"
+            widget: "list"
+            fields:
+              - { label: "Name", name: "name", widget: "string" }
+              - { label: "Website Link", name: "url", widget: "string" }
+              - { label: "Logo", name: "logo", widget: "image" }
+
+      - label: "Photo Gallery"
+        name: "gallery"
+        description: "Upload and arrange photos shown in the public gallery."
+        file: "content/gallery.json"
+        format: "json"
+        fields:
+          - label: "Gallery Photos"
+            name: "gallery"
+            widget: "list"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Image", name: "image", widget: "image" }
+              - { label: "Caption", name: "caption", widget: "text", required: false }
+
+      - label: "Clubhouse & Menu"
+        name: "clubhouse"
+        description: "Edit clubhouse wording, menu link and featured photos."
+        file: "content/clubhouse.json"
+        format: "json"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Intro", name: "intro", widget: "text" }
+          - { label: "Tagline", name: "tagline", widget: "string" }
+          - { label: "Menu Link", name: "menuUrl", widget: "string" }
+          - label: "Photos"
+            name: "photos"
+            widget: "list"
+            fields:
+              - { label: "Image", name: "image", widget: "image" }
+              - { label: "Caption", name: "caption", widget: "string" }
+
+      - label: "Rentals & Pricing"
+        name: "rentals"
+        description: "Update rates, rental types and the emails that receive requests."
+        file: "content/rentals.json"
+        format: "json"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - label: "Rates"
+            name: "rates"
+            widget: "list"
+            field: { label: "Rate Text", name: "rate", widget: "string" }
+          - label: "Notification Emails"
+            name: "emails"
+            widget: "list"
+            field: { label: "Email", name: "email", widget: "string" }
+          - label: "Request Types"
+            name: "requestTypes"
+            widget: "list"
+            fields:
+              - { label: "Name", name: "name", widget: "string" }
+              - { label: "Description", name: "description", widget: "text" }
+
+      - label: "Safety, Rules & Refunds"
+        name: "safety"
+        description: "Maintain park safety information, rules, insurance requirements and refund policies."
+        file: "content/safety.json"
+        format: "json"
+        fields:
+          - { label: "Waiver Link", name: "waiverUrl", widget: "string" }
+          - label: "Safety Paragraphs"
+            name: "safety"
+            widget: "list"
+            field: { label: "Paragraph", name: "paragraph", widget: "text" }
+          - label: "Rules Intro"
+            name: "rulesIntro"
+            widget: "list"
+            field: { label: "Paragraph", name: "paragraph", widget: "text" }
+          - label: "Rules"
+            name: "rules"
+            widget: "list"
+            field: { label: "Rule", name: "rule", widget: "string" }
+          - { label: "Insurance", name: "insurance", widget: "text" }
+          - { label: "Rosters", name: "rosters", widget: "text", required: false }
+          - { label: "Umpires", name: "umpires", widget: "text" }
+          - { label: "Equipment", name: "equipment", widget: "text" }
+          - label: "Refund Summary"
+            name: "refundSummary"
+            widget: "list"
+            field: { label: "Policy", name: "policy", widget: "text" }
+          - { label: "Refund Details", name: "refundDetails", widget: "text" }
