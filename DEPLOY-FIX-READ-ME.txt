@@ -1,0 +1,11 @@
+DEPLOY FIX
+
+The prior deployment failed because package.json requested an unavailable @netlify/identity version.
+This package uses the current npm latest tags for the official Netlify packages and removes any stale npm lock file.
+
+After replacing repository files:
+1. Commit and push.
+2. Confirm Netlify says Published.
+3. Open /admin/ normally.
+4. Hard refresh once with Command + Shift + R.
+5. Open /admin/diagnostics.html to verify the live function.
