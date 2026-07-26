@@ -1,104 +1,22 @@
 (function(){
-  const $ = (s, c=document) => c.querySelector(s);
-  const $$ = (s, c=document) => Array.from(c.querySelectorAll(s));
-
-  function addShell(){
-    const bar = document.createElement('div');
-    bar.className = 'ase-admin-bar';
-    bar.innerHTML = `
-      <div class="ase-admin-brand">
-        <img src="/uploads/branding/adventure-logo.png" alt="Adventure Sports">
-        <div class="ase-admin-brand-copy">
-          <strong>Adventure Sports Website Manager</strong>
-          <span>Simple, secure website administration</span>
-        </div>
-      </div>
-      <div class="ase-admin-actions">
-        <a class="ase-admin-action" href="/" target="_blank" rel="noopener" title="Open live website">🌐 <span>View Website</span></a>
-        <a class="ase-admin-action primary" href="/admin/events-import.html" title="Import several events at once">⚡ <span>Bulk Event Import</span></a>
-      </div>`;
-    document.body.prepend(bar);
-
-    const loader = document.createElement('div');
-    loader.className = 'ase-loader';
-    loader.innerHTML = `
-      <div class="ase-loader-card">
-        <img src="/uploads/branding/adventure-logo.png" alt="">
-        <h1>Opening Website Manager</h1>
-        <p>Loading your events, photos, field status and website content.</p>
-        <div class="ase-loader-line"></div>
-      </div>`;
-    document.body.appendChild(loader);
-
-    const tools = document.createElement('div');
-    tools.className = 'ase-quick-tools';
-    tools.innerHTML = `
-      <a class="ase-tool-link import" href="/admin/events-import.html">⚡ Bulk Events</a>
-      <a class="ase-tool-link" href="/" target="_blank" rel="noopener">↗ Live Site</a>
-      <button class="ase-tool-link" id="aseHelp" type="button" style="border:0;cursor:pointer">? Help</button>`;
-    document.body.appendChild(tools);
-
-    const note = document.createElement('div');
-    note.className = 'ase-help-note';
-    note.innerHTML = `<strong>Admin quick guide</strong>Select a section on the left, make your changes, then press <b>Save</b> or <b>Publish</b>. Netlify will update the live website automatically after the change is published.`;
-    document.body.appendChild(note);
-    $('#aseHelp').addEventListener('click',()=>note.classList.toggle('open'));
-  }
-
-  function improveLabels(){
-    const replacements = {
-      'Website Content':'Website Manager',
-      'Main Website Settings':'Homepage & Facility Info',
-      'Events':'Events & Registration',
-      'Resources':'Partners & Resources',
-      'Gallery':'Photo Gallery',
-      'Clubhouse':'Clubhouse & Menu',
-      'Private Rentals':'Rentals & Pricing',
-      'Safety / Rules / Refund':'Safety, Rules & Refunds'
-    };
-    $$('a,button,h1,h2,h3,span,div').forEach(el=>{
-      if(el.children.length===0){
-        const text=(el.textContent||'').trim();
-        if(replacements[text] && el.dataset.aseRenamed!=='1'){
-          el.textContent=replacements[text];
-          el.dataset.aseRenamed='1';
-        }
-      }
-    });
-  }
-
-  function addIcons(){
-    const iconMap={
-      'Homepage & Facility Info':'🏠',
-      'Events & Registration':'📅',
-      'Partners & Resources':'🤝',
-      'Photo Gallery':'📸',
-      'Clubhouse & Menu':'🍔',
-      'Rentals & Pricing':'🏟️',
-      'Safety, Rules & Refunds':'🛡️'
-    };
-    $$('a,button').forEach(el=>{
-      const text=(el.textContent||'').trim();
-      if(iconMap[text] && !el.dataset.aseIcon){
-        el.textContent=`${iconMap[text]}  ${text}`;
-        el.dataset.aseIcon='1';
-      }
-    });
-  }
-
-  function hideLoader(){
-    const root=$('#nc-root');
-    if(root && root.children.length){
-      setTimeout(()=>$('.ase-loader')?.classList.add('hidden'),500);
-    }
-  }
-
-  addShell();
-  const observer=new MutationObserver(()=>{
-    improveLabels();
-    addIcons();
-    hideLoader();
-  });
-  observer.observe(document.documentElement,{subtree:true,childList:true});
-  setTimeout(hideLoader,4500);
+  const sections=[
+    {name:'Homepage & Facility Info',icon:'⌂',desc:'Field status, announcements, contact details, links, hours and homepage photos.',hash:'#/collections/content/entries/site',cls:''},
+    {name:'Events & Registration',icon:'◫',desc:'Add tournaments, update dates, registration links, logos and featured events.',hash:'#/collections/content/entries/events',cls:'ase-card-events'},
+    {name:'Photo Gallery',icon:'▣',desc:'Upload, remove and arrange the photos displayed in the public gallery.',hash:'#/collections/content/entries/gallery',cls:'ase-card-gallery'},
+    {name:'Rentals & Pricing',icon:'◆',desc:'Update rental rates, request types and notification email addresses.',hash:'#/collections/content/entries/rentals',cls:'ase-card-rentals'},
+    {name:'Clubhouse & Menu',icon:'☕',desc:'Manage clubhouse text, food menu link and featured clubhouse photos.',hash:'#/collections/content/entries/clubhouse',cls:'ase-card-clubhouse'},
+    {name:'Partners & Resources',icon:'◎',desc:'Manage partner organizations, websites and resource logos.',hash:'#/collections/content/entries/resources',cls:'ase-card-partners'},
+    {name:'Safety, Rules & Refunds',icon:'✓',desc:'Edit safety information, park rules, insurance and refund policies.',hash:'#/collections/content/entries/safety',cls:'ase-card-safety'}
+  ];
+  const shell=document.getElementById('ase-shell');
+  shell.innerHTML=`<header class="ase-topbar"><a class="ase-brand" href="#/collections/content"><img src="/uploads/branding/adventure-logo.png" alt=""><div><strong>Adventure Sports Website Manager</strong><span>Website administration center</span></div></a><nav class="ase-top-actions"><a class="ase-top-btn" href="/" target="_blank" rel="noopener">↗ <span>View Website</span></a><a class="ase-top-btn primary" href="/admin/events-import.html">⚡ <span>Bulk Event Import</span></a></nav></header>`;
+  const loader=document.createElement('div'); loader.className='ase-loader'; loader.innerHTML=`<div class="ase-loader-card"><img src="/uploads/branding/adventure-logo.png" alt=""><h2>Opening Website Manager</h2><p>Loading your website content and administration tools.</p><div class="ase-progress"></div></div>`; document.body.appendChild(loader);
+  const dash=document.getElementById('ase-dashboard');
+  function card(s){return `<a class="ase-admin-card ${s.cls}" href="${s.hash}" data-name="${s.name.toLowerCase()}"><span class="ase-card-icon">${s.icon}</span><h3>${s.name}</h3><p>${s.desc}</p><span class="ase-card-link">Open section <span class="ase-card-arrow">→</span></span></a>`}
+  dash.innerHTML=`<div class="ase-dashboard-wrap"><section class="ase-welcome"><div class="ase-welcome-copy"><span class="ase-kicker">● Website control center</span><h1>Good morning. What would you like to update?</h1><p>Choose a section below to safely edit the live Adventure Sports website. Changes only go live after you press Publish.</p></div><div class="ase-live-status"><span>Website status</span><strong><i class="ase-status-dot"></i> Online & Connected</strong></div></section><div class="ase-dashboard-heading"><div><h2>Manage Your Website</h2><p>Everything is grouped by the part of the website it controls.</p></div><label class="ase-search"><input id="aseSearch" placeholder="Search admin sections…" autocomplete="off"></label></div><section class="ase-admin-grid">${sections.map(card).join('')}</section><section class="ase-bottom-grid"><div class="ase-panel"><div class="ase-panel-head"><h3>Quick Actions</h3><small>Common tasks</small></div><div class="ase-quick-row"><a class="ase-quick" href="#/collections/content/entries/site"><b>🟢 Update Field Status</b><span>Open, closed, delayed or check schedule</span></a><a class="ase-quick" href="/admin/events-import.html"><b>⚡ Import Multiple Events</b><span>Add a full tournament schedule faster</span></a><a class="ase-quick" href="#/collections/content/entries/gallery"><b>＋ Add New Photos</b><span>Update the public photo gallery</span></a></div></div><aside class="ase-panel"><div class="ase-panel-head"><h3>How Publishing Works</h3></div><div class="ase-tip"><span class="ase-tip-icon">1</span><div><b>Open a section</b><span>Choose what part of the website you need to edit.</span></div></div><div class="ase-tip"><span class="ase-tip-icon">2</span><div><b>Make your changes</b><span>Update text, links, photos or event information.</span></div></div><div class="ase-tip"><span class="ase-tip-icon">3</span><div><b>Press Publish</b><span>Netlify automatically updates the live website.</span></div></div></aside></section></div>`;
+  document.getElementById('aseSearch').addEventListener('input',e=>{const q=e.target.value.trim().toLowerCase();document.querySelectorAll('.ase-admin-card').forEach(c=>c.style.display=(!q||c.dataset.name.includes(q)||c.textContent.toLowerCase().includes(q))?'':'none')});
+  function isDashboard(){const h=location.hash.replace(/\/$/,'');return h===''||h==='#'||h==='#/collections/content'||h==='#/collections/content/entries'}
+  function route(){const on=isDashboard();document.body.classList.toggle('ase-dashboard-mode',on);dash.classList.toggle('active',on);if(on)window.scrollTo(0,0);setTimeout(()=>loader.classList.add('hidden'),500)}
+  window.addEventListener('hashchange',route);route();
+  const obs=new MutationObserver(()=>{if(document.querySelector('#nc-root'))setTimeout(()=>loader.classList.add('hidden'),450)});obs.observe(document.documentElement,{childList:true,subtree:true});setTimeout(()=>loader.classList.add('hidden'),4500);
 })();

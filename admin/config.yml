@@ -16,7 +16,7 @@ collections:
   - name: "content"
     label: "Website Manager"
     files:
-      - label: "🏠 Homepage & Facility Info"
+      - label: "Homepage & Facility Info"
         name: "site"
         description: "Update the homepage, field status, announcement, contact details, hours, links and slider photos."
         file: "content/site.json"
@@ -67,7 +67,7 @@ collections:
             widget: "list"
             field: { label: "Photo", name: "photo", widget: "image" }
 
-      - label: "📅 Events & Registration"
+      - label: "Events & Registration"
         name: "events"
         description: "Add, edit, feature or remove tournaments and events. Use Bulk Event Import for several events at once."
         file: "content/events.json"
@@ -96,7 +96,7 @@ collections:
               - { label: "Description", name: "description", widget: "text", required: false }
               - { label: "Show on Homepage Upcoming Events", name: "featured", widget: "boolean", default: false }
 
-      - label: "🤝 Partners & Resources"
+      - label: "Partners & Resources"
         name: "resources"
         description: "Manage partner organizations, resource links and logos."
         file: "content/resources.json"
@@ -110,7 +110,7 @@ collections:
               - { label: "Website Link", name: "url", widget: "string" }
               - { label: "Logo", name: "logo", widget: "image" }
 
-      - label: "📸 Photo Gallery"
+      - label: "Photo Gallery"
         name: "gallery"
         description: "Upload and arrange photos shown in the public gallery."
         file: "content/gallery.json"
@@ -124,7 +124,7 @@ collections:
               - { label: "Image", name: "image", widget: "image" }
               - { label: "Caption", name: "caption", widget: "text", required: false }
 
-      - label: "🍔 Clubhouse & Menu"
+      - label: "Clubhouse & Menu"
         name: "clubhouse"
         description: "Edit clubhouse wording, menu link and featured photos."
         file: "content/clubhouse.json"
@@ -141,7 +141,7 @@ collections:
               - { label: "Image", name: "image", widget: "image" }
               - { label: "Caption", name: "caption", widget: "string" }
 
-      - label: "🏟️ Rentals & Pricing"
+      - label: "Rentals & Pricing"
         name: "rentals"
         description: "Update rates, rental types and the emails that receive requests."
         file: "content/rentals.json"
@@ -163,7 +163,7 @@ collections:
               - { label: "Name", name: "name", widget: "string" }
               - { label: "Description", name: "description", widget: "text" }
 
-      - label: "🛡️ Safety, Rules & Refunds"
+      - label: "Safety, Rules & Refunds"
         name: "safety"
         description: "Maintain park safety information, rules, insurance requirements and refund policies."
         file: "content/safety.json"
