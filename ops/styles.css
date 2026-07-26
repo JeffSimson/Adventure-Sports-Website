@@ -6,3 +6,4 @@
 .login-fallback{width:100%;margin:0 0 12px}
 /* Keep Netlify's own modal layout intact; only raise its top-level overlay. */
 .netlify-identity-widget{z-index:2147483647!important}
+.login-form{display:grid;gap:8px;text-align:left;margin-top:18px}.login-form label{font-size:12px;font-weight:800;color:var(--ink);margin-top:3px}.login-form input{width:100%;border:1px solid var(--line);border-radius:12px;padding:13px 14px;font:inherit;background:#fff;color:var(--ink);outline:none}.login-form input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(23,105,224,.12)}.login-form .primary-btn{margin:9px 0 3px}.login-form input[aria-invalid="true"]{border-color:#c93535}.login-status.error{color:#b42318!important}.login-status.success{color:#087a4b!important}.login-status.loading{color:var(--blue)!important}

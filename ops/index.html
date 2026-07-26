@@ -11,8 +11,7 @@
   <link rel="manifest" href="/ops/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/uploads/branding/apple-touch-icon.png">
   <link rel="icon" href="/uploads/branding/favicon.ico">
-  <link rel="stylesheet" href="/ops/styles.css?v=4">
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <link rel="stylesheet" href="/ops/styles.css?v=5">
 </head>
 <body>
   <div id="loginGate" class="login-gate" hidden>
@@ -21,8 +20,14 @@
       <p class="eyebrow">Secure Management Portal</p>
       <h1>Adventure Sports Operations Hub</h1>
       <p>Sign in to manage the website and access facility operations.</p>
-      <button id="loginButton" class="primary-btn" type="button">Sign In</button>
-      <p id="loginStatus" class="login-status">Login service ready.</p>
+      <form id="loginForm" class="login-form" novalidate>
+        <label for="loginEmail">Email address</label>
+        <input id="loginEmail" name="email" type="email" autocomplete="username" required>
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
+        <button id="loginButton" class="primary-btn" type="submit">Sign In</button>
+      </form>
+      <p id="loginStatus" class="login-status" role="status">Enter the email and password used for the website admin.</p>
       <a id="adminLoginFallback" href="/admin/" class="secondary-btn login-fallback">Use Existing Website Admin Login</a>
       <a href="/" class="text-link">Return to public website</a>
     </div>
@@ -134,7 +139,7 @@
     </main>
   </div>
   <div id="toast" class="toast" role="status"></div>
-  <script src="/ops/app.js?v=4"></script>
+  <script src="/ops/app.js?v=5"></script>
 
 </body>
 </html>
