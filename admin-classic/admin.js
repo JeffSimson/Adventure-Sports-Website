@@ -10,7 +10,7 @@
   ];
 
   const shell=document.getElementById('ase-shell');
-  shell.innerHTML=`<header class="ase-topbar"><a class="ase-brand" href="#/collections/content"><img src="/uploads/branding/adventure-logo.png" alt="Adventure Sports"><div><strong>Adventure Sports Website Manager</strong><span>Website Administration Center</span></div></a><nav class="ase-top-actions"><a class="ase-top-btn" href="/" target="_blank" rel="noopener">↗ <span>View Website</span></a><a class="ase-top-btn" href="/admin-classic/" title="Open the saved previous admin">↶ <span>Classic Admin</span></a><a class="ase-top-btn primary" href="/admin/events-import.html">⚡ <span>Bulk Event Import</span></a></nav></header>`;
+  shell.innerHTML=`<header class="ase-topbar"><a class="ase-brand" href="#/collections/content"><img src="/uploads/branding/adventure-logo.png" alt="Adventure Sports"><div><strong>Adventure Sports Website Manager</strong><span>Website Administration Center</span></div></a><nav class="ase-top-actions"><a class="ase-top-btn" href="/" target="_blank" rel="noopener">↗ <span>View Website</span></a><a class="ase-top-btn primary" href="/admin-classic/events-import.html">⚡ <span>Bulk Event Import</span></a></nav></header>`;
 
   const loader=document.createElement('div');
   loader.className='ase-loader';
@@ -25,13 +25,6 @@
     <section class="ase-welcome">
       <div class="ase-welcome-copy"><span class="ase-kicker">● Website Control Center</span><h1>Manage your website quickly and confidently.</h1><p>Use Quick Edit for everyday updates. Open a full section only for photos, events, long lists or advanced changes.</p></div>
       <div class="ase-live-status"><span>Website connection</span><strong><i class="ase-status-dot"></i> Online & Connected</strong></div>
-    </section>
-
-    <section class="ase-overview-grid" aria-label="Website overview">
-      <article class="ase-overview-card status"><span class="ase-overview-label">Current Field Status</span><strong id="aseOverviewStatus">Loading…</strong><small>Update below with Quick Edit</small></article>
-      <article class="ase-overview-card"><span class="ase-overview-label">Upcoming Events</span><strong id="aseOverviewEvents">—</strong><small id="aseOverviewNextEvent">Checking event schedule…</small></article>
-      <article class="ase-overview-card"><span class="ase-overview-label">Gallery Photos</span><strong id="aseOverviewGallery">—</strong><small>Photos currently published</small></article>
-      <article class="ase-overview-card"><span class="ase-overview-label">Website</span><strong class="ase-online-text">Online</strong><small>Connected to GitHub and Netlify</small></article>
     </section>
 
     <section class="ase-quick-editor" aria-labelledby="quick-edit-title">
@@ -126,7 +119,7 @@
     <section class="ase-admin-grid">${sections.map(card).join('')}</section>
 
     <section class="ase-bottom-grid">
-      <div class="ase-panel"><div class="ase-panel-head"><h3>Helpful Shortcuts</h3><small>Less common tasks</small></div><div class="ase-quick-row"><a class="ase-quick" href="/admin/events-import.html"><b>⚡ Import Multiple Events</b><span>Add a full tournament schedule faster</span></a><a class="ase-quick" href="#/collections/content/entries/gallery"><b>＋ Add New Photos</b><span>Upload photos to the public gallery</span></a><a class="ase-quick" href="#/collections/content/entries/events"><b>＋ Add One Event</b><span>Create or update a single event</span></a></div></div>
+      <div class="ase-panel"><div class="ase-panel-head"><h3>Helpful Shortcuts</h3><small>Less common tasks</small></div><div class="ase-quick-row"><a class="ase-quick" href="/admin-classic/events-import.html"><b>⚡ Import Multiple Events</b><span>Add a full tournament schedule faster</span></a><a class="ase-quick" href="#/collections/content/entries/gallery"><b>＋ Add New Photos</b><span>Upload photos to the public gallery</span></a><a class="ase-quick" href="#/collections/content/entries/events"><b>＋ Add One Event</b><span>Create or update a single event</span></a></div></div>
       <aside class="ase-panel ase-publishing-panel"><div class="ase-panel-head"><h3>How Publishing Works</h3></div><div class="ase-tip"><span class="ase-tip-icon">1</span><div><b>Make your change</b><span>Use Quick Edit or open a detailed section.</span></div></div><div class="ase-tip"><span class="ase-tip-icon">2</span><div><b>Press Save or Publish</b><span>Your update is committed securely.</span></div></div><div class="ase-tip"><span class="ase-tip-icon">3</span><div><b>Wait for Netlify</b><span>The live site normally updates within a minute.</span></div></div></aside>
     </section>
   </div>`;
@@ -147,27 +140,6 @@
   function lines(value){return (value||'').split('\n').map(v=>v.trim()).filter(Boolean)}
   function setValue(id,value){const el=byId(id);if(el)el.value=value??''}
 
-  async function loadOverview(){
-    try{
-      const [er,gr]=await Promise.all([
-        fetch('/content/events.json?overview='+Date.now(),{cache:'no-store'}),
-        fetch('/content/gallery.json?overview='+Date.now(),{cache:'no-store'})
-      ]);
-      if(er.ok){
-        const d=await er.json(), list=Array.isArray(d)?d:(d.events||[]);
-        const now=new Date(); now.setHours(0,0,0,0);
-        const upcoming=list.filter(e=>{const raw=e.endDate||e.startDate||e.date;const dt=raw?new Date(String(raw).slice(0,10)+'T23:59:59'):null;return dt&&!isNaN(dt)&&dt>=now}).sort((a,b)=>new Date(a.startDate||a.date)-new Date(b.startDate||b.date));
-        const c=byId('aseOverviewEvents'),n=byId('aseOverviewNextEvent');
-        if(c)c.textContent=String(upcoming.length);
-        if(n)n.textContent=upcoming.length?'Next: '+(upcoming[0].title||upcoming[0].name||'Upcoming event'):'No upcoming events published';
-      }
-      if(gr.ok){
-        const d=await gr.json(), photos=Array.isArray(d)?d:(d.images||d.photos||d.gallery||[]);
-        const g=byId('aseOverviewGallery'); if(g)g.textContent=String(photos.length);
-      }
-    }catch(e){console.warn('Dashboard overview unavailable',e)}
-  }
-
   function populate(){
     const s=files.site.data||{},r=files.rentals.data||{},c=files.clubhouse.data||{},safe=files.safety.data||{};
     setValue('aseFieldStatus',s.fieldStatus||'OPEN'); setValue('aseAnnouncement',s.announcement);
@@ -180,7 +152,6 @@
     setValue('aseRentalsTitle',r.title); setValue('aseRentalRates',(r.rates||[]).join('\n')); setValue('aseRentalEmails',(r.emails||[]).join('\n'));
     setValue('aseClubhouseTitle',c.title); setValue('aseClubhouseTagline',c.tagline); setValue('aseClubhouseIntro',c.intro); setValue('aseClubhouseMenuUrl',c.menuUrl);
     setValue('aseSafetyWaiverUrl',safe.waiverUrl); setValue('aseInsurance',safe.insurance); setValue('aseUmpires',safe.umpires); setValue('aseEquipment',safe.equipment);
-    const os=byId('aseOverviewStatus'); if(os)os.textContent=s.fieldStatus||'OPEN';
     stateEl.textContent='Ready to edit'; stateEl.className='ase-save-state ready';
   }
 
@@ -257,7 +228,6 @@
         await saveFile(key,updated[key],token);
       }
       stateEl.textContent='Saved successfully'; stateEl.className='ase-save-state success';
-      const os=byId('aseOverviewStatus'); if(os)os.textContent=updated.site.fieldStatus||'OPEN';
       setMessage('Saved '+changed.length+' section'+(changed.length===1?'':'s')+'! Netlify is publishing the update now.','success');
       setTimeout(()=>{stateEl.textContent='Ready to edit';stateEl.className='ase-save-state ready'},5000);
     }catch(err){
@@ -273,7 +243,7 @@
     document.querySelectorAll('.ase-tab-panel').forEach(p=>p.classList.toggle('active',p.dataset.panel===btn.dataset.tab));
   }));
   saveBtn.addEventListener('click',saveQuickChanges);
-  loadAll(); loadOverview();
+  loadAll();
 
   byId('aseSearch').addEventListener('input',e=>{const q=e.target.value.trim().toLowerCase();document.querySelectorAll('.ase-admin-card').forEach(c=>c.style.display=(!q||c.dataset.name.includes(q)||c.textContent.toLowerCase().includes(q))?'':'none')});
   function isDashboard(){const h=location.hash.replace(/\/$/,'');return h===''||h==='#'||h==='#/collections/content'||h==='#/collections/content/entries'}
