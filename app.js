@@ -52,7 +52,7 @@ async function loadHome(){
   $('aboutTitle').textContent = site.legalName;
   $('aboutText').textContent = site.about;
   $('facebookLink').href = site.facebook;
-  $('videoLink').href = site.videoStreamsUrl || '#';
+  $('videoLink').href = site.videoStreamsUrl || 'https://watch.livebarn.com/en/register';
   $('waiverQuick').href = site.waiverUrl;
   $('menuQuick').href = site.menuUrl;
   $('rentalQuick').href = '/private-rentals.html';
@@ -90,7 +90,7 @@ async function loadHome(){
 }
 async function loadEvents(){
   const [site, eventsData] = await Promise.all([getJSON('/content/site.json'), getJSON('/content/events.json')]);
-  renderFixedStatus(site); $('pageLogo').src = img(site.logo);
+  renderFixedStatus(site); if ($('pageLogo')) $('pageLogo').src = img(site.logo);
 
   const params = new URLSearchParams(location.search);
   let selected = params.get('category') || 'All';
@@ -131,12 +131,12 @@ async function loadEvents(){
 }
 async function loadGallery(){
   const [site, galleryData] = await Promise.all([getJSON('/content/site.json'), getJSON('/content/gallery.json')]);
-  renderFixedStatus(site); $('pageLogo').src = img(site.logo);
+  renderFixedStatus(site); if ($('pageLogo')) $('pageLogo').src = img(site.logo);
   $('galleryGrid').innerHTML = galleryData.gallery.map(g => `<img src="${esc(img(g.image))}" alt="${esc(g.title || 'Gallery photo')}">`).join('');
 }
 async function loadClubhouse(){
   const [site, club] = await Promise.all([getJSON('/content/site.json'), getJSON('/content/clubhouse.json')]);
-  renderFixedStatus(site); $('pageLogo').src = img(site.logo);
+  renderFixedStatus(site); if ($('pageLogo')) $('pageLogo').src = img(site.logo);
   $('menuButton').href = club.menuUrl;
   $('clubIntro').textContent = club.intro;
   $('clubTagline').textContent = club.tagline;
@@ -144,13 +144,13 @@ async function loadClubhouse(){
 }
 async function loadRentals(){
   const [site, rentals] = await Promise.all([getJSON('/content/site.json'), getJSON('/content/rentals.json')]);
-  renderFixedStatus(site); $('pageLogo').src = img(site.logo);
-  $('ratesList').innerHTML = rentals.rates.map(r => `<li>${esc(r)}</li>`).join('');
+  renderFixedStatus(site); if ($('pageLogo')) $('pageLogo').src = img(site.logo);
+  if ($('ratesList')) $('ratesList').innerHTML = rentals.rates.map(r => `<li>${esc(r)}</li>`).join('');
   $('typeDescriptions').innerHTML = (rentals.requestTypes || []).map(t => `<div class="type-help-item"><b>${esc(t.name)}</b><br>${esc(t.description)}</div>`).join('');
 }
 async function loadSafety(){
   const [site, safety] = await Promise.all([getJSON('/content/site.json'), getJSON('/content/safety.json')]);
-  renderFixedStatus(site); $('pageLogo').src = img(site.logo);
+  renderFixedStatus(site); if ($('pageLogo')) $('pageLogo').src = img(site.logo);
   $('waiverButton').href = safety.waiverUrl;
   $('safetyList').innerHTML = safety.safety.map(x=>`<p>${esc(x)}</p>`).join('');
   $('rulesIntro').innerHTML = (safety.rulesIntro || []).map(x=>`<p>${esc(x)}</p>`).join('');
@@ -164,7 +164,7 @@ async function loadSafety(){
 }
 async function loadContact(){
   const site = await getJSON('/content/site.json');
-  renderFixedStatus(site); $('pageLogo').src = img(site.logo);
+  renderFixedStatus(site); if ($('pageLogo')) $('pageLogo').src = img(site.logo);
   $('contactAddress').innerHTML = `<b>${esc(site.name)}</b><br>${esc(site.shortAddress)}<br>${esc(site.cityStateZip)}`;
   $('contactPhone').textContent = site.phone;
   $('contactPhone').href = 'tel:' + site.phone.replace(/\D/g,'');
@@ -175,3 +175,21 @@ async function loadContact(){
 
 window.addEventListener('error', staticHomeFallback);
 setTimeout(staticHomeFallback, 1200);
+
+/* 2026 visual polish: no content or data changes */
+(function(){
+  const nav=document.querySelector('.top-nav');
+  const updateNav=()=>nav&&nav.classList.toggle('nav-scrolled',window.scrollY>24);
+  window.addEventListener('scroll',updateNav,{passive:true});
+  updateNav();
+
+  const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!reduce&&'IntersectionObserver' in window){
+    const targets=document.querySelectorAll('.section-head,.about-card,.info-mini-card,.visit-item,.why-card,.category-card,.feature-card,.location-grid,.resource-grid a,.card,.rate-card');
+    targets.forEach((el,i)=>{el.classList.add('ase-reveal');el.style.transitionDelay=((i%5)*45)+'ms';});
+    const io=new IntersectionObserver(entries=>entries.forEach(entry=>{
+      if(entry.isIntersecting){entry.target.classList.add('ase-visible');io.unobserve(entry.target);}
+    }),{threshold:.08,rootMargin:'0px 0px -30px 0px'});
+    targets.forEach(el=>io.observe(el));
+  }
+})();

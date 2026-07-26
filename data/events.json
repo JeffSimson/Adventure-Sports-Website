@@ -1,0 +1,8 @@
+{
+  "events": [
+    {"title":"USABL Cup Finals","category":"Baseball","date":"July 28–30, 2026","startDate":"2026-07-28","endDate":"2026-07-30","description":"Qualified teams compete for the USABL Cup at Adventure Sports.","register":"https://play.usabl.com/events/USABLCupFinals2026","image":"https://images.unsplash.com/photo-1562552052-df8f6f0716d2?auto=format&fit=crop&w=1200&q=85"},
+    {"title":"USABL World Series","category":"Baseball","date":"July 31–August 3, 2026","startDate":"2026-07-31","endDate":"2026-08-03","description":"A premier championship weekend featuring top qualifying baseball teams.","register":"https://play.usabl.com/events/USABLEliteWS2026","image":"https://images.unsplash.com/photo-1508344928928-7165b67de128?auto=format&fit=crop&w=1200&q=85"},
+    {"title":"AAG Softball","category":"Softball","date":"August 8, 2026","startDate":"2026-08-08","endDate":"2026-08-08","description":"A competitive softball event hosted at Adventure Sports.","register":"https://njfastpitch.usssa.com/event/aag-tryout-jackson-nj-2/","image":"https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=1200&q=85"},
+    {"title":"Island Elite Summer Smash","category":"Flag Football","date":"August 22, 2026","startDate":"2026-08-22","endDate":"2026-08-22","description":"Fast-paced flag football competition under the lights.","register":"#contact","image":"https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1200&q=85"}
+  ]
+}
