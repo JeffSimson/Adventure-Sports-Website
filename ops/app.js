@@ -57,9 +57,9 @@
   function install(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.finally(()=>deferredPrompt=null)}else{toast('On iPhone: Safari → Share → Add to Home Screen')}}
   function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500)}
   $$('.nav-item').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));$$('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
-  $('#menuButton').addEventListener('click',()=>sidebar.classList.toggle('open'));$('#loginButton').addEventListener('click',openLogin);$('#logoutButton').addEventListener('click',logout);$('#settingsLogout').addEventListener('click',logout);$('#installButton').addEventListener('click',install);$('#settingsInstall').addEventListener('click',install);
+  $('#menuButton').addEventListener('click',()=>sidebar.classList.toggle('open'));$('#loginButton').addEventListener('click',function(e){ e.preventDefault(); if(window.opsOpenLogin) window.opsOpenLogin(); else openLogin(); });$('#logoutButton').addEventListener('click',logout);$('#settingsLogout').addEventListener('click',logout);$('#installButton').addEventListener('click',install);$('#settingsInstall').addEventListener('click',install);
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('#installButton').hidden=false});
-  if('serviceWorker' in navigator)navigator.serviceWorker.register('/ops/sw.js').catch(()=>{});
+  if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(rs=>rs.filter(r=>r.scope.includes('/ops/')).forEach(r=>r.unregister())).catch(()=>{});caches&&caches.keys().then(keys=>keys.filter(k=>k.startsWith('ase-ops-')).forEach(k=>caches.delete(k))).catch(()=>{});}
   const initial=location.hash.replace('#','');if(initial&&$(`[data-view-panel="${initial}"]`))go(initial);
   initIdentity();
 })();

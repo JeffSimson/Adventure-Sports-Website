@@ -11,7 +11,7 @@
   <link rel="manifest" href="/ops/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/uploads/branding/apple-touch-icon.png">
   <link rel="icon" href="/uploads/branding/favicon.ico">
-  <link rel="stylesheet" href="/ops/styles.css?v=2">
+  <link rel="stylesheet" href="/ops/styles.css?v=3">
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
@@ -21,7 +21,9 @@
       <p class="eyebrow">Secure Management Portal</p>
       <h1>Adventure Sports Operations Hub</h1>
       <p>Sign in to manage the website and access facility operations.</p>
-      <button id="loginButton" class="primary-btn">Sign In</button>
+      <button id="loginButton" class="primary-btn" type="button" onclick="window.opsOpenLogin && window.opsOpenLogin()">Sign In</button>
+      <p id="loginStatus" class="login-status">Login service ready.</p>
+      <a id="adminLoginFallback" href="/admin/" class="secondary-btn login-fallback">Use Existing Website Admin Login</a>
       <a href="/" class="text-link">Return to public website</a>
     </div>
   </div>
@@ -132,6 +134,43 @@
     </main>
   </div>
   <div id="toast" class="toast" role="status"></div>
-  <script src="/ops/app.js?v=2"></script>
+  <script>
+  // Immediate login handler so the button works even if the main app script is cached or delayed.
+  window.opsOpenLogin = function () {
+    var status = document.getElementById('loginStatus');
+    var btn = document.getElementById('loginButton');
+    if (status) status.textContent = 'Opening secure sign-in…';
+    if (btn) { btn.disabled = true; btn.textContent = 'Opening…'; }
+
+    function finish() {
+      if (btn) { btn.disabled = false; btn.textContent = 'Sign In'; }
+    }
+
+    function openWidget() {
+      try {
+        if (!window.netlifyIdentity) throw new Error('Identity widget unavailable');
+        window.netlifyIdentity.init({ APIUrl: window.location.origin + '/.netlify/identity' });
+        window.netlifyIdentity.open('login');
+        if (status) status.textContent = 'Secure sign-in window opened.';
+      } catch (err) {
+        console.error(err);
+        if (status) status.innerHTML = 'The popup could not open. Click <b>Use Existing Website Admin Login</b> below.';
+      } finally {
+        finish();
+      }
+    }
+
+    if (window.netlifyIdentity) return openWidget();
+    var script = document.createElement('script');
+    script.src = 'https://unpkg.com/netlify-identity-widget@1/build/netlify-identity-widget.js';
+    script.onload = openWidget;
+    script.onerror = function () {
+      if (status) status.innerHTML = 'The login service was blocked. Click <b>Use Existing Website Admin Login</b> below.';
+      finish();
+    };
+    document.head.appendChild(script);
+  };
+</script>
+<script src="/ops/app.js?v=3"></script>
 </body>
 </html>
