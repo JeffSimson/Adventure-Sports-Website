@@ -18,6 +18,8 @@
   document.body.appendChild(loader);
 
   const dash=document.getElementById('ase-dashboard');
+  dash.classList.add('active');
+  document.body.classList.add('ase-dashboard-mode');
   function card(s){return `<a class="ase-admin-card ${s.cls}" href="${s.hash}" data-name="${s.name.toLowerCase()}"><span class="ase-card-icon">${s.icon}</span><h3>${s.name}</h3><p>${s.desc}</p><span class="ase-card-link">Open section <span class="ase-card-arrow">→</span></span></a>`}
 
   dash.innerHTML=`
@@ -37,7 +39,7 @@
         </div></div>
       </div>
       <aside class="ase-command-summary">
-        <div class="ase-command-summary-head"><div><span>Website Overview</span><strong><i class="ase-status-dot"></i> Online</strong></div><a href="/admin-classic/" title="Open the saved previous admin">Classic Admin</a></div>
+        <div class="ase-command-summary-head"><div><span>Website Overview</span><strong id="aseLiveEngineStatus"><i class="ase-status-dot"></i> Checking live connection…</strong></div><div class="ase-summary-links"><button id="aseCheckLive" type="button">Check Live</button><a href="/admin-classic/" title="Open the saved previous admin">Classic Admin</a></div></div>
         <article class="ase-summary-stat today"><span>Today's Events</span><strong id="aseTodayEvents">—</strong><small id="aseTodayEventsNote">Checking today's schedule…</small></article>
         <div class="ase-summary-pair"><article class="ase-summary-stat"><span>Gallery</span><strong id="aseOverviewGallery">—</strong><small>Published photos</small></article><article class="ase-summary-stat"><span>Upcoming Events</span><strong id="aseOverviewEvents">—</strong><small>Still on the calendar</small></article></div>
         <article class="ase-next-event"><span>Next Tournament</span><strong id="aseOverviewNextEvent">Checking event schedule…</strong></article>
@@ -137,33 +139,49 @@
 
     <section class="ase-bottom-grid">
       <div class="ase-panel"><div class="ase-panel-head"><h3>Helpful Shortcuts</h3><small>Less common tasks</small></div><div class="ase-quick-row"><a class="ase-quick" href="/admin/events-import.html"><b>⚡ Import Multiple Events</b><span>Add a full tournament schedule faster</span></a><a class="ase-quick" href="#/collections/content/entries/gallery"><b>＋ Add New Photos</b><span>Upload photos to the public gallery</span></a><a class="ase-quick" href="#/collections/content/entries/events"><b>＋ Add One Event</b><span>Create or update a single event</span></a></div></div>
-      <aside class="ase-panel ase-publishing-panel"><div class="ase-panel-head"><h3>How Publishing Works</h3></div><div class="ase-tip"><span class="ase-tip-icon">1</span><div><b>Make your change</b><span>Use Quick Edit or open a detailed section.</span></div></div><div class="ase-tip"><span class="ase-tip-icon">2</span><div><b>Press Save or Publish</b><span>Your update is committed securely.</span></div></div><div class="ase-tip"><span class="ase-tip-icon">3</span><div><b>Wait for Netlify</b><span>The live site normally updates within a minute.</span></div></div></aside>
+      <aside class="ase-panel ase-publishing-panel"><div class="ase-panel-head"><h3>How Publishing Works</h3></div><div class="ase-tip"><span class="ase-tip-icon">1</span><div><b>Make your change</b><span>Use Quick Edit or open a detailed section.</span></div></div><div class="ase-tip"><span class="ase-tip-icon">2</span><div><b>Press Save or Publish</b><span>Your everyday Quick Edit update is written to the live data store.</span></div></div><div class="ase-tip"><span class="ase-tip-icon">3</span><div><b>Live immediately</b><span>The control center verifies the live revision before reporting success.</span></div></div></aside>
     </section>
   </div>`;
 
   const byId=id=>document.getElementById(id);
   const stateEl=byId('aseQuickState'), messageEl=byId('aseQuickMessage'), saveBtn=byId('aseQuickSave');
 
+  function getIdentityUser(){
+    try{
+      return window.netlifyIdentity&&typeof window.netlifyIdentity.currentUser==='function'
+        ? window.netlifyIdentity.currentUser()
+        : null;
+    }catch(error){return null}
+  }
+
+  function getDisplayName(user){
+    if(!user)return 'Administrator';
+    const metadata=user.user_metadata||user.userMetadata||{};
+    const raw=metadata.full_name||metadata.name||metadata.display_name||metadata.displayName||'';
+    if(String(raw).trim())return String(raw).trim().split(/\s+/)[0];
+    if(user.email){
+      const emailName=user.email.split('@')[0].replace(/[._-]+/g,' ').trim();
+      if(emailName)return emailName.replace(/\b\w/g,char=>char.toUpperCase());
+    }
+    return 'Administrator';
+  }
+
   function updateGreeting(){
     const hour=new Date().getHours();
     const greeting=hour<12?'Good Morning':hour<17?'Good Afternoon':'Good Evening';
     const greetingEl=byId('aseGreeting');
-    if(greetingEl)greetingEl.textContent=greeting;
-    let displayName='Administrator';
-    try{
-      const user=window.netlifyIdentity&&window.netlifyIdentity.currentUser?window.netlifyIdentity.currentUser():null;
-      if(user){
-        const metadata=user.user_metadata||{};
-        const rawName=metadata.full_name||metadata.name||metadata.display_name||'';
-        if(rawName.trim()){
-          displayName=rawName.trim().split(/\s+/)[0];
-        }else if(user.email){
-          displayName=user.email.split('@')[0].replace(/[._-]+/g,' ').replace(/\b\w/g,char=>char.toUpperCase());
-        }
-      }
-    }catch(error){console.warn('Could not read signed-in user name.',error)}
     const nameEl=byId('aseUserName');
-    if(nameEl)nameEl.textContent=displayName;
+    if(greetingEl)greetingEl.textContent=greeting;
+    if(nameEl)nameEl.textContent=getDisplayName(getIdentityUser());
+  }
+
+  function waitForIdentityName(){
+    let attempts=0;
+    const timer=setInterval(()=>{
+      attempts+=1;
+      updateGreeting();
+      if(getIdentityUser()||attempts>=20)clearInterval(timer);
+    },500);
   }
   function syncTopToQuick(){const ts=byId('aseTopFieldStatus'),ta=byId('aseTopAnnouncement'),s=byId('aseFieldStatus'),a=byId('aseAnnouncement');if(ts&&s)s.value=ts.value;if(ta&&a)a.value=ta.value}
   function syncQuickToTop(){const ts=byId('aseTopFieldStatus'),ta=byId('aseTopAnnouncement'),s=byId('aseFieldStatus'),a=byId('aseAnnouncement');if(ts&&s)ts.value=s.value;if(ta&&a)ta.value=a.value}
@@ -224,7 +242,13 @@
         try{r=await fetch('/.netlify/functions/live-content?file='+encodeURIComponent(liveKey)+'&admin='+Date.now(),{cache:'no-store'})}catch(error){}
         if(!r||!r.ok)r=await fetch('/'+f.path+'?admin='+Date.now(),{cache:'no-store'});
         if(!r.ok)throw new Error('Could not load '+f.path);
-        f.data=await r.json(); f.original=JSON.stringify(f.data);
+        f.data=await r.json();
+        if(f.data&&typeof f.data==='object'){
+          delete f.data.__revision;
+          delete f.data.__publishedAt;
+          delete f.data.__publishedBy;
+        }
+        f.original=JSON.stringify(f.data);
       }));
       populate();
     }catch(err){
@@ -262,9 +286,27 @@
     if(!user)throw new Error('Your login session expired. Refresh and log in again.');
     return user.jwt();
   }
+  async function checkLiveEngine(){
+    const status=byId('aseLiveEngineStatus');
+    if(status){status.className='checking';status.innerHTML='<i class="ase-status-dot"></i> Checking live connection…'}
+    try{
+      const response=await fetch('/.netlify/functions/live-content?health=1&v='+Date.now(),{cache:'no-store'});
+      if(!response.ok)throw new Error('HTTP '+response.status);
+      const data=await response.json();
+      if(!data.ok)throw new Error('Unexpected health response');
+      if(status){status.className='connected';status.innerHTML='<i class="ase-status-dot"></i> Instant updates connected'}
+      return true;
+    }catch(error){
+      if(status){status.className='disconnected';status.innerHTML='<i class="ase-status-dot"></i> Instant updates unavailable'}
+      console.error('Live engine check failed',error);
+      return false;
+    }
+  }
+
   async function saveInstant(key,newData,token){
     const response=await fetch('/.netlify/functions/live-content',{
       method:'PUT',
+      cache:'no-store',
       headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json','Accept':'application/json'},
       body:JSON.stringify({file:key,data:newData})
     });
@@ -273,7 +315,14 @@
       try{detail=(await response.json()).message||''}catch(error){}
       throw new Error('Instant publish failed for '+key+' ('+response.status+'). '+detail);
     }
-    return response.json();
+    const result=await response.json();
+    if(!result.ok||!result.revision)throw new Error('Instant publish did not return a verified revision for '+key+'.');
+
+    const verify=await fetch('/.netlify/functions/live-content?file='+encodeURIComponent(key)+'&revision='+encodeURIComponent(result.revision)+'&v='+Date.now(),{cache:'no-store'});
+    if(!verify.ok)throw new Error('The live site could not verify the new '+key+' data.');
+    const verified=await verify.json();
+    if(verified.__revision!==result.revision)throw new Error('The live site returned an older '+key+' revision.');
+    return verified;
   }
 
   async function saveFile(key,newData,token){
@@ -347,15 +396,20 @@
   const quickStatus=byId('aseFieldStatus'),quickAnnouncement=byId('aseAnnouncement');if(quickStatus)quickStatus.addEventListener('change',syncQuickToTop);if(quickAnnouncement)quickAnnouncement.addEventListener('input',syncQuickToTop);
   document.querySelectorAll('[data-open-tab]').forEach(b=>b.addEventListener('click',()=>{const t=document.querySelector('.ase-tab[data-tab="'+b.dataset.openTab+'"]');if(t)t.click();const e=document.querySelector('.ase-quick-editor');if(e)e.scrollIntoView({behavior:'smooth',block:'start'})}));
   updateGreeting();
+  waitForIdentityName();
   if(window.netlifyIdentity){
     window.netlifyIdentity.on('init',updateGreeting);
     window.netlifyIdentity.on('login',updateGreeting);
     window.netlifyIdentity.on('logout',updateGreeting);
   }
-  loadAll(); loadOverview();
+  loadAll(); loadOverview(); checkLiveEngine();
+  const checkLiveBtn=byId('aseCheckLive');if(checkLiveBtn)checkLiveBtn.addEventListener('click',checkLiveEngine);
 
   byId('aseSearch').addEventListener('input',e=>{const q=e.target.value.trim().toLowerCase();document.querySelectorAll('.ase-admin-card').forEach(c=>c.style.display=(!q||c.dataset.name.includes(q)||c.textContent.toLowerCase().includes(q))?'':'none')});
-  function isDashboard(){const h=location.hash.replace(/\/$/,'');return h===''||h==='#'||h==='#/collections/content'||h==='#/collections/content/entries'}
+  function isDashboard(){
+    const h=(location.hash||'').replace(/\/$/,'');
+    return h===''||h==='#'||h==='#/'||h==='#/collections/content'||h==='#/collections/content/entries';
+  }
   function route(){const on=isDashboard();document.body.classList.toggle('ase-dashboard-mode',on);dash.classList.toggle('active',on);if(on)window.scrollTo(0,0);setTimeout(()=>loader.classList.add('hidden'),500)}
   window.addEventListener('hashchange',route);route();
   const obs=new MutationObserver(()=>{if(document.querySelector('#nc-root'))setTimeout(()=>loader.classList.add('hidden'),450)});obs.observe(document.documentElement,{childList:true,subtree:true});setTimeout(()=>loader.classList.add('hidden'),4500);

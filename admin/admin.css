@@ -165,3 +165,12 @@ body.ase-dashboard-mode #nc-root{display:none!important}
 /* Instant publishing */
 .ase-command-publish b::after,.ase-save-btn b::after{content:" • INSTANT";color:#12805f;font-size:8px;font-weight:900;letter-spacing:.8px}
 .ase-quick-message.warning{color:#8a5a00;border-color:#f2d58b;background:#fff8df}
+
+/* Corrected control-center routing and live diagnostics */
+body.ase-dashboard-mode #ase-dashboard.active{display:block!important;visibility:visible!important;opacity:1!important}
+.ase-summary-links{display:flex;align-items:center;gap:7px}
+.ase-summary-links button{border:0;padding:8px 10px;border-radius:9px;color:#0b5faa;background:#e8f3ff;font:850 9px Manrope,Inter,sans-serif;cursor:pointer}
+#aseLiveEngineStatus.checking{color:#946200}
+#aseLiveEngineStatus.connected{color:#15805e}
+#aseLiveEngineStatus.disconnected{color:#b42318}
+#aseLiveEngineStatus.disconnected .ase-status-dot{background:#dc2626;box-shadow:0 0 0 4px rgba(220,38,38,.12)}

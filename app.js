@@ -32,7 +32,15 @@ async function getJSON(path){
   if(key){
     try{
       const live=await fetch('/.netlify/functions/live-content?file='+encodeURIComponent(key)+'&v='+Date.now(),{cache:'no-store'});
-      if(live.ok)return live.json();
+      if(live.ok){
+        const data=await live.json();
+        if(data&&typeof data==='object'){
+          delete data.__revision;
+          delete data.__publishedAt;
+          delete data.__publishedBy;
+        }
+        return data;
+      }
     }catch(error){console.warn('Using published content fallback.',error)}
   }
   const response=await fetch(path+'?v='+Date.now(),{cache:'no-store'});
