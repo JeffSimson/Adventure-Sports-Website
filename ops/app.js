@@ -1,53 +1,41 @@
 (function(){
-  const $=(s,r=document)=>r.querySelector(s); const $$=(s,r=document)=>[...r.querySelectorAll(s)];
-  const app=$('#app'),gate=$('#loginGate'),sidebar=$('#sidebar'); let deferredPrompt=null;
-  const AUTH_KEY='ase_ops_identity_session_v1';
-  const IDENTITY_BASE='/.netlify/identity';
-
-  function displayName(user){const m=(user&&user.user_metadata)||{};const raw=m.full_name||m.name||m.display_name||'';if(raw.trim())return raw.trim().split(/\s+/)[0];if(user&&user.email)return user.email.split('@')[0].replace(/[._-]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());return 'Administrator'}
-  function greeting(){const h=new Date().getHours();return h<12?'Good Morning':h<17?'Good Afternoon':'Good Evening'}
-  function renderUser(user){$('#greeting').textContent=greeting();$('#userName').textContent=displayName(user);$('#accountEmail').textContent=(user&&user.email)||'Signed-in administrator';$$('.avatar').forEach(x=>x.textContent=displayName(user).charAt(0).toUpperCase())}
-  function showApp(user){gate.hidden=true;app.hidden=false;renderUser(user);loadWebsiteData()}
-  function showGate(){app.hidden=true;gate.hidden=false}
-  function setStatus(message,type=''){const el=$('#loginStatus');el.textContent=message;el.className='login-status'+(type?' '+type:'')}
-  function saveSession(token,user){localStorage.setItem(AUTH_KEY,JSON.stringify({token,user,saved_at:Date.now()}))}
-  function clearSession(){localStorage.removeItem(AUTH_KEY)}
-  function readSession(){try{return JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch{return null}}
-  async function fetchUser(accessToken){const r=await fetch(IDENTITY_BASE+'/user',{headers:{Authorization:'Bearer '+accessToken},cache:'no-store'});if(!r.ok)throw new Error('Your login session could not be verified.');return r.json()}
-  async function refreshSession(session){
-    if(!session||!session.token||!session.token.refresh_token)return null;
-    const body=new URLSearchParams({grant_type:'refresh_token',refresh_token:session.token.refresh_token});
-    const r=await fetch(IDENTITY_BASE+'/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body});
-    if(!r.ok)return null;
-    const token=await r.json();const user=await fetchUser(token.access_token);saveSession(token,user);return {token,user};
-  }
-  async function restoreSession(){
-    showGate();const session=readSession();if(!session||!session.token){setStatus('Enter the email and password used for the website admin.');return}
-    try{const user=await fetchUser(session.token.access_token);saveSession(session.token,user);showApp(user)}catch{try{const fresh=await refreshSession(session);if(fresh)showApp(fresh.user);else{clearSession();setStatus('Your session expired. Please sign in again.')}}catch{clearSession();setStatus('Your session expired. Please sign in again.')}}
-  }
-  async function login(email,password){
-    const body=new URLSearchParams({grant_type:'password',username:email,password});
-    const r=await fetch(IDENTITY_BASE+'/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body});
-    let data={};try{data=await r.json()}catch{}
-    if(!r.ok){const msg=data.error_description||data.msg||data.error||'The email or password is incorrect.';throw new Error(msg)}
-    const user=await fetchUser(data.access_token);saveSession(data,user);return user;
-  }
-  async function handleLogin(e){
-    e.preventDefault();const email=$('#loginEmail'),password=$('#loginPassword'),button=$('#loginButton');
-    email.setAttribute('aria-invalid',String(!email.validity.valid));password.setAttribute('aria-invalid',String(!password.value));
-    if(!email.validity.valid||!password.value){setStatus('Enter a valid email address and password.','error');return}
-    button.disabled=true;button.textContent='Signing In…';setStatus('Checking your account securely…','loading');
-    try{const user=await login(email.value.trim(),password.value);setStatus('Signed in successfully.','success');showApp(user)}catch(err){console.error(err);setStatus(err&&err.message?err.message:'Sign-in failed. Please try again.','error')}finally{button.disabled=false;button.textContent='Sign In'}
-  }
-  function logout(){clearSession();showGate();$('#loginPassword').value='';setStatus('You have been signed out.','success')}
-  function go(view){$$('.view').forEach(v=>v.classList.toggle('active',v.dataset.viewPanel===view));$$('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.view===view));sidebar.classList.remove('open');history.replaceState(null,'','#'+view);window.scrollTo({top:0,behavior:'smooth'})}
-  async function loadWebsiteData(){try{let r=await fetch('/.netlify/functions/live-content?file=site&ops='+Date.now(),{cache:'no-store'});if(!r.ok)r=await fetch('/content/site.json?ops='+Date.now(),{cache:'no-store'});if(!r.ok)throw 0;const d=await r.json();const status=d.fieldStatus||'OPEN',announcement=d.announcement||'No announcement is currently posted.';$('#facilityStatus').textContent=status;$('#websiteStatusTitle').textContent='Facility is '+status;$('#websiteAnnouncement').textContent=announcement}catch(e){$('#facilityStatus').textContent='Check website';$('#websiteStatusTitle').textContent='Website data unavailable';$('#websiteAnnouncement').textContent='Open the Website Manager to review current settings.'}}
-  function install(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.finally(()=>deferredPrompt=null)}else{toast('On iPhone: Safari → Share → Add to Home Screen')}}
-  function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500)}
-  $$('.nav-item').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));$$('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
-  $('#menuButton').addEventListener('click',()=>sidebar.classList.toggle('open'));$('#loginForm').addEventListener('submit',handleLogin);$('#logoutButton').addEventListener('click',logout);$('#settingsLogout').addEventListener('click',logout);$('#installButton').addEventListener('click',install);$('#settingsInstall').addEventListener('click',install);
-  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('#installButton').hidden=false});
-  if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(rs=>rs.filter(r=>r.scope.includes('/ops/')).forEach(r=>r.unregister())).catch(()=>{});if(window.caches)caches.keys().then(keys=>keys.filter(k=>k.startsWith('ase-ops-')).forEach(k=>caches.delete(k))).catch(()=>{});}
-  const initial=location.hash.replace('#','');if(initial&&$(`[data-view-panel="${initial}"]`))go(initial);
-  restoreSession();
+'use strict';
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const app=$('#app'),gate=$('#loginGate'),sidebar=$('#sidebar'),AUTH_KEY='ase_ops_identity_session_v1',IDENTITY='/.netlify/identity',GIT='/.netlify/git/github',SITE='content/site.json';
+let deferredPrompt=null,session=null,siteData=null,siteSha='',originalStatus='',originalAnnouncement='',publishing=false;
+function displayName(u){const m=u?.user_metadata||{},raw=m.full_name||m.name||m.display_name||'';if(raw.trim())return raw.trim().split(/\s+/)[0];if(u?.email)return u.email.split('@')[0].replace(/[._-]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());return'Administrator'}
+function greeting(){const h=new Date().getHours();return h<12?'Good Morning':h<17?'Good Afternoon':'Good Evening'}
+function renderUser(u){const n=displayName(u);$('#greeting').textContent=greeting();$('#userName').textContent=n;$('#accountEmail').textContent=u?.email||'Signed-in administrator';$('#publisherEmail').textContent=u?.email||'Administrator';$$('.avatar').forEach(x=>x.textContent=n[0].toUpperCase())}
+function showApp(u){gate.hidden=true;app.hidden=false;renderUser(u);loadSite()}
+function showGate(){app.hidden=true;gate.hidden=false}
+function loginStatus(m,t=''){const e=$('#loginStatus');e.textContent=m;e.className='login-status'+(t?' '+t:'')}
+function saveSession(token,user){session={token,user,saved_at:Date.now()};localStorage.setItem(AUTH_KEY,JSON.stringify(session))}
+function clearSession(){session=null;localStorage.removeItem(AUTH_KEY)}
+function readSession(){try{return JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch{return null}}
+async function fetchUser(token){const r=await fetch(IDENTITY+'/user',{headers:{Authorization:'Bearer '+token},cache:'no-store'});if(!r.ok)throw Error('Your login session could not be verified.');return r.json()}
+async function refreshSession(s){if(!s?.token?.refresh_token)return null;const body=new URLSearchParams({grant_type:'refresh_token',refresh_token:s.token.refresh_token}),r=await fetch(IDENTITY+'/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body});if(!r.ok)return null;const token=await r.json(),user=await fetchUser(token.access_token);saveSession(token,user);return session}
+async function ensureSession(){if(session?.token?.access_token)return session;const s=readSession();if(!s)return null;try{const u=await fetchUser(s.token.access_token);saveSession(s.token,u);return session}catch{return refreshSession(s)}}
+async function restoreSession(){showGate();const s=readSession();if(!s?.token){loginStatus('Enter the email and password used for the website admin.');return}try{const u=await fetchUser(s.token.access_token);saveSession(s.token,u);showApp(u)}catch{const fresh=await refreshSession(s).catch(()=>null);if(fresh)showApp(fresh.user);else{clearSession();loginStatus('Your session expired. Please sign in again.')}}}
+async function login(email,password){const body=new URLSearchParams({grant_type:'password',username:email,password}),r=await fetch(IDENTITY+'/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Error(d.error_description||d.msg||d.error||'The email or password is incorrect.');const u=await fetchUser(d.access_token);saveSession(d,u);return u}
+async function handleLogin(e){e.preventDefault();const email=$('#loginEmail'),pw=$('#loginPassword'),b=$('#loginButton');if(!email.validity.valid||!pw.value){loginStatus('Enter a valid email address and password.','error');return}b.disabled=true;b.textContent='Signing In…';loginStatus('Checking your account securely…','loading');try{showApp(await login(email.value.trim(),pw.value))}catch(err){loginStatus(err.message||'Sign-in failed.','error')}finally{b.disabled=false;b.textContent='Sign In'}}
+function logout(){clearSession();showGate();$('#loginPassword').value='';loginStatus('You have been signed out.','success')}
+function go(v){$$('.view').forEach(x=>x.classList.toggle('active',x.dataset.viewPanel===v));$$('.nav-item').forEach(x=>x.classList.toggle('active',x.dataset.view===v));sidebar.classList.remove('open');history.replaceState(null,'','#'+v);window.scrollTo({top:0,behavior:'smooth'});if(v==='website'&&!siteData)loadSite()}
+function headers(t){return{Authorization:'Bearer '+t,Accept:'application/vnd.github.v3+json'}}
+async function gitSite(){const s=await ensureSession();if(!s)throw Error('Your session expired. Please sign in again.');const r=await fetch(`${GIT}/contents/${SITE}?ref=main&ts=${Date.now()}`,{headers:headers(s.token.access_token),cache:'no-store'});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Error(d.message||`Unable to load website controls (${r.status}).`);const text=decodeURIComponent(escape(atob((d.content||'').replace(/\n/g,''))));return{data:JSON.parse(text),sha:d.sha}}
+async function loadSite(){setEditor('Loading','loading');try{const x=await gitSite();siteData=x.data;siteSha=x.sha;applyLoaded();setEditor('Ready','ready')}catch(err){console.error(err);try{const r=await fetch('/content/site.json?ops='+Date.now(),{cache:'no-store'});if(!r.ok)throw err;siteData=await r.json();siteSha='';applyLoaded();setEditor('View only','warning');notice('Settings loaded, but publishing access could not be verified. Sign out and back in if publishing fails.','warning')}catch{setEditor('Unavailable','error');notice(err.message||'Website controls could not be loaded.','error')}}}
+function applyLoaded(){originalStatus=siteData.fieldStatus||'OPEN';originalAnnouncement=siteData.announcement||'';const radio=$(`input[name="fieldStatus"][value="${CSS.escape(originalStatus)}"]`)||$('input[value="OPEN"]');if(radio)radio.checked=true;$('#announcementInput').value=originalAnnouncement;$('#currentLiveStatus').textContent=originalStatus;$('#lastLoadedTime').textContent=new Date().toLocaleString();updatePreview();updateDashboard()}
+function currentStatus(){return $('input[name="fieldStatus"]:checked')?.value||'OPEN'}
+function updateDashboard(){if(!siteData)return;$('#facilityStatus').textContent=siteData.fieldStatus||'OPEN';$('#dashboardLiveDot').dataset.status=(siteData.fieldStatus||'OPEN').toLowerCase().replace(/\s+/g,'-')}
+function dirty(){return currentStatus()!==originalStatus||$('#announcementInput').value.trim()!==originalAnnouncement.trim()}
+function updatePreview(){const s=currentStatus(),a=$('#announcementInput').value.trim()||'No announcement is currently posted.',key=s.toLowerCase().replace(/\s+/g,'-');$('#previewStatus').textContent=s;$('#previewAnnouncement').textContent=a;$('#previewDot').dataset.status=key;$('#sitePreview').dataset.status=key;$('#announcementCount').textContent=`${$('#announcementInput').value.length} / 240`;const d=dirty();$('#changeState').textContent=d?'Ready to publish':'None';$('#changeState').className=d?'has-changes':'';$('#publishControlsButton').disabled=!d||publishing;$('#resetControlsButton').disabled=!d||publishing}
+function setEditor(t,c=''){const e=$('#editorState');e.textContent=t;e.className='connection-badge'+(c?' '+c:'')}
+function notice(m,t='success'){const e=$('#publishNotice');e.textContent=m;e.className='publish-notice '+t;e.hidden=false}
+function hideNotice(){$('#publishNotice').hidden=true}
+function b64(s){return btoa(unescape(encodeURIComponent(s)))}
+async function publish(e){e.preventDefault();hideNotice();if(!siteData||publishing)return;const announcement=$('#announcementInput').value.trim();if(!announcement){notice('Please enter a homepage announcement before publishing.','error');return}const s=await ensureSession();if(!s){notice('Your session expired. Please sign in again.','error');return}publishing=true;setEditor('Publishing','loading');const btn=$('#publishControlsButton');btn.textContent='Publishing…';updatePreview();try{if(!siteSha){const latest=await gitSite();siteSha=latest.sha;siteData=latest.data}const updated={...siteData,fieldStatus:currentStatus(),announcement},payload={message:`Update facility status and announcement from Operations Hub (${displayName(s.user)})`,content:b64(JSON.stringify(updated,null,2)+'\n'),sha:siteSha,branch:'main'},r=await fetch(`${GIT}/contents/${SITE}`,{method:'PUT',headers:{...headers(s.token.access_token),'Content-Type':'application/json'},body:JSON.stringify(payload)});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Error(d.message||`Publishing failed (${r.status}).`);siteData=updated;siteSha=d.content?.sha||siteSha;originalStatus=updated.fieldStatus;originalAnnouncement=updated.announcement;$('#currentLiveStatus').textContent=originalStatus;updateDashboard();setEditor('Published','ready');notice('Published successfully. Netlify is deploying the update now; the public website should refresh shortly.','success');toast('Website update published')}catch(err){console.error(err);setEditor('Publish failed','error');notice((err.message||'The website update could not be published.')+(/401|403|permission|unauthorized|forbidden/i.test(err.message)?' Your account may need an Owner or Manager role.':''),'error')}finally{publishing=false;btn.textContent='Publish to Website';updatePreview()}}
+function reset(){if(!siteData)return;applyLoaded();hideNotice();toast('Changes reset')}
+function install(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.finally(()=>deferredPrompt=null)}else toast('On iPhone: Safari → Share → Add to Home Screen')}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500)}
+$$('.nav-item').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));$$('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));$('#menuButton').addEventListener('click',()=>sidebar.classList.toggle('open'));$('#loginForm').addEventListener('submit',handleLogin);$('#logoutButton').addEventListener('click',logout);$('#settingsLogout').addEventListener('click',logout);$('#installButton').addEventListener('click',install);$('#settingsInstall').addEventListener('click',install);$('#quickControlsForm').addEventListener('submit',publish);$('#resetControlsButton').addEventListener('click',reset);$$('input[name="fieldStatus"]').forEach(x=>x.addEventListener('change',updatePreview));$('#announcementInput').addEventListener('input',updatePreview);window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('#installButton').hidden=false});window.addEventListener('beforeunload',e=>{if(dirty()){e.preventDefault();e.returnValue=''}});
+if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(rs=>rs.filter(r=>r.scope.includes('/ops/')).forEach(r=>r.unregister())).catch(()=>{});if(window.caches)caches.keys().then(ks=>ks.filter(k=>k.startsWith('ase-ops-')).forEach(k=>caches.delete(k))).catch(()=>{})}const initial=location.hash.replace('#','');if(initial&&$(`[data-view-panel="${initial}"]`))go(initial);restoreSession();
 })();

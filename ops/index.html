@@ -11,7 +11,7 @@
   <link rel="manifest" href="/ops/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/uploads/branding/apple-touch-icon.png">
   <link rel="icon" href="/uploads/branding/favicon.ico">
-  <link rel="stylesheet" href="/ops/styles.css?v=5">
+  <link rel="stylesheet" href="/ops/styles.css?v=6">
 </head>
 <body>
   <div id="loginGate" class="login-gate" hidden>
@@ -70,7 +70,7 @@
         </div>
 
         <div class="status-banner">
-          <div><span class="live-dot"></span><div><small>Facility Status</small><strong id="facilityStatus">Loading…</strong></div></div>
+          <div><span id="dashboardLiveDot" class="live-dot"></span><div><small>Facility Status</small><strong id="facilityStatus">Loading…</strong></div></div>
           <button class="small-btn" data-go="website">Update Status</button>
         </div>
 
@@ -85,7 +85,7 @@
           <article class="panel quick-panel">
             <div class="panel-head"><div><p class="eyebrow">Quick actions</p><h2>What do you need to do?</h2></div></div>
             <div class="quick-grid">
-              <button data-go="website"><span>◈</span><b>Update Website</b><small>Status, announcements, events and photos</small></button>
+              <button data-go="website"><span>◈</span><b>Update Website</b><small>Status and homepage announcement</small></button>
               <button data-go="clover"><span>$</span><b>View Clover</b><small>Sales, items and inventory</small></button>
               <button data-go="staff"><span>👥</span><b>View Staff</b><small>Today's schedule and coverage</small></button>
               <button data-go="fields"><span>◇</span><b>Check Fields</b><small>Conditions and inspections</small></button>
@@ -104,18 +104,45 @@
       </section>
 
       <section class="view" data-view-panel="website">
-        <div class="page-head"><div><p class="eyebrow">Website Manager</p><h1>Manage adventurenj.com</h1><p>Every website control will ultimately live here. The existing editor remains available while the new mobile controls are built.</p></div><a class="primary-btn link-btn" href="/admin/">Open Full Website Editor</a></div>
-        <div class="website-hero panel">
-          <div><p class="eyebrow">Live website status</p><h2 id="websiteStatusTitle">Checking current settings…</h2><p id="websiteAnnouncement">Loading announcement…</p></div>
-          <div class="website-live-actions"><a href="/admin/" class="primary-btn link-btn">Edit Website</a><a href="/" target="_blank" class="secondary-btn">Preview Live Site ↗</a></div>
+        <div class="page-head">
+          <div><p class="eyebrow">Website Manager</p><h1>Website Quick Controls</h1><p>Update the facility status and homepage announcement without leaving Operations Hub.</p></div>
+          <div class="head-actions"><a class="secondary-btn" href="/admin/">Full Website Editor</a><a class="secondary-btn" href="/" target="_blank">View Live Site ↗</a></div>
         </div>
-        <div class="module-grid">
-          <a href="/admin/" class="module-card"><span>●</span><b>Field Status & Announcement</b><small>Open, closed, delayed and homepage message</small></a>
-          <a href="/admin/#/collections/content/entries/events" class="module-card"><span>⚾</span><b>Events & Tournaments</b><small>Add dates, registrations, logos and details</small></a>
+        <div id="publishNotice" class="publish-notice" hidden role="status"></div>
+        <div class="editor-layout">
+          <form id="quickControlsForm" class="panel control-panel">
+            <div class="panel-head"><div><p class="eyebrow">Public website controls</p><h2>Facility Update</h2></div><span id="editorState" class="connection-badge loading">Loading</span></div>
+            <fieldset class="status-fieldset">
+              <legend>Facility Status</legend><p class="field-help">Choose the status visitors should see across the website.</p>
+              <div class="status-options">
+                <label class="status-option open"><input type="radio" name="fieldStatus" value="OPEN"><span><b>Open</b><small>Facility is operating normally</small></span></label>
+                <label class="status-option delayed"><input type="radio" name="fieldStatus" value="DELAYED"><span><b>Delayed</b><small>Games or opening are delayed</small></span></label>
+                <label class="status-option closed"><input type="radio" name="fieldStatus" value="CLOSED"><span><b>Closed</b><small>Facility is closed</small></span></label>
+                <label class="status-option check"><input type="radio" name="fieldStatus" value="CHECK SCHEDULE"><span><b>Check Schedule</b><small>Visitors should review their schedule</small></span></label>
+              </div>
+            </fieldset>
+            <div class="form-field">
+              <div class="label-row"><label for="announcementInput">Homepage Announcement</label><span id="announcementCount">0 / 240</span></div>
+              <textarea id="announcementInput" maxlength="240" rows="5" placeholder="Enter the public homepage message."></textarea>
+              <p class="field-help">This message is public. Keep it direct and easy to understand.</p>
+            </div>
+            <div class="change-summary"><span>Current live status</span><strong id="currentLiveStatus">Loading…</strong><span>Unsaved changes</span><strong id="changeState">None</strong></div>
+            <div class="form-actions"><button id="resetControlsButton" class="secondary-btn" type="button">Reset Changes</button><button id="publishControlsButton" class="primary-btn" type="submit">Publish to Website</button></div>
+            <p class="publish-help">Publishing updates GitHub and Netlify deploys the public website automatically. It may take about a minute.</p>
+          </form>
+          <aside class="preview-column">
+            <article class="panel preview-panel">
+              <div class="panel-head"><div><p class="eyebrow">Live preview</p><h2>What visitors will see</h2></div><span class="preview-label">Preview</span></div>
+              <div id="sitePreview" class="site-preview"><div class="preview-status-row"><span id="previewDot" class="preview-dot"></span><strong id="previewStatus">OPEN</strong></div><p id="previewAnnouncement">Loading announcement…</p></div>
+              <p class="preview-note">The preview updates while you type. Nothing goes live until you publish.</p>
+            </article>
+            <article class="panel activity-panel"><p class="eyebrow">Publishing information</p><h2>Current Website File</h2><dl><div><dt>File</dt><dd>content/site.json</dd></div><div><dt>Signed in as</dt><dd id="publisherEmail">Loading…</dd></div><div><dt>Last loaded</dt><dd id="lastLoadedTime">—</dd></div></dl></article>
+          </aside>
+        </div>
+        <div class="module-grid lower-modules">
+          <a href="/admin/#/collections/content/entries/events" class="module-card"><span>⚾</span><b>Events & Tournaments</b><small>Add dates, registration links, logos and details</small></a>
           <a href="/admin/#/collections/content/entries/gallery" class="module-card"><span>▣</span><b>Photo Gallery</b><small>Upload and arrange public photos</small></a>
-          <a href="/admin/#/collections/content/entries/site" class="module-card"><span>⌂</span><b>Homepage & Facility Info</b><small>Hours, contact information and homepage content</small></a>
-          <a href="/admin/#/collections/content/entries/rentals" class="module-card"><span>◆</span><b>Rentals & Pricing</b><small>Rates, request types and rental contacts</small></a>
-          <a href="/admin/#/collections/content/entries/clubhouse" class="module-card"><span>☕</span><b>Clubhouse & Menu</b><small>Menu links, photos and clubhouse content</small></a>
+          <a href="/admin/#/collections/content/entries/site" class="module-card"><span>⌂</span><b>Full Homepage Settings</b><small>Edit hours, contact details, photos and all homepage content</small></a>
         </div>
       </section>
 
@@ -139,7 +166,7 @@
     </main>
   </div>
   <div id="toast" class="toast" role="status"></div>
-  <script src="/ops/app.js?v=5"></script>
+  <script src="/ops/app.js?v=6"></script>
 
 </body>
 </html>
