@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap');
+
+:root{
+  --ase-navy:#071a36;
+  --ase-navy-2:#0c274d;
+  --ase-blue:#1456ad;
+  --ase-blue-bright:#2276df;
+  --ase-red:#d94a43;
+  --ase-bg:#f4f7fb;
+  --ase-card:#ffffff;
+  --ase-text:#13213a;
+  --ase-muted:#6b7890;
+  --ase-line:#dce5f0;
+  --ase-shadow:0 18px 55px rgba(13,34,69,.12);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--ase-bg);color:var(--ase-text)}
+body{padding-top:74px}
+
+/* Branded utility header */
+.ase-admin-bar{
+  position:fixed;z-index:100000;top:0;left:0;right:0;height:74px;
+  display:flex;align-items:center;gap:18px;padding:0 22px;
+  background:linear-gradient(110deg,var(--ase-navy),var(--ase-navy-2));
+  border-bottom:3px solid var(--ase-blue-bright);
+  box-shadow:0 10px 30px rgba(2,16,36,.22);
+  color:#fff;
+}
+.ase-admin-brand{display:flex;align-items:center;gap:13px;min-width:290px}
+.ase-admin-brand img{width:48px;height:48px;object-fit:contain;filter:drop-shadow(0 5px 12px rgba(0,0,0,.28))}
+.ase-admin-brand-copy{display:flex;flex-direction:column;line-height:1.05}
+.ase-admin-brand-copy strong{font:800 17px Manrope,sans-serif;letter-spacing:-.2px}
+.ase-admin-brand-copy span{margin-top:5px;color:#a9c9f5;font-size:10px;text-transform:uppercase;letter-spacing:1.4px;font-weight:800}
+.ase-admin-actions{margin-left:auto;display:flex;align-items:center;gap:9px}
+.ase-admin-action{
+  display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:0 14px;
+  border:1px solid rgba(255,255,255,.16);border-radius:10px;color:#fff;text-decoration:none;
+  background:rgba(255,255,255,.075);font-size:12px;font-weight:800;transition:.2s;
+}
+.ase-admin-action:hover{background:rgba(255,255,255,.15);transform:translateY(-1px)}
+.ase-admin-action.primary{background:var(--ase-blue-bright);border-color:var(--ase-blue-bright)}
+.ase-admin-action.primary:hover{background:#3989ec}
+
+/* Loading experience */
+.ase-loader{position:fixed;inset:74px 0 0;z-index:99999;display:grid;place-items:center;background:var(--ase-bg);transition:opacity .35s,visibility .35s}
+.ase-loader.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.ase-loader-card{width:min(440px,calc(100% - 34px));padding:38px;text-align:center;background:#fff;border:1px solid var(--ase-line);border-radius:24px;box-shadow:var(--ase-shadow)}
+.ase-loader-card img{width:90px;height:90px;object-fit:contain}
+.ase-loader-card h1{font:800 27px Manrope,sans-serif;margin:18px 0 7px;color:var(--ase-navy)}
+.ase-loader-card p{margin:0;color:var(--ase-muted);font-size:14px;line-height:1.6}
+.ase-loader-line{height:5px;margin-top:24px;border-radius:999px;background:#e5edf7;overflow:hidden}
+.ase-loader-line::after{content:"";display:block;height:100%;width:42%;border-radius:inherit;background:linear-gradient(90deg,var(--ase-blue),var(--ase-blue-bright));animation:aseLoading 1.25s ease-in-out infinite}
+@keyframes aseLoading{0%{transform:translateX(-110%)}100%{transform:translateX(340%)}}
+
+/* Global Decap cleanup */
+#nc-root{min-height:calc(100vh - 74px);background:var(--ase-bg)}
+#nc-root *{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+#nc-root h1,#nc-root h2,#nc-root h3{font-family:Manrope,Inter,sans-serif;letter-spacing:-.35px}
+
+/* Header inside Decap */
+#nc-root header{box-shadow:none!important;border-bottom:1px solid var(--ase-line)!important;background:#fff!important}
+#nc-root header img{max-height:38px!important}
+
+/* Sidebar */
+#nc-root aside,
+#nc-root [class*="Sidebar"],
+#nc-root nav[role="navigation"]{
+  background:linear-gradient(180deg,#0a1f3d 0%,#07172e 100%)!important;
+}
+#nc-root aside a,
+#nc-root aside button,
+#nc-root [class*="Sidebar"] a,
+#nc-root [class*="Sidebar"] button{
+  border-radius:9px!important;margin:3px 8px!important;transition:.18s!important;
+}
+#nc-root aside a:hover,
+#nc-root aside button:hover,
+#nc-root [class*="Sidebar"] a:hover,
+#nc-root [class*="Sidebar"] button:hover{background:rgba(255,255,255,.09)!important}
+
+/* Main content cards/panels */
+#nc-root main{background:var(--ase-bg)!important}
+#nc-root [class*="Card"],
+#nc-root [class*="Pane"],
+#nc-root [class*="EditorContainer"]{
+  border-radius:16px!important;
+}
+#nc-root [class*="Card"]{
+  border:1px solid var(--ase-line)!important;
+  box-shadow:0 8px 30px rgba(14,42,85,.07)!important;
+}
+
+/* Buttons */
+#nc-root button{border-radius:9px!important;font-weight:700!important;transition:transform .16s ease,box-shadow .16s ease,background .16s ease!important}
+#nc-root button:hover{transform:translateY(-1px)}
+#nc-root button[class*="Button"]{box-shadow:none!important}
+#nc-root button[title*="Publish"],
+#nc-root button[aria-label*="Publish"]{
+  background:var(--ase-blue)!important;color:#fff!important;
+}
+
+/* Inputs and forms */
+#nc-root input,
+#nc-root textarea,
+#nc-root select{
+  border-radius:10px!important;border:1px solid #cdd9e8!important;background:#fff!important;
+  color:var(--ase-text)!important;box-shadow:0 1px 2px rgba(10,30,60,.03)!important;
+}
+#nc-root input:focus,
+#nc-root textarea:focus,
+#nc-root select:focus{
+  border-color:var(--ase-blue-bright)!important;
+  box-shadow:0 0 0 3px rgba(34,118,223,.13)!important;
+  outline:none!important;
+}
+#nc-root label{font-weight:700!important;color:#293a56!important}
+#nc-root textarea{line-height:1.55!important}
+
+/* Lists and entries */
+#nc-root [class*="ListCard"],
+#nc-root [class*="EntryCard"]{
+  border:1px solid var(--ase-line)!important;border-radius:13px!important;background:#fff!important;
+  box-shadow:0 7px 22px rgba(11,37,76,.06)!important;
+}
+
+/* Modal polish */
+#nc-root [role="dialog"]{border-radius:20px!important;box-shadow:0 30px 90px rgba(2,17,39,.28)!important}
+
+/* Custom quick tools */
+.ase-quick-tools{
+  position:fixed;z-index:99990;right:18px;bottom:18px;display:flex;align-items:center;gap:9px;
+  padding:9px;background:rgba(255,255,255,.95);border:1px solid var(--ase-line);border-radius:15px;
+  box-shadow:0 15px 42px rgba(10,32,67,.18);backdrop-filter:blur(12px)
+}
+.ase-tool-link{display:inline-flex;align-items:center;gap:7px;padding:10px 13px;border-radius:9px;text-decoration:none;color:#183252;font-size:11px;font-weight:800;background:#eef4fb;transition:.2s}
+.ase-tool-link:hover{background:#dfeeff;transform:translateY(-1px)}
+.ase-tool-link.import{background:var(--ase-blue);color:#fff}
+.ase-tool-link.import:hover{background:var(--ase-blue-bright)}
+
+/* Friendly help bubble */
+.ase-help-note{position:fixed;z-index:99989;right:18px;bottom:83px;width:290px;padding:16px 17px;border-radius:15px;background:#fff;border:1px solid var(--ase-line);box-shadow:0 15px 42px rgba(10,32,67,.15);color:#4c5e78;font-size:12px;line-height:1.55;display:none}
+.ase-help-note.open{display:block}
+.ase-help-note strong{display:block;color:var(--ase-navy);font:800 14px Manrope;margin-bottom:4px}
+
+/* Notifications */
+#nc-root [class*="Toast"],#nc-root [role="alert"]{border-radius:12px!important;box-shadow:0 16px 45px rgba(0,0,0,.16)!important}
+
+@media(max-width:850px){
+  body{padding-top:64px}
+  .ase-admin-bar{height:64px;padding:0 12px}
+  .ase-admin-brand{min-width:0}
+  .ase-admin-brand img{width:40px;height:40px}
+  .ase-admin-brand-copy strong{font-size:14px}
+  .ase-admin-brand-copy span{font-size:8px}
+  .ase-admin-action span{display:none}
+  .ase-admin-action{width:38px;padding:0;justify-content:center}
+  .ase-loader{inset:64px 0 0}
+  .ase-quick-tools{left:10px;right:10px;bottom:10px;justify-content:center}
+  .ase-tool-link{flex:1;justify-content:center;padding:10px 8px}
+  .ase-help-note{left:12px;right:12px;bottom:72px;width:auto}
+}
