@@ -10,7 +10,7 @@ const DEFAULT_SITE={fieldStatus:'OPEN',announcement:'',updatedAt:null,updatedBy:
 
 const cleanRepo=value=>{
   const raw=String(value||'').trim().replace(/^https?:\/\/github\.com\//,'').replace(/\.git$/,'').replace(/^\/+|\/+$/g,'');
-  return raw.includes('/')?raw:'';
+  return raw.includes('/')?raw:'JeffSimson/Adventure-Sports-Website';
 };
 
 async function githubSite(){
@@ -29,13 +29,13 @@ async function githubSite(){
 exports.handler=async event=>{
   if(event.httpMethod!=='GET')return reply(405,{error:'Method not allowed.'});
   try{
-    // Netlify storage is the source of truth. It avoids GitHub 404s and branch/path issues.
-    const stored=await getStoreValue('ase-ops-v2','site-status',null);
-    if(stored&&stored.fieldStatus)return reply(200,{...DEFAULT_SITE,...stored,source:'netlify'});
-
-    // One-time migration/fallback from GitHub when configured.
+    // The public GitHub website is the source of truth so the editor always shows what visitors see.
     const fromGithub=await githubSite();
-    if(fromGithub&&fromGithub.fieldStatus)return reply(200,{...DEFAULT_SITE,...fromGithub,source:'github'});
+    if(fromGithub&&fromGithub.fieldStatus)return reply(200,{...DEFAULT_SITE,...fromGithub,source:'public-website'});
+
+    // Private Netlify storage is only a fallback if GitHub is temporarily unavailable.
+    const stored=await getStoreValue('ase-ops-v2','site-status',null);
+    if(stored&&stored.fieldStatus)return reply(200,{...DEFAULT_SITE,...stored,source:'netlify-fallback'});
 
     // Always return a usable status instead of a 404.
     return reply(200,{...DEFAULT_SITE,source:'default'});

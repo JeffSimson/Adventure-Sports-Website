@@ -1,0 +1,8 @@
+THIS FIX CHANGES PUBLISHING BEHAVIOR
+
+• Publish now updates JeffSimson/Adventure-Sports-Website/content/site.json.
+• It reads and preserves the complete existing site.json file.
+• It does not report success unless GitHub confirms the public website update.
+• The editor reads the public website file first.
+• Required existing variable: GITHUB_TOKEN
+• Optional overrides: GITHUB_REPOSITORY, GITHUB_BRANCH, WEBSITE_STATUS_PATH
