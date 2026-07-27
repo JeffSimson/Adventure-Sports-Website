@@ -1,0 +1,40 @@
+{
+  "title": "Clubhouse",
+  "intro": "At this time, we don't accept online orders, but you can view the menu.",
+  "tagline": "Come for the sport and enjoy the food!",
+  "menuUrl": "https://www.clover.com/online-ordering/adventure-sports-enterta-jackson",
+  "photos": [
+    {
+      "image": "/uploads/clubhouse/clubhouse-kitchen-pennants.webp",
+      "caption": " "
+    },
+    {
+      "image": "/uploads/clubhouse/clubhouse-mascot-kitchen.webp",
+      "caption": " "
+    },
+    {
+      "image": "/uploads/clubhouse/clubhouse-catered-event.webp",
+      "caption": " "
+    },
+    {
+      "image": "/uploads/clubhouse/ice-cream-field.webp",
+      "caption": " "
+    },
+    {
+      "image": "/uploads/clubhouse/sandwich-field.webp",
+      "caption": " "
+    },
+    {
+      "image": "/uploads/clubhouse/team-eating-clubhouse.webp",
+      "caption": " "
+    },
+    {
+      "image": "/uploads/clubhouse/ice-cream-bowls.webp",
+      "caption": " "
+    },
+    {
+      "image": "/uploads/clubhouse/hot-dogs-field.webp",
+      "caption": " "
+    }
+  ]
+}

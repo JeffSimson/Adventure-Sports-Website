@@ -1,0 +1,40 @@
+{
+  "slider": [
+    {
+      "image": "/uploads/slider/home-slider-01.jpg",
+      "alt": "Adventure Sports homepage photo 1"
+    },
+    {
+      "image": "/uploads/slider/home-slider-02.jpg",
+      "alt": "Adventure Sports homepage photo 2"
+    },
+    {
+      "image": "/uploads/slider/home-slider-03.jpg",
+      "alt": "Adventure Sports homepage photo 3"
+    },
+    {
+      "image": "/uploads/slider/home-slider-04.jpg",
+      "alt": "Adventure Sports homepage photo 4"
+    },
+    {
+      "image": "/uploads/slider/home-slider-05.jpg",
+      "alt": "Adventure Sports homepage photo 5"
+    },
+    {
+      "image": "/uploads/slider/home-slider-06.jpg",
+      "alt": "Adventure Sports homepage photo 6"
+    },
+    {
+      "image": "/uploads/slider/home-slider-07.jpg",
+      "alt": "Adventure Sports homepage photo 7"
+    },
+    {
+      "image": "/uploads/slider/home-slider-08.jpg",
+      "alt": "Adventure Sports homepage photo 8"
+    },
+    {
+      "image": "/uploads/slider/home-slider-09.jpg",
+      "alt": "Adventure Sports homepage photo 9"
+    }
+  ]
+}

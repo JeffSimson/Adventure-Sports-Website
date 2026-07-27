@@ -1,0 +1,35 @@
+{
+  "title": "Private Rentals",
+  "rates": [
+    "Rates range from as little as $50/hr to $125/hr depending on event. Please contact for more info.",
+    "Practice Turf Area: $60/hr",
+    "Batting cages: $35/hr per cage",
+    "Discounts are available for long-term rentals."
+  ],
+  "emails": [
+    "asejakemollica1@gmail.com",
+    "asealec1@gmail.com"
+  ],
+  "requestTypes": [
+    {
+      "name": "Full Field Rental",
+      "description": "Rent one complete field for a game, team practice, scrimmage, showcase, or private event. This does not mean the whole complex."
+    },
+    {
+      "name": "Single Field Rental",
+      "description": "Rent one specific field space based on availability and your event needs."
+    },
+    {
+      "name": "Batting Cage(s)",
+      "description": "Reserve one or more batting cages for hitting practice, warmups, lessons, or team training."
+    },
+    {
+      "name": "Clubhouse",
+      "description": "Reserve clubhouse space for team meals, parties, meetings, private gatherings, or events."
+    },
+    {
+      "name": "Other",
+      "description": "Use this for full-complex rentals, large events, special requests, or anything that does not fit the listed options."
+    }
+  ]
+}

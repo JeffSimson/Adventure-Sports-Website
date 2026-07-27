@@ -52,9 +52,3 @@ Events now use `startDate` and `endDate` in `content/events.json`.
 - `/events.html` shows today and future events only.
 - `/events.html?past=1` shows past events.
 - Homepage featured events also only shows upcoming events.
-
-
-## July 2026 polish update
-- Updated facility address to Adventure Crossing Bar & Grill at The Dome, Building 200.
-- Replaced the old Facebook and video icons with polished Facebook and LiveBarn cards.
-- Live Video Streams now links to the official LiveBarn registration page.

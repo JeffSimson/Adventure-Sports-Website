@@ -42,12 +42,6 @@
     .template{font-size:14px;background:#f8faff;border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px}
     @media(max-width:900px){main{grid-template-columns:1fr}textarea,pre{min-height:300px}}
   </style>
-  <link rel="icon" href="/uploads/branding/favicon.ico" sizes="any">
-  <link rel="icon" type="image/png" sizes="32x32" href="/uploads/branding/favicon-32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/uploads/branding/favicon-16.png">
-  <link rel="apple-touch-icon" href="/uploads/branding/apple-touch-icon.png">
-  <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#061b3a">
 </head>
 <body>
   <header>
@@ -69,7 +63,7 @@
       <div class="template">Title: USSSA Northeast Opener<br>
 Category: Baseball<br>
 Date: April 24-26, 2026<br>
-Location: Adventure Crossing Bar & Grill at The Dome, 515 Monmouth Rd, Building 200, Jackson Township, NJ 08527, USA<br>
+Location: 515 Monmouth Road, Building 210, Jackson, NJ<br>
 Price: $695/team<br>
 Register: https://example.com<br>
 Image: /uploads/site/hero-aerial.jpg<br>
@@ -86,7 +80,7 @@ Featured: yes</div>
       <textarea id="eventText" spellcheck="false">Title: USSSA Northeast Opener
 Category: Baseball
 Date: April 24-26, 2026
-Location: Adventure Crossing Bar & Grill at The Dome, 515 Monmouth Rd, Building 200, Jackson Township, NJ 08527, USA
+Location: 515 Monmouth Road, Building 210, Jackson, NJ
 Price: $695/team
 Register: https://example.com
 Image: /uploads/site/hero-aerial.jpg
@@ -96,7 +90,7 @@ Featured: yes
 Title: Summer Softball Showcase
 Category: Softball
 Date: June 10, 2026
-Location: Adventure Crossing Bar & Grill at The Dome, 515 Monmouth Rd, Building 200, Jackson Township, NJ 08527, USA
+Location: 515 Monmouth Road, Building 210, Jackson, NJ
 Price: $500/team
 Register: https://example.com
 Description: Softball showcase event at Adventure Sports.
@@ -179,7 +173,7 @@ Featured: no</textarea>
         title,
         category,
         date: data.date || data.datetime || "Date TBD",
-        location: data.location || "Adventure Crossing Bar & Grill at The Dome, 515 Monmouth Rd, Building 200, Jackson Township, NJ 08527, USA",
+        location: data.location || "515 Monmouth Road, Building 210, Jackson, NJ",
         price: data.price || "See registration page",
         register: data.register || data.registration || data.link || "",
         image: data.image || defaults.image,

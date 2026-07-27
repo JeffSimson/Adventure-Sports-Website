@@ -1,0 +1,39 @@
+{
+  "resources": [
+    {
+      "name": "USSSA",
+      "url": "https://usssa.com/home/",
+      "logo": "/uploads/resources/usssa.jpg"
+    },
+    {
+      "name": "Top 100 Sports",
+      "url": "https://top100sports.com/",
+      "logo": "/uploads/resources/top-100-sports.jpg"
+    },
+    {
+      "name": "New Jersey Marlins",
+      "url": "https://www.njmarlins.com/",
+      "logo": "/uploads/resources/new-jersey-marlins.avif"
+    },
+    {
+      "name": "USABL",
+      "url": "https://www.usabl.com/",
+      "logo": "/uploads/resources/usabl.png"
+    },
+    {
+      "name": "Tri State Elite Baseball League",
+      "url": "https://www.tsebaseball.net/",
+      "logo": "/uploads/resources/tri-state-elite.jpg"
+    },
+    {
+      "name": "One Nation Slowpitch",
+      "url": "https://onenationslowpitch.com/",
+      "logo": "/uploads/resources/one-nation-slowpitch.jpg"
+    },
+    {
+      "name": "Jersey Outlaws Fast Pitch",
+      "url": "https://www.jerseyoutlawsfp.com/",
+      "logo": "/uploads/resources/jersey-outlaws.png"
+    }
+  ]
+}

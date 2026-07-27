@@ -1,0 +1,62 @@
+{
+  "safetyTitle": "Safety First",
+  "safetyText": "All Adventure Sports facilities carry risks for players and spectators. Flying objects including balls and bats are inherent concerns. We recommend all spectators sit behind large backstop screens, observation decks, and remain aware at all times. All teams are required to have team insurance and all visitors must sign our park waiver. If any injuries occur, immediately notify the umpire and site director. Children should remain supervised by a parent or custodian at all times.",
+  "rules": [
+    "No metal cleats",
+    "No gum, chewing tobacco, or seeds",
+    "No smoking",
+    "No alcohol",
+    "No tobacco use",
+    "No pets",
+    "No outside coolers, except 1 team cooler",
+    "No heating or cooling units of any kind",
+    "No bicycles, scooters, roller skates, skateboards, or hoverboards",
+    "No public music players or noise makers in the stands, dugouts, or fields",
+    "No outside food or drink"
+  ],
+  "insurance": "Each team is required to have proof of insurance with them at all times. Proof must also be provided to Adventure Sports and Entertainment prior to the tournament. The insurance certificate must have no less than $2,000,000 General Aggregate and $1,000,000 for Each Occurrence. Adventure Sports and Entertainment must be listed as the certificate holder and additionally insured.",
+  "umpires": "Any foul language, arguing, berating, or unbecoming actions toward any umpire can result in temporary expulsion or permanent banning from the facility.",
+  "equipment": "Teams must bring their own practice balls for batting cages and warm-up. Teams should also bring helmets, bats, gloves, catcher\u2019s gear, first aid, and any other equipment needed. No metal cleats.",
+  "lostItems": "Adventure Sports is not responsible for any lost, stolen, or unattended personal items/equipment, or damage caused by balls, athletes, or games. If you are worried about foul balls, please park accordingly.",
+  "refundSummary": [
+    {
+      "label": "45+ days before event",
+      "detail": "Full refund if the event is not at max registration."
+    },
+    {
+      "label": "Event at max registration",
+      "detail": "No refund unless a replacement team is found."
+    },
+    {
+      "label": "Schedules set to release Monday before event",
+      "detail": "No refunds regardless of replacement status."
+    },
+    {
+      "label": "Less than 30 days before event",
+      "detail": "50% refund if a replacement team is found prior to 48 hours before event start."
+    },
+    {
+      "label": "Within 96 hours of event",
+      "detail": "No refund regardless of whether a replacement team can be found."
+    }
+  ],
+  "weatherCredits": [
+    {
+      "label": "No games started",
+      "detail": "75% credit."
+    },
+    {
+      "label": "25% of guaranteed games started",
+      "detail": "50% credit."
+    },
+    {
+      "label": "50% of guaranteed games started",
+      "detail": "25% credit."
+    },
+    {
+      "label": "More than 50% of scheduled games started",
+      "detail": "No credit."
+    }
+  ],
+  "refundLong": "Adventure Sports understands that unforeseen circumstances, including injuries, roster changes, and player availability, can occur during a season. Teams should plan for the unexpected because events may sell out weeks or months in advance and scheduling begins several weeks before an event. Field rental costs, umpire fees, UIC fees, assigning fees, credit card fees, field labor, administration, and insurance must be paid despite weather cancellations or team withdrawals. If governmental agencies shut down play due to a national or state emergency, refunds are not guaranteed and decisions will be made based on the impact of the shutdown. If teams are due a refund but are registered and unpaid for future events run by the same director, that refund may be applied to the future balance. Adventure Sports reserves the right to adjust this policy at any time individually to teams or as a whole."
+}
