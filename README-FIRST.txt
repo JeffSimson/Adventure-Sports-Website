@@ -1,37 +1,56 @@
-ADVENTURE SPORTS — STAFF OPERATIONS MODULE
+ADVENTURE SPORTS — LIVE GOOGLE SHEETS STAFF MODULE
 
-This ZIP is a complete Operations Hub update built from:
-Adventure Sports Shift Final JULY.xlsm → July Base Schedule
+This package connects the Staff page directly to the Google Apps Script API you created.
 
-NEW STAFF FEATURES
-• Daily date selector
-• Today button
-• Scheduled, working-now, later, completed, labor-hour and closing KPIs
-• Live shift status based on Eastern Time
-• Employee search
-• Status filtering
-• Opening and closing staff summary
-• Daily coverage visualization
-• Shift-start timeline
-• Mobile-friendly employee cards
-• Text and Call shortcuts when a phone number exists in Employee Database
-• Current July Base Schedule data through August 1
+LIVE CONNECTION INCLUDED:
+Google Apps Script URL:
+https://script.google.com/macros/s/AKfycbw9scSqtOlPYdpnHPoqnk04xYDYkjizbv_V4ygmhCNTAH83TSfEtPa-shD8xe9ktmVz/exec
 
-UPLOAD THE ENTIRE PACKAGE CONTENTS TO THE ROOT OF THE WEBSITE.
-At minimum, replace/add:
+API key:
+ASE-Staff-Live-2026
 
+WHAT IT DOES:
+• Reads the Base Schedule directly from Google Sheets
+• Refreshes automatically every 30 seconds
+• Refreshes again whenever the page becomes active
+• Includes a manual Refresh button
+• Shows Live, Syncing, or Offline connection status
+• Keeps the previous schedule on screen if one refresh fails
+• Falls back to content/staff-schedule.json if the live connection is unavailable
+• Uses the existing Staff Operations design
+• Does not add Manager Mode or other future features
+
+UPLOAD THE COMPLETE ZIP CONTENTS TO THE WEBSITE ROOT.
+
+Files being added/replaced:
 ops/index.html
 ops/styles.css
-ops/app.js
 ops/staff.js
 content/staff-schedule.json
+netlify/functions/staff-schedule.js
 
-Keep all other existing website files.
+Keep every other existing website file.
 
-AFTER NETLIFY DEPLOYS
+After Netlify deploys:
 1. Open https://adventurenj.com/ops/#staff
-2. Press Command + Shift + R on Mac.
-3. The page will automatically choose today when today's date exists.
+2. Press Command + Shift + R once.
+3. Confirm the Staff page says “Live.”
+4. Change a shift in the Google Sheet.
+5. Wait up to 30 seconds or press Refresh.
 
-IMPORTANT FOR AUGUST
-The Staff page reads content/staff-schedule.json. When the August Base Schedule is ready, that JSON file can be regenerated from the new Base Schedule workbook without changing the Staff page design.
+IMPORTANT:
+Your Apps Script must stay deployed as:
+Execute as: Me
+Who has access: Anyone
+
+The Apps Script must keep returning:
+ok
+sheetName
+updatedAt
+displayValues
+
+OPTIONAL SECURITY:
+The live URL and key are already included so the ZIP works immediately.
+Later, you may add these Netlify environment variables and redeploy:
+STAFF_GOOGLE_SHEETS_URL
+STAFF_GOOGLE_SHEETS_KEY
