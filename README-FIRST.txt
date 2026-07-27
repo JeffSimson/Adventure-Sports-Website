@@ -1,44 +1,37 @@
-ADVENTURE SPORTS OPERATIONS HUB — WEBSITE STATUS HOTFIX
+ADVENTURE SPORTS — STAFF OPERATIONS MODULE
 
-This package fixes the exact problems shown in the screenshot:
+This ZIP is a complete Operations Hub update built from:
+Adventure Sports Shift Final JULY.xlsm → July Base Schedule
 
-• Fixes “Unexpected end of JSON input”
-• Restores working facility-status publishing
-• Makes every Netlify function return a readable JSON error
-• Adds the missing publish-content function
-• Adds the missing live-content function
-• Cleans up and modernizes the Website Control Center
-• Replaces “Clover V2” wording with “Clover”
-• Preserves Dashboard V2 and the existing Clover page
+NEW STAFF FEATURES
+• Daily date selector
+• Today button
+• Scheduled, working-now, later, completed, labor-hour and closing KPIs
+• Live shift status based on Eastern Time
+• Employee search
+• Status filtering
+• Opening and closing staff summary
+• Daily coverage visualization
+• Shift-start timeline
+• Mobile-friendly employee cards
+• Text and Call shortcuts when a phone number exists in Employee Database
+• Current July Base Schedule data through August 1
 
-UPLOAD AND REPLACE/ADD:
+UPLOAD THE ENTIRE PACKAGE CONTENTS TO THE ROOT OF THE WEBSITE.
+At minimum, replace/add:
 
-1. ops/index.html
-2. ops/app.js
-3. ops/styles.css
-4. netlify/functions/publish-content.js
-5. netlify/functions/live-content.js
+ops/index.html
+ops/styles.css
+ops/app.js
+ops/staff.js
+content/staff-schedule.json
 
-Keep all other existing files.
+Keep all other existing website files.
 
-REQUIRED NETLIFY ENVIRONMENT VARIABLE:
+AFTER NETLIFY DEPLOYS
+1. Open https://adventurenj.com/ops/#staff
+2. Press Command + Shift + R on Mac.
+3. The page will automatically choose today when today's date exists.
 
-GITHUB_TOKEN = a GitHub token with permission to update the repository
-
-The functions automatically use:
-JeffSimson/Adventure-Sports-Website
-main branch
-
-Optional variables, only if your repository or branch is different:
-GITHUB_REPOSITORY
-GITHUB_BRANCH
-
-AFTER UPLOAD:
-
-1. Commit the files.
-2. Wait for Netlify deployment to finish.
-3. Open https://adventurenj.com/ops/#website
-4. Press Command + Shift + R.
-5. Select a status and press Publish Changes.
-
-The stylesheet and app versions are now 50 to clear Chrome’s old cache.
+IMPORTANT FOR AUGUST
+The Staff page reads content/staff-schedule.json. When the August Base Schedule is ready, that JSON file can be regenerated from the new Base Schedule workbook without changing the Staff page design.
