@@ -1,4 +1,4 @@
-const SITE_ID=process.env.SITE_ID||process.env.NETLIFY_SITE_ID||'';
+const SITE_ID=process.env.SITE_ID||process.env.PROJECT_ID||process.env.NETLIFY_SITE_ID||'';
 const TOKEN=process.env.NETLIFY_AUTH_TOKEN||process.env.NETLIFY_BLOBS_TOKEN||'';
 const BASE='https://api.netlify.com/api/v1/blobs';
 const memory={};

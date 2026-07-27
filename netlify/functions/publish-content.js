@@ -1,166 +1,51 @@
-const headers={
-  'Content-Type':'application/json',
-  'Cache-Control':'no-store'
-};
-
-const reply=(statusCode,body)=>({
-  statusCode,
-  headers,
-  body:JSON.stringify(body)
-});
+const {verifiedUser,json}=require('./_role-auth');
+const {setStoreValue}=require('./_v2-storage');
+const {appendAudit}=require('./_audit');
 
 const cleanRepo=value=>{
-  const raw=String(value||'').trim()
-    .replace(/^https?:\/\/github\.com\//,'')
-    .replace(/\.git$/,'')
-    .replace(/^\/+|\/+$/g,'');
-  return raw.includes('/')?raw:'JeffSimson/Adventure-Sports-Website';
+  const raw=String(value||'').trim().replace(/^https?:\/\/github\.com\//,'').replace(/\.git$/,'').replace(/^\/+|\/+$/g,'');
+  return raw.includes('/')?raw:'';
 };
 
-async function verifyUser(event){
-  const authorization=event.headers.authorization||event.headers.Authorization;
-  if(!authorization?.startsWith('Bearer ')){
-    throw Object.assign(new Error('You are not signed in.'),{statusCode:401});
-  }
-
-  const siteUrl=process.env.URL||process.env.DEPLOY_PRIME_URL;
-  if(!siteUrl){
-    throw Object.assign(new Error('Netlify site URL is unavailable.'),{statusCode:500});
-  }
-
-  const response=await fetch(`${siteUrl}/.netlify/identity/user`,{
-    headers:{Authorization:authorization}
-  });
-
-  if(!response.ok){
-    throw Object.assign(new Error('Your login session could not be verified.'),{statusCode:401});
-  }
-  const user=await response.json();
-  const ownerEmail=String(process.env.OWNER_EMAIL||'').trim().toLowerCase();
-  let role=String(user.app_metadata?.role||'').trim().toLowerCase();
-  if(ownerEmail&&String(user.email||'').toLowerCase()===ownerEmail)role='owner';
-  if(role!=='owner'){
-    throw Object.assign(new Error('Only an Owner can publish website changes.'),{statusCode:403});
-  }
-  return user;
-}
-
-async function github(path,options={}){
-  const token=process.env.GITHUB_TOKEN||
-    process.env.GITHUB_ACCESS_TOKEN||
-    process.env.GH_TOKEN;
-
-  if(!token){
-    throw Object.assign(
-      new Error('The GitHub token is missing from Netlify environment variables.'),
-      {statusCode:500}
-    );
-  }
-
-  const response=await fetch(`https://api.github.com${path}`,{
-    ...options,
-    headers:{
-      Accept:'application/vnd.github+json',
-      Authorization:`Bearer ${token}`,
-      'X-GitHub-Api-Version':'2022-11-28',
-      'User-Agent':'Adventure-Sports-Operations-Hub',
-      ...(options.headers||{})
-    }
-  });
-
-  const raw=await response.text();
-  let data={};
-  if(raw){
-    try{data=JSON.parse(raw)}
-    catch{data={message:raw.slice(0,400)}}
-  }
-
-  if(!response.ok){
-    const message=data.message||`GitHub request failed (${response.status}).`;
-    throw Object.assign(new Error(message),{statusCode:response.status});
-  }
-
-  return data;
+async function mirrorToGithub(site){
+  const repo=cleanRepo(process.env.GITHUB_REPOSITORY||process.env.GITHUB_REPO||process.env.REPOSITORY);
+  const token=process.env.GITHUB_TOKEN||process.env.GITHUB_ACCESS_TOKEN||process.env.GH_TOKEN;
+  if(!repo||!token)return {mirrored:false,reason:'GitHub mirror not configured'};
+  const branch=process.env.GITHUB_BRANCH||process.env.BRANCH||'main';
+  const path='content/site.json';
+  const encoded=path.split('/').map(encodeURIComponent).join('/');
+  const headers={Accept:'application/vnd.github+json',Authorization:`Bearer ${token}`,'X-GitHub-Api-Version':'2022-11-28','User-Agent':'Adventure-Sports-Operations-Hub','Content-Type':'application/json'};
+  const current=await fetch(`https://api.github.com/repos/${repo}/contents/${encoded}?ref=${encodeURIComponent(branch)}`,{headers});
+  let sha=null;
+  if(current.ok){const d=await current.json();sha=d.sha||null}
+  else if(current.status!==404){return {mirrored:false,reason:`GitHub read failed (${current.status})`}}
+  const body={message:`Update facility status to ${site.fieldStatus}`,content:Buffer.from(JSON.stringify(site,null,2)+'\n').toString('base64'),branch,...(sha?{sha}:{})};
+  const response=await fetch(`https://api.github.com/repos/${repo}/contents/${encoded}`,{method:'PUT',headers,body:JSON.stringify(body)});
+  if(!response.ok){let msg=`GitHub mirror failed (${response.status})`;try{msg=(await response.json()).message||msg}catch{}return {mirrored:false,reason:msg}}
+  const data=await response.json();return {mirrored:true,commit:data.commit?.sha||null};
 }
 
 exports.handler=async event=>{
-  if(event.httpMethod!=='POST'){
-    return reply(405,{error:'Method not allowed.'});
-  }
-
+  if(event.httpMethod!=='POST')return json(405,{error:'Method not allowed.'});
   try{
-    await verifyUser(event);
-
-    let requested={};
-    try{
-      requested=JSON.parse(event.body||'{}');
-    }catch{
-      return reply(400,{error:'The update request was not valid JSON.'});
-    }
-
+    const actor=await verifiedUser(event);
+    if(actor.role!=='owner')return json(403,{error:'Only an Owner can publish website changes.'});
+    let body={};try{body=JSON.parse(event.body||'{}')}catch{return json(400,{error:'The update request was not valid JSON.'})}
+    const fieldStatus=String(body.fieldStatus||'').trim().toUpperCase();
+    const announcement=String(body.announcement||'').trim().slice(0,240);
     const allowed=['OPEN','DELAYED','CLOSED','CHECK SCHEDULE'];
-    const fieldStatus=String(requested.fieldStatus||'').trim().toUpperCase();
-    const announcement=String(requested.announcement||'').trim().slice(0,240);
+    if(!allowed.includes(fieldStatus))return json(400,{error:'Choose Open, Delayed, Closed, or Check Schedule.'});
+    const site={fieldStatus,announcement,updatedAt:new Date().toISOString(),updatedBy:actor.user.email||''};
 
-    if(!allowed.includes(fieldStatus)){
-      return reply(400,{error:'Choose Open, Delayed, Closed, or Check Schedule.'});
-    }
+    // Save first. Publishing no longer fails because GitHub is missing or returns Not Found.
+    await setStoreValue('ase-ops-v2','site-status',site);
+    await appendAudit(actor,'website-status-published',`Published ${fieldStatus}${announcement?` — ${announcement}`:''}.`,'🌐').catch(()=>{});
 
-    const repo=cleanRepo(
-      process.env.GITHUB_REPOSITORY||
-      process.env.GITHUB_REPO||
-      process.env.REPOSITORY
-    );
-    const branch=process.env.GITHUB_BRANCH||process.env.BRANCH||'main';
-    const filePath='content/site.json';
-    const encodedPath=filePath.split('/').map(encodeURIComponent).join('/');
-
-    const current=await github(
-      `/repos/${repo}/contents/${encodedPath}?ref=${encodeURIComponent(branch)}`
-    );
-
-    const decoded=Buffer.from(current.content||'','base64').toString('utf8');
-    let site={};
-    try{
-      site=JSON.parse(decoded);
-    }catch{
-      throw Object.assign(
-        new Error('content/site.json currently contains invalid JSON.'),
-        {statusCode:500}
-      );
-    }
-
-    site.fieldStatus=fieldStatus;
-    site.announcement=announcement;
-
-    const content=Buffer.from(
-      JSON.stringify(site,null,2)+'\n',
-      'utf8'
-    ).toString('base64');
-
-    const updated=await github(
-      `/repos/${repo}/contents/${encodedPath}`,
-      {
-        method:'PUT',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          message:`Update facility status to ${fieldStatus}`,
-          content,
-          sha:current.sha,
-          branch
-        })
-      }
-    );
-
-    return reply(200,{
-      ok:true,
-      site,
-      commit:updated.commit?.sha||null
-    });
+    // Optional mirror for the public website repository. Its failure never blocks the editor.
+    const mirror=await mirrorToGithub(site).catch(e=>({mirrored:false,reason:e.message}));
+    return json(200,{ok:true,site,storage:'netlify',mirror});
   }catch(error){
     console.error('publish-content error:',error);
-    return reply(error.statusCode||500,{
-      error:error.message||'The website could not be updated.'
-    });
+    return json(error.statusCode||500,{error:error.message||'The website could not be updated.'});
   }
 };

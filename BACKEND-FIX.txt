@@ -1,0 +1,13 @@
+BACKEND FIX INCLUDED
+
+Required variables:
+OWNER_EMAIL = davidkeimel5@gmail.com
+PROJECT_ID or SITE_ID = your Netlify Project ID
+NETLIFY_AUTH_TOKEN = your Netlify personal access token
+
+Optional GitHub mirror variables:
+GITHUB_REPOSITORY = owner/repository
+GITHUB_BRANCH = main
+GITHUB_TOKEN = token with repository contents write access
+
+The editor now saves to Netlify first and never fails with Not Found because GitHub is missing.
