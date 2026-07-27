@@ -1,35 +1,33 @@
-ADVENTURE SPORTS OPERATIONS HUB — EMERGENCY RESTORE
+ADVENTURE SPORTS — CLOVER V2
 
-This ZIP fixes the plain, unstyled Operations Hub shown in your screenshot.
+Upload and replace/add these files:
 
-THE ACTUAL PROBLEM:
-The /ops/styles.css file is missing from the repository, so the browser is displaying raw HTML.
+1. netlify/functions/clover-dashboard.js
+2. ops/index.html
+3. ops/styles.css
+4. ops/clover-v2.js
 
-REPLACE/UPLOAD THESE FILES EXACTLY:
-- ops/index.html
-- ops/app.js
-- ops/styles.css
-- netlify/functions/clover-dashboard.js
+Keep your existing ops/app.js file.
 
-Do not paste the file text into the browser or inside another file.
-Upload the files into the matching folders.
-
-This restores:
-- Modern dark-blue sidebar
-- Dashboard cards and panels
-- Mobile layout
-- Website controls
-- Clover page
+Included:
+- Today, Yesterday, This Week, This Month and Custom reports
+- Total Net Sales
 - Front Gate Sales
 - Kitchen Sales
+- Gross Sales, refunds, transactions and average ticket
+- Sales-by-hour chart
+- Daily sales trend
+- Front Gate vs Kitchen visual
+- Top items ranked by revenue
 - Recent orders
-- Top items
-- Inventory alerts
-- Secure login
+- Low inventory alerts
+- Existing Operations Hub design and controls preserved
 
-After Netlify finishes:
-1. Open https://adventurenj.com/ops/
-2. Press Command + Shift + R
-3. If needed, close the tab and reopen it
+Front Gate matching is case-insensitive and counts any item containing “Front Gate”.
+Kitchen Sales = Total Net Sales - Front Gate Sales
 
-The HTML uses version 20 for CSS and JavaScript to force Chrome to download the repaired files.
+After uploading:
+1. Commit the files.
+2. Wait for Netlify.
+3. Open https://adventurenj.com/ops/#clover
+4. Press Command + Shift + R.
