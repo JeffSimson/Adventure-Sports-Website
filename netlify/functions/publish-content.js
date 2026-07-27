@@ -4,7 +4,6 @@ const {appendAudit}=require('./_audit');
 
 exports.handler=async event=>{
   if(event.httpMethod!=='POST')return json(405,{error:'Method not allowed.'});
-
   try{
     const actor=await verifiedUser(event);
     if(actor.role!=='owner'){
@@ -12,8 +11,8 @@ exports.handler=async event=>{
     }
 
     let body={};
-    try{ body=JSON.parse(event.body||'{}'); }
-    catch{ return json(400,{error:'The update request was not valid JSON.'}); }
+    try{body=JSON.parse(event.body||'{}')}
+    catch{return json(400,{error:'The update request was not valid JSON.'})}
 
     const fieldStatus=String(body.fieldStatus||'').trim().toUpperCase();
     const announcement=String(body.announcement||'').trim().slice(0,240);
@@ -30,8 +29,6 @@ exports.handler=async event=>{
       updatedBy:actor.user.email||''
     };
 
-    // This is the only source used by the live website.
-    // No GitHub commit and no Netlify rebuild are triggered.
     await setStoreValue('ase-ops-v2','site-status',site);
 
     await appendAudit(
@@ -43,10 +40,10 @@ exports.handler=async event=>{
 
     return json(200,{
       ok:true,
-      site,
       live:true,
-      updateMode:'instant-storage',
-      message:'The public website live status was updated.'
+      site,
+      updateMode:'one-second-live',
+      message:'Public website updated live.'
     });
   }catch(error){
     console.error('publish-content error:',error);

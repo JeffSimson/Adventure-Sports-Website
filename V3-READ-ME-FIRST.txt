@@ -1,0 +1,22 @@
+ADVENTURE SPORTS V3 — POLISHED WEBSITE + ONE-SECOND LIVE STATUS
+
+This package starts with the polished redesigned website and preserves its:
+• New homepage appearance
+• Styling and navigation
+• Images and galleries
+• Events and content
+• Mobile design
+
+V3 adds:
+• Current Operations Hub and Roles V2
+• Live status stored directly in Netlify
+• No GitHub commit for facility-status changes
+• No rebuild when Publish is pressed
+• Automatic public-page updates every second
+
+Required Netlify variables:
+PROJECT_ID
+NETLIFY_AUTH_TOKEN
+OWNER_EMAIL=davidkeimel5@gmail.com
+
+Deploy this complete ZIP to Netlify.

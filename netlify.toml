@@ -1,9 +1,10 @@
 [build]
   publish = "."
-  functions = "netlify/functions"
+  command = ""
 
 [functions]
-  node_bundler = "esbuild"
+  directory = "netlify/functions"
+
 
 [[headers]]
   for = "/.netlify/functions/live-content"
@@ -11,8 +12,3 @@
     Cache-Control = "no-store, no-cache, must-revalidate, max-age=0"
     CDN-Cache-Control = "no-store"
     Netlify-CDN-Cache-Control = "no-store"
-
-[[headers]]
-  for = "/app.js"
-  [headers.values]
-    Cache-Control = "no-cache"

@@ -23,7 +23,6 @@ const reply=(statusCode,body)=>({
 
 exports.handler=async event=>{
   if(event.httpMethod!=='GET')return reply(405,{error:'Method not allowed.'});
-
   try{
     const stored=await getStoreValue('ase-ops-v2','site-status',null);
     return reply(200,{
@@ -35,8 +34,7 @@ exports.handler=async event=>{
     console.error('live-content error:',error);
     return reply(200,{
       ...DEFAULT_SITE,
-      source:'safe-fallback',
-      warning:error.message||'Live status temporarily unavailable.'
+      source:'safe-fallback'
     });
   }
 };

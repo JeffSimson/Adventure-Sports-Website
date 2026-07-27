@@ -21,47 +21,7 @@ function staticHomeFallback(){
 
 const esc = (s="") => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 const img = (s="") => !s ? "" : (s.startsWith("/") || s.startsWith("http") ? s : "/" + s);
-async function getJSON(path){
-  const separator = path.includes('?') ? '&' : '?';
-  const r = await fetch(path + separator + "v=" + Date.now(), {cache:'no-store'});
-  if(!r.ok) throw new Error(path);
-  return r.json();
-}
-
-async function getLiveStatus(){
-  try{
-    return await getJSON('/.netlify/functions/live-content');
-  }catch(error){
-    return null;
-  }
-}
-
-async function getSiteJSON(){
-  const [site,live] = await Promise.all([
-    getSiteJSON(),
-    getLiveStatus()
-  ]);
-  return live ? {...site,...live} : site;
-}
-
-let lastLiveStatusSignature = '';
-async function refreshLiveStatus(){
-  const live = await getLiveStatus();
-  if(!live)return;
-  const signature = `${live.fieldStatus||''}|${live.announcement||''}|${live.updatedAt||''}`;
-  if(signature === lastLiveStatusSignature)return;
-  lastLiveStatusSignature = signature;
-  renderFixedStatus(live);
-}
-
-function startOneSecondLiveStatus(){
-  refreshLiveStatus();
-  window.setInterval(refreshLiveStatus,1000);
-}
-
-document.addEventListener('visibilitychange',()=>{
-  if(!document.hidden)refreshLiveStatus();
-});
+async function getJSON(path){ const r = await fetch(path+"?v="+Date.now()); if(!r.ok) throw new Error(path); return r.json(); }
 
 function todayISO(){
   const d = new Date();
@@ -83,7 +43,7 @@ function renderFixedStatus(site){
   if ($('fixedAnnouncement')) $('fixedAnnouncement').textContent = site.announcement || '';
 }
 async function loadHome(){
-  const [site, eventsData, resData] = await Promise.all([getSiteJSON(), getJSON('/content/events.json'), getJSON('/content/resources.json')]);
+  const [site, eventsData, resData] = await Promise.all([getJSON('/content/site.json'), getJSON('/content/events.json'), getJSON('/content/resources.json')]);
   renderFixedStatus(site);
   document.title = site.name;
   $('homeHero').style.backgroundImage = `linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.35)), url('${img(site.heroImage)}')`;
@@ -92,7 +52,7 @@ async function loadHome(){
   $('aboutTitle').textContent = site.legalName;
   $('aboutText').textContent = site.about;
   $('facebookLink').href = site.facebook;
-  $('videoLink').href = site.videoStreamsUrl || '#';
+  $('videoLink').href = site.videoStreamsUrl || 'https://watch.livebarn.com/en/register';
   $('waiverQuick').href = site.waiverUrl;
   $('menuQuick').href = site.menuUrl;
   $('rentalQuick').href = '/private-rentals.html';
@@ -129,8 +89,8 @@ async function loadHome(){
   $('footerLogo').src = img(site.logo);
 }
 async function loadEvents(){
-  const [site, eventsData] = await Promise.all([getSiteJSON(), getJSON('/content/events.json')]);
-  renderFixedStatus(site); $('pageLogo').src = img(site.logo);
+  const [site, eventsData] = await Promise.all([getJSON('/content/site.json'), getJSON('/content/events.json')]);
+  renderFixedStatus(site); if ($('pageLogo')) $('pageLogo').src = img(site.logo);
 
   const params = new URLSearchParams(location.search);
   let selected = params.get('category') || 'All';
@@ -170,27 +130,27 @@ async function loadEvents(){
   }).join('') || `<div class="card">No ${showPast ? 'past' : 'upcoming'} events found for this category.</div>`;
 }
 async function loadGallery(){
-  const [site, galleryData] = await Promise.all([getSiteJSON(), getJSON('/content/gallery.json')]);
-  renderFixedStatus(site); $('pageLogo').src = img(site.logo);
+  const [site, galleryData] = await Promise.all([getJSON('/content/site.json'), getJSON('/content/gallery.json')]);
+  renderFixedStatus(site); if ($('pageLogo')) $('pageLogo').src = img(site.logo);
   $('galleryGrid').innerHTML = galleryData.gallery.map(g => `<img src="${esc(img(g.image))}" alt="${esc(g.title || 'Gallery photo')}">`).join('');
 }
 async function loadClubhouse(){
-  const [site, club] = await Promise.all([getSiteJSON(), getJSON('/content/clubhouse.json')]);
-  renderFixedStatus(site); $('pageLogo').src = img(site.logo);
+  const [site, club] = await Promise.all([getJSON('/content/site.json'), getJSON('/content/clubhouse.json')]);
+  renderFixedStatus(site); if ($('pageLogo')) $('pageLogo').src = img(site.logo);
   $('menuButton').href = club.menuUrl;
   $('clubIntro').textContent = club.intro;
   $('clubTagline').textContent = club.tagline;
   $('clubGrid').innerHTML = club.photos.map(p => `<div class="card"><img style="width:100%;height:260px;object-fit:cover;border-radius:14px" src="${esc(img(p.image))}" alt="${esc(p.caption)}"><h3>${esc(p.caption)}</h3></div>`).join('');
 }
 async function loadRentals(){
-  const [site, rentals] = await Promise.all([getSiteJSON(), getJSON('/content/rentals.json')]);
-  renderFixedStatus(site); $('pageLogo').src = img(site.logo);
-  $('ratesList').innerHTML = rentals.rates.map(r => `<li>${esc(r)}</li>`).join('');
+  const [site, rentals] = await Promise.all([getJSON('/content/site.json'), getJSON('/content/rentals.json')]);
+  renderFixedStatus(site); if ($('pageLogo')) $('pageLogo').src = img(site.logo);
+  if ($('ratesList')) $('ratesList').innerHTML = rentals.rates.map(r => `<li>${esc(r)}</li>`).join('');
   $('typeDescriptions').innerHTML = (rentals.requestTypes || []).map(t => `<div class="type-help-item"><b>${esc(t.name)}</b><br>${esc(t.description)}</div>`).join('');
 }
 async function loadSafety(){
-  const [site, safety] = await Promise.all([getSiteJSON(), getJSON('/content/safety.json')]);
-  renderFixedStatus(site); $('pageLogo').src = img(site.logo);
+  const [site, safety] = await Promise.all([getJSON('/content/site.json'), getJSON('/content/safety.json')]);
+  renderFixedStatus(site); if ($('pageLogo')) $('pageLogo').src = img(site.logo);
   $('waiverButton').href = safety.waiverUrl;
   $('safetyList').innerHTML = safety.safety.map(x=>`<p>${esc(x)}</p>`).join('');
   $('rulesIntro').innerHTML = (safety.rulesIntro || []).map(x=>`<p>${esc(x)}</p>`).join('');
@@ -203,8 +163,8 @@ async function loadSafety(){
   $('refundDetails').textContent = safety.refundDetails;
 }
 async function loadContact(){
-  const site = await getSiteJSON();
-  renderFixedStatus(site); $('pageLogo').src = img(site.logo);
+  const site = await getJSON('/content/site.json');
+  renderFixedStatus(site); if ($('pageLogo')) $('pageLogo').src = img(site.logo);
   $('contactAddress').innerHTML = `<b>${esc(site.name)}</b><br>${esc(site.shortAddress)}<br>${esc(site.cityStateZip)}`;
   $('contactPhone').textContent = site.phone;
   $('contactPhone').href = 'tel:' + site.phone.replace(/\D/g,'');
@@ -216,4 +176,67 @@ async function loadContact(){
 window.addEventListener('error', staticHomeFallback);
 setTimeout(staticHomeFallback, 1200);
 
-window.addEventListener('DOMContentLoaded', startOneSecondLiveStatus);
+/* 2026 visual polish: no content or data changes */
+(function(){
+  const nav=document.querySelector('.top-nav');
+  const updateNav=()=>nav&&nav.classList.toggle('nav-scrolled',window.scrollY>24);
+  window.addEventListener('scroll',updateNav,{passive:true});
+  updateNav();
+
+  const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!reduce&&'IntersectionObserver' in window){
+    const targets=document.querySelectorAll('.section-head,.about-card,.info-mini-card,.visit-item,.why-card,.category-card,.feature-card,.location-grid,.resource-grid a,.card,.rate-card');
+    targets.forEach((el,i)=>{el.classList.add('ase-reveal');el.style.transitionDelay=((i%5)*45)+'ms';});
+    const io=new IntersectionObserver(entries=>entries.forEach(entry=>{
+      if(entry.isIntersecting){entry.target.classList.add('ase-visible');io.unobserve(entry.target);}
+    }),{threshold:.08,rootMargin:'0px 0px -30px 0px'});
+    targets.forEach(el=>io.observe(el));
+  }
+})();
+
+/* V3 one-second live facility status — preserves all polished design markup. */
+let aseLastLiveSignature='';
+
+async function aseFetchLiveStatus(){
+  try{
+    const response=await fetch('/.netlify/functions/live-content?t='+Date.now(),{
+      cache:'no-store',
+      headers:{'Cache-Control':'no-cache'}
+    });
+    if(!response.ok)return null;
+    return await response.json();
+  }catch(error){
+    return null;
+  }
+}
+
+async function aseRefreshLiveStatus(){
+  const live=await aseFetchLiveStatus();
+  if(!live)return;
+  const signature=[
+    live.fieldStatus||'',
+    live.announcement||'',
+    live.updatedAt||''
+  ].join('|');
+  if(signature===aseLastLiveSignature)return;
+  aseLastLiveSignature=signature;
+
+  if(typeof renderFixedStatus==='function'){
+    renderFixedStatus(live);
+  }
+}
+
+function aseStartLiveStatus(){
+  aseRefreshLiveStatus();
+  window.setInterval(aseRefreshLiveStatus,1000);
+}
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',aseStartLiveStatus);
+}else{
+  aseStartLiveStatus();
+}
+
+document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden)aseRefreshLiveStatus();
+});
