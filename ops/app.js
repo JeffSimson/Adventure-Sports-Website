@@ -12,17 +12,18 @@ const LIVE='/.netlify/functions/live-content?file=site';
 const PUBLISH='/.netlify/functions/publish-content';
 const CLOVER='/.netlify/functions/clover-dashboard';
 
-const ROLE_LABELS={owner:'Owner',manager:'Manager',grounds:'Grounds Crew',kitchen:'Kitchen'};
+const ROLE_LABELS={owner:'Owner',manager:'Manager',grounds:'Grounds Crew',kitchen:'Kitchen',cashier:'Cashier'};
 const DEFAULT_PERMISSIONS={
-  owner:['dashboard','website','clover','staff','games','maintenance','weather','reports','kitchen','users','settings'],
-  manager:['dashboard','clover','staff','games','maintenance','weather','reports','kitchen','users'],
-  grounds:['maintenance','weather'],
-  kitchen:['kitchen','weather']
+  owner:['dashboard','website','clover','staff','games','maintenance','weather','reports','kitchen','notifications','users','settings'],
+  manager:['dashboard','clover','staff','games','maintenance','weather','reports','kitchen','notifications','users'],
+  grounds:['maintenance','weather','notifications'],
+  kitchen:['kitchen','weather','notifications'],
+  cashier:['dashboard','notifications']
 };
 const MODULES=[
   ['dashboard','Dashboard'],['website','Website Control'],['clover','Clover'],['staff','Staffing'],
   ['games','Games'],['maintenance','Fields & Maintenance'],['weather','Weather Center'],
-  ['reports','Reports'],['kitchen','Kitchen'],['users','People & Permissions'],['settings','Settings']
+  ['reports','Reports'],['kitchen','Kitchen'],['notifications','Notifications'],['users','People & Permissions'],['settings','Settings']
 ];
 
 let session=null,profile=null,permissions=structuredClone(DEFAULT_PERMISSIONS);

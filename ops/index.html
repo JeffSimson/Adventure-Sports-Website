@@ -10,6 +10,7 @@
 <button class="nav-item" data-view="weather"><span>☁</span>Weather Center</button>
 <button class="nav-item" data-view="reports"><span>▥</span>Reports</button>
 <button class="nav-item" data-view="kitchen"><span>🍔</span>Kitchen</button>
+<button class="nav-item" data-view="notifications"><span>🔔</span>Notifications</button>
 <button class="nav-item" data-view="users"><span>♙</span>Team Management</button>
 <button class="nav-item" data-view="settings"><span>☰</span>Settings</button>
 </nav><div class="sidebar-role-card"><span class="avatar">A</span><div><strong id="sidebarUserName">Administrator</strong><small id="sidebarRoleName">Loading role…</small></div></div><div class="sidebar-footer"><a href="/" target="_blank">View Public Website ↗</a><button id="logoutButton">Sign Out</button></div></aside>
@@ -147,7 +148,7 @@
         <button data-go="website"><span>◈</span><div><b>Website</b><small>Update public status</small></div></button>
         <button data-go="clover"><span>$</span><div><b>Clover</b><small>Full sales center</small></div></button>
         <button data-go="staff"><span>👥</span><div><b>Staff</b><small>Live daily schedule</small></div></button>
-        <button data-go="maintenance"><span>◇</span><div><b>Maintenance</b><small>Fields, issues & equipment</small></div></button>
+        <button data-go="maintenance"><span>◇</span><div><b>Maintenance</b><small>Fields, issues & equipment</small></div></button><button data-go="notifications"><span>🔔</span><div><b>Notify Staff</b><small>Role-based alerts</small></div></button>
       </div>
     </article>
   </div>
@@ -514,6 +515,95 @@
 </section>
 
 
+
+<section class="view notifications-view" data-view-panel="notifications">
+  <div class="users-hero notifications-hero">
+    <div>
+      <p class="eyebrow">V7 Communications</p>
+      <h1>Notification Command Center</h1>
+      <p>Send secure role-based alerts, control who can see operational information, and manage every enrolled device.</p>
+    </div>
+    <div class="hero-actions">
+      <button id="enableNotifications" class="secondary-btn" type="button">Enable on This Device</button>
+      <button id="refreshNotifications" class="primary-btn" type="button">Refresh</button>
+    </div>
+  </div>
+
+  <div id="notificationStatus" class="publish-notice" hidden></div>
+
+  <div class="notification-command-grid">
+    <article id="sendNotificationPanel" class="panel notification-composer">
+      <div class="panel-head">
+        <div><p class="eyebrow">Broadcast</p><h2>Send Staff Notification</h2><p>Only approved roles can send. Recipients are selected by their backend role.</p></div>
+        <span id="notificationPermissionBadge" class="role-badge">Checking access</span>
+      </div>
+      <form id="notificationForm" class="notification-form">
+        <div class="notification-template-row">
+          <button type="button" class="template-chip" data-template-title="Weather Delay" data-template-body="Games and operations are temporarily delayed due to weather. Please wait for the next update." data-template-priority="high">Weather Delay</button>
+          <button type="button" class="template-chip" data-template-title="Field Closed" data-template-body="The selected field is closed until further notice. Check the Operations Hub for updates." data-template-priority="high">Field Closed</button>
+          <button type="button" class="template-chip" data-template-title="Schedule Update" data-template-body="Your work schedule has been updated. Please open the Operations Hub and review the change." data-template-priority="normal">Schedule Update</button>
+          <button type="button" class="template-chip emergency" data-template-title="Emergency Alert" data-template-body="Important emergency update from Adventure Sports. Open the Operations Hub immediately for instructions." data-template-priority="emergency">Emergency</button>
+        </div>
+        <label><span>Notification title</span><input id="notificationTitle" maxlength="90" required placeholder="Example: Weather Delay"></label>
+        <label><span>Message</span><textarea id="notificationBody" maxlength="500" rows="4" required placeholder="Type the alert employees should receive"></textarea></label>
+        <div class="notification-form-grid">
+          <label><span>Priority</span><select id="notificationPriority"><option value="normal">Normal</option><option value="high">High</option><option value="emergency">Emergency</option></select></label>
+          <label><span>Open when tapped</span><select id="notificationUrl"><option value="/ops/">Operations Hub</option><option value="/ops/#weather">Weather Center</option><option value="/ops/#staff">Staff</option><option value="/">Public Website</option></select></label>
+        </div>
+        <fieldset class="audience-fieldset">
+          <legend>Send to</legend>
+          <label class="audience-option"><input type="radio" name="notificationAudience" value="everyone" checked><span><strong>Everyone</strong><small>All enrolled employees</small></span></label>
+          <label class="audience-option"><input type="radio" name="notificationAudience" value="roles"><span><strong>Selected roles</strong><small>Choose one or more roles below</small></span></label>
+          <div id="notificationRoleChoices" class="role-choice-grid">
+            <label><input type="checkbox" value="owner"> Owners</label>
+            <label><input type="checkbox" value="manager"> Managers</label>
+            <label><input type="checkbox" value="grounds"> Grounds</label>
+            <label><input type="checkbox" value="kitchen"> Kitchen</label>
+            <label><input type="checkbox" value="cashier"> Cashiers</label>
+          </div>
+        </fieldset>
+        <button id="sendNotificationButton" class="primary-btn notification-send-btn" type="submit">Send Notification</button>
+      </form>
+    </article>
+
+    <aside class="notification-side-stack">
+      <article class="panel device-card">
+        <p class="eyebrow">This device</p>
+        <h2>Push Status</h2>
+        <div class="device-status-line"><span id="deviceStatusDot" class="device-status-dot"></span><strong id="deviceStatusText">Checking browser…</strong></div>
+        <p id="deviceStatusHelp">Employees must install the app and allow notifications.</p>
+      </article>
+      <article class="panel privacy-card">
+        <p class="eyebrow">Privacy by role</p>
+        <h2>Staff Presence Is Restricted</h2>
+        <p>Clocked-in and staff-presence information is hidden from Grounds, Kitchen, and Cashier roles by default. Owners control this below.</p>
+        <span class="privacy-lock">🔒 Owner-controlled visibility</span>
+      </article>
+      <article class="panel">
+        <p class="eyebrow">Enrolled devices</p>
+        <h2 id="deviceCount">—</h2>
+        <p>Active phones, tablets, and computers registered to receive alerts.</p>
+      </article>
+    </aside>
+  </div>
+
+  <div class="notification-lower-grid">
+    <article class="panel">
+      <div class="panel-head"><div><p class="eyebrow">Recent broadcasts</p><h2>Notification History</h2></div></div>
+      <div id="notificationHistory" class="notification-history"><div class="dashboard-empty">Loading notifications…</div></div>
+    </article>
+    <article id="notificationAccessPanel" class="panel owner-only">
+      <div class="panel-head"><div><p class="eyebrow">Owner controls</p><h2>Visibility & Sending Power</h2><p>Control exactly what each role can see and who can broadcast alerts.</p></div><button id="saveNotificationAccess" class="primary-btn" type="button">Save Controls</button></div>
+      <div id="notificationAccessMatrix" class="notification-access-matrix"><div class="dashboard-empty">Loading controls…</div></div>
+    </article>
+  </div>
+
+  <article id="notificationDevicesPanel" class="panel owner-manager-only">
+    <div class="panel-head"><div><p class="eyebrow">Enrollment</p><h2>Registered Devices</h2><p>Device tokens are protected and never displayed.</p></div></div>
+    <div id="notificationDevices" class="notification-devices"><div class="dashboard-empty">Loading devices…</div></div>
+  </article>
+</section>
+
 <section class="view users-view" data-view-panel="users">
   <div class="users-hero">
     <div>
@@ -533,6 +623,7 @@
     <button class="admin-tab active" data-admin-tab="people">People</button>
     <button class="admin-tab owner-only" data-admin-tab="owners">Owners</button>
     <button class="admin-tab owner-only" data-admin-tab="permissions">Permissions</button>
+    <button class="admin-tab owner-only" data-admin-tab="notification-access">Notification Access</button>
     <button class="admin-tab owner-only" data-admin-tab="audit">Audit Log</button>
   </div>
 
@@ -579,6 +670,21 @@
         <button id="savePermissions" class="primary-btn" type="button">Save Permissions</button>
       </div>
       <div id="permissionMatrix" class="permission-matrix-wrap"><div class="dashboard-empty">Loading permissions…</div></div>
+    </div>
+  </section>
+
+
+  <section class="admin-panel owner-only" data-admin-panel="notification-access">
+    <div class="panel">
+      <div class="panel-head permission-head">
+        <div><p class="eyebrow">Role privacy and communication</p><h2>Notification Access Controls</h2><p>Manage who sees staff presence, delivery details, the operations feed, and notification history.</p></div>
+        <button class="primary-btn open-notification-controls" type="button">Open Notification Controls</button>
+      </div>
+      <div class="permission-explainer-grid">
+        <div><strong>Staff Presence</strong><p>Controls clocked-in and working-now information. Disabled for regular employees by default.</p></div>
+        <div><strong>Delivery Reports</strong><p>Controls recipient totals, sent counts, and failure counts.</p></div>
+        <div><strong>Operations Feed</strong><p>Controls access to internal updates and announcements.</p></div>
+      </div>
     </div>
   </section>
 
@@ -635,4 +741,4 @@
   </div>
 </section>
 
-<section class="view" data-view-panel="settings"><div class="page-head"><div><p class="eyebrow">Settings</p><h1>Operations Hub Settings</h1></div></div><div class="settings-grid"><article class="panel"><h2>Signed-in account</h2><p id="accountEmail">Loading…</p><span id="settingsRoleBadge" class="role-badge">Loading role</span><button id="settingsLogout" class="secondary-btn">Sign Out</button></article><article class="panel"><h2>Install on phone</h2><p>Use Add to Home Screen in Safari.</p><button id="settingsInstall" class="primary-btn">Install App</button></article></div></section></main></div><div id="toast" class="toast"></div><script src="/ops/dashboard-v2.js?v=40"></script><script src="/ops/clover-v2.js?v=30"></script><script src="/ops/staff.js?v=70"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"><script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script><script src="/ops/maintenance.js?v=20"></script><script src="/ops/weather.js?v=10"></script><script src="/ops/app.js?v=500"></script></body></html>
+<section class="view" data-view-panel="settings"><div class="page-head"><div><p class="eyebrow">Settings</p><h1>Operations Hub Settings</h1></div></div><div class="settings-grid"><article class="panel"><h2>Signed-in account</h2><p id="accountEmail">Loading…</p><span id="settingsRoleBadge" class="role-badge">Loading role</span><button id="settingsLogout" class="secondary-btn">Sign Out</button></article><article class="panel"><h2>Install on phone</h2><p>Use Add to Home Screen in Safari.</p><button id="settingsInstall" class="primary-btn">Install App</button></article></div></section></main></div><div id="toast" class="toast"></div><script src="/ops/dashboard-v2.js?v=40"></script><script src="/ops/clover-v2.js?v=30"></script><script src="/ops/staff.js?v=70"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"><script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script><script src="/ops/maintenance.js?v=20"></script><script src="/ops/weather.js?v=10"></script><script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-messaging-compat.js"></script><script src="/ops/app.js?v=700"></script><script src="/ops/notifications-v7.js?v=700"></script></body></html>

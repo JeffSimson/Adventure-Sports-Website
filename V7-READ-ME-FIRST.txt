@@ -1,0 +1,72 @@
+ADVENTURE SPORTS OPERATIONS HUB — V7 EXECUTIVE COMMAND CENTER
+==================================================================
+
+WHAT IS INCLUDED
+- Preserves the polished V3 website and existing Operations Hub
+- V7 Notification Command Center
+- Free Firebase Cloud Messaging push notifications
+- PWA install support for iPhone, Android, Mac, and Windows
+- Role-targeted broadcasts: Owner, Manager, Grounds, Kitchen, Cashier
+- Notification templates: Weather Delay, Field Closed, Schedule Update, Emergency
+- Delivery history and registered-device dashboard
+- Owner-controlled visibility matrix
+- Cashier role support
+- Staff Presence / Clocked-In visibility is OFF by default for Grounds, Kitchen, and Cashier
+- Team Management includes a Notification Access tab
+- Existing one-second live website status remains intact
+
+IMPORTANT SECURITY
+The Firebase private service-account file is NOT included in this ZIP.
+Never upload the JSON file into GitHub or the public website.
+
+NETLIFY ENVIRONMENT VARIABLE REQUIRED
+1. Open your Netlify site.
+2. Go to Site configuration > Environment variables.
+3. Add a variable named:
+   FIREBASE_SERVICE_ACCOUNT_JSON
+4. Open the Firebase service-account JSON file on your computer.
+5. Copy the COMPLETE JSON contents and paste them as the value.
+6. Save, then deploy this ZIP.
+
+EXISTING VARIABLES THAT MUST REMAIN
+- OWNER_EMAIL or OWNER_EMAILS
+- PROJECT_ID
+- NETLIFY_AUTH_TOKEN
+- Any Clover variables already configured
+Do not delete your current Netlify variables.
+
+HOW EMPLOYEES ENABLE NOTIFICATIONS
+1. Employee signs into /ops/.
+2. Open Notifications.
+3. Press Enable on This Device.
+4. Approve the browser notification prompt.
+5. On iPhone, add the Operations Hub to the Home Screen first, then enable notifications.
+
+OWNER PRIVACY CONTROLS
+Open Team Management > Notification Access, or open Notifications and scroll to
+Visibility & Sending Power.
+
+Controls per role:
+- Operations Feed
+- Staff Presence / Clocked In
+- Delivery Reports
+- Notification History
+- Can Send
+
+Owner access is protected and cannot be removed.
+By default, employees do NOT see who is clocked in.
+
+TEST PLAN
+1. Deploy the ZIP.
+2. Sign in as Owner.
+3. Open Notifications and enable this device.
+4. Send a test notification to Owners.
+5. Lock the phone or close the installed app.
+6. Send another test and confirm it appears.
+7. Check Notification History for delivery totals.
+
+NOTES
+- Push notifications are free through Firebase Cloud Messaging.
+- Employees must explicitly allow notifications.
+- A device that blocks notifications cannot receive them until permission is restored.
+- The system automatically removes Firebase tokens reported as unregistered.

@@ -1,0 +1,23 @@
+{
+  "name": "Adventure Sports Operations Hub",
+  "short_name": "Adventure Sports",
+  "start_url": "/ops/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#071c3b",
+  "theme_color": "#071c3b",
+  "icons": [
+    {
+      "src": "/uploads/branding/adventure-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/uploads/branding/adventure-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

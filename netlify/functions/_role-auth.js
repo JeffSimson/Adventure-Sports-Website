@@ -1,7 +1,7 @@
 const {getStoreValue}=require('./_v2-storage');
 const json=(statusCode,body)=>({statusCode,headers:{'Content-Type':'application/json','Cache-Control':'no-store'},body:JSON.stringify(body)});
 const error=(message,statusCode=500)=>Object.assign(new Error(message),{statusCode});
-const VALID_ROLES=['owner','manager','grounds','kitchen'];
+const VALID_ROLES=['owner','manager','grounds','kitchen','cashier'];
 function bearer(event){const value=event.headers.authorization||event.headers.Authorization||'';if(!value.startsWith('Bearer '))throw error('You are not signed in.',401);return value}
 async function verifiedUser(event){
   const authorization=bearer(event),siteUrl=process.env.URL||process.env.DEPLOY_PRIME_URL;
