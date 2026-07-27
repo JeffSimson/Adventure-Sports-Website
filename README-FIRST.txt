@@ -1,33 +1,39 @@
-ADVENTURE SPORTS — CLOVER V2
+ADVENTURE SPORTS — DASHBOARD V2
 
-Upload and replace/add these files:
+This package upgrades the main Operations Hub dashboard while preserving Clover V2 and the existing website controls.
 
-1. netlify/functions/clover-dashboard.js
-2. ops/index.html
-3. ops/styles.css
-4. ops/clover-v2.js
+UPLOAD AND REPLACE/ADD:
 
-Keep your existing ops/app.js file.
+1. ops/index.html
+2. ops/styles.css
+3. ops/dashboard-v2.js
 
-Included:
-- Today, Yesterday, This Week, This Month and Custom reports
-- Total Net Sales
-- Front Gate Sales
-- Kitchen Sales
-- Gross Sales, refunds, transactions and average ticket
-- Sales-by-hour chart
-- Daily sales trend
-- Front Gate vs Kitchen visual
-- Top items ranked by revenue
-- Recent orders
-- Low inventory alerts
-- Existing Operations Hub design and controls preserved
+The ZIP also contains the complete current Clover V2 package for safety.
 
-Front Gate matching is case-insensitive and counts any item containing “Front Gate”.
-Kitchen Sales = Total Net Sales - Front Gate Sales
+DASHBOARD V2 INCLUDES:
 
-After uploading:
-1. Commit the files.
-2. Wait for Netlify.
-3. Open https://adventurenj.com/ops/#clover
-4. Press Command + Shift + R.
+• Premium command-center header
+• Live facility status
+• Current public announcement
+• Net Sales Today
+• Front Gate Sales
+• Kitchen Sales
+• Transactions
+• Average ticket
+• Hourly sales chart
+• Recent Clover orders
+• Clover connection health
+• Low-inventory alert count
+• Quick access to Website, Clover, Staff and Fields
+• Responsive desktop, tablet and mobile design
+• Existing Clover V2 page preserved
+
+INSTALLATION:
+
+1. Upload the files into their matching folders.
+2. Commit the changes.
+3. Wait for Netlify to finish deploying.
+4. Open https://adventurenj.com/ops/
+5. Press Command + Shift + R.
+
+The stylesheet version is now 40 so the upgraded dashboard loads immediately.
