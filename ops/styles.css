@@ -1200,3 +1200,31 @@ body.maintenance-modal-open{overflow:hidden}
 body[data-role="grounds"] .dashboard-view-only,body[data-role="kitchen"] .dashboard-view-only{display:none!important}
 @media(max-width:1050px){.users-layout{grid-template-columns:1fr}.user-row{grid-template-columns:42px 1fr 135px}.user-actions{grid-column:2/-1;justify-content:flex-start}}
 @media(max-width:650px){.users-hero{align-items:flex-start;flex-direction:column}.user-row{grid-template-columns:40px 1fr}.user-role-control,.user-actions{grid-column:2}.user-actions{flex-wrap:wrap}.users-list-head{align-items:flex-start;flex-direction:column}.users-list-head .staff-search{width:100%}}
+
+
+/* V2 IDENTITY & ACCESS */
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap}
+.admin-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;padding:7px;background:#edf3f8;border:1px solid #dfe8f0;border-radius:14px}
+.admin-tab{border:0;background:transparent;padding:10px 14px;border-radius:10px;font:inherit;font-size:11px;font-weight:900;color:#627489;cursor:pointer}
+.admin-tab.active{background:#fff;color:#173b60;box-shadow:0 4px 14px rgba(16,48,80,.09)}
+.admin-panel{display:none}.admin-panel.active{display:block}
+.owner-management-grid{display:grid;grid-template-columns:1.3fr .9fr;gap:16px}
+.owners-list{display:grid;gap:10px}.owner-card{display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center;padding:14px;border:1px solid #e2e9f0;border-radius:14px;background:#fbfdff}
+.owner-card b,.owner-card span,.owner-card small{display:block}.owner-card span{font-size:11px;color:#61748a;margin:2px 0}.owner-card small{font-size:9px;color:#97a3af}
+.muted-copy{font-size:11px;color:#738397;line-height:1.55}.soft-rule{border:0;border-top:1px solid #e5ebf0;margin:22px 0}
+.permission-head{align-items:center}.permission-matrix-wrap{overflow-x:auto}.permission-table{width:100%;border-collapse:collapse;min-width:720px}
+.permission-table th,.permission-table td{padding:12px;border-bottom:1px solid #e9eef3;text-align:center;font-size:11px}.permission-table th:first-child,.permission-table td:first-child{text-align:left}
+.permission-table td b,.permission-table td small{display:block}.permission-table td small{font-size:8px;color:#9aa6b3;text-transform:uppercase;letter-spacing:.07em;margin-top:2px}
+.permission-table input{width:18px;height:18px;accent-color:#1f6fa7}
+.audit-list{display:grid}.audit-entry{display:grid;grid-template-columns:38px 1fr;gap:12px;padding:14px 2px;border-bottom:1px solid #edf1f5}.audit-entry:last-child{border-bottom:0}
+.audit-icon{width:34px;height:34px;border-radius:10px;background:#edf4fa;color:#1e5e8e;display:grid;place-items:center;font-weight:900}
+.audit-entry b{font-size:12px;color:#29445f}.audit-entry p{font-size:11px;color:#65778b;margin:3px 0}.audit-entry small{font-size:9px;color:#98a4af}
+.modal-backdrop{position:fixed;inset:0;background:rgba(4,16,31,.62);display:grid;place-items:center;padding:18px;z-index:1000}
+.modal-card{position:relative;width:min(480px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:20px;padding:26px;box-shadow:0 28px 80px rgba(0,0,0,.25)}
+.large-modal{width:min(760px,100%)}.modal-close{position:absolute;right:14px;top:12px;border:0;background:#edf2f6;width:34px;height:34px;border-radius:10px;font-size:22px;cursor:pointer}
+.modal-card h2{color:#193c5f;margin:4px 0 16px}.modal-open{overflow:hidden}
+.profile-form{display:grid;gap:18px}.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.profile-grid label span{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.06em;font-weight:900;color:#66798e;margin-bottom:5px}
+.profile-grid input,.profile-grid textarea{width:100%;box-sizing:border-box;border:1px solid #d8e2ec;border-radius:11px;padding:11px;font:inherit;font-size:12px}.profile-span{grid-column:1/-1}
+.profile-actions{display:flex;gap:9px;flex-wrap:wrap}.warning-btn{border:1px solid #e8cb87;background:#fff8e7;color:#8a6205;border-radius:10px;padding:10px 12px;font:inherit;font-size:10px;font-weight:850;cursor:pointer}
+.disabled-user{opacity:.63;background:#f7f8fa}.disabled-user .user-avatar{filter:grayscale(1)}
+@media(max-width:850px){.owner-management-grid{grid-template-columns:1fr}.profile-grid{grid-template-columns:1fr}.profile-span{grid-column:auto}}

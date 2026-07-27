@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Adventure Sports Operations Hub</title><meta name="theme-color" content="#071c3b"><link rel="manifest" href="/ops/manifest.webmanifest"><link rel="icon" href="/uploads/branding/favicon.ico"><link rel="stylesheet" href="/ops/styles.css?v=100"></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Adventure Sports Operations Hub</title><meta name="theme-color" content="#071c3b"><link rel="manifest" href="/ops/manifest.webmanifest"><link rel="icon" href="/uploads/branding/favicon.ico"><link rel="stylesheet" href="/ops/styles.css?v=200"></head><body>
 <div id="loginGate" class="login-gate" hidden><div class="login-card"><img src="/uploads/branding/adventure-logo.png" alt="Adventure Sports"><p class="eyebrow">Secure Management Portal</p><h1>Adventure Sports Operations Hub</h1><p>Sign in to manage the website and daily facility operations.</p><form id="loginForm" class="login-form"><label>Email address</label><input id="loginEmail" type="email" autocomplete="username" required><label>Password</label><input id="loginPassword" type="password" autocomplete="current-password" required><button id="loginButton" class="primary-btn">Sign In</button></form><p id="loginStatus" class="login-status">Enter the email and password used for the website admin.</p><a href="/admin/" class="secondary-btn login-fallback">Use Full Website Editor</a><a href="/" class="text-link">Return to public website</a></div></div>
 <div id="app" class="app-shell" hidden><aside class="sidebar" id="sidebar"><div class="brand-block"><img src="/uploads/branding/adventure-logo.png"><div><strong>Adventure Sports</strong><span>Operations Hub</span></div></div><nav class="main-nav">
 <button class="nav-item active" data-view="dashboard"><span>⌂</span>Dashboard</button>
@@ -513,42 +513,126 @@
   </div>
 </section>
 
+
 <section class="view users-view" data-view-panel="users">
   <div class="users-hero">
     <div>
-      <p class="eyebrow">Access Administration</p>
-      <h1>Team & Role Management</h1>
-      <p>Invite employees, assign access, and terminate accounts according to your management level.</p>
+      <p class="eyebrow">Identity & Access</p>
+      <h1>People & Permissions</h1>
+      <p>Invite employees, manage owners, control module access, and review every account change.</p>
     </div>
-    <button id="usersRefresh" class="secondary-btn" type="button">Refresh Team</button>
+    <div class="hero-actions">
+      <button id="usersRefresh" class="secondary-btn" type="button">Refresh</button>
+      <button id="openInviteModal" class="primary-btn" type="button">Invite Employee</button>
+    </div>
   </div>
 
   <div id="usersNotice" class="publish-notice" hidden></div>
 
-  <div class="users-layout">
-    <aside class="panel invite-panel">
+  <div class="admin-tabs" role="tablist">
+    <button class="admin-tab active" data-admin-tab="people">People</button>
+    <button class="admin-tab owner-only" data-admin-tab="owners">Owners</button>
+    <button class="admin-tab owner-only" data-admin-tab="permissions">Permissions</button>
+    <button class="admin-tab owner-only" data-admin-tab="audit">Audit Log</button>
+  </div>
+
+  <section class="admin-panel active" data-admin-panel="people">
+    <div class="panel users-list-panel">
+      <div class="panel-head users-list-head">
+        <div><p class="eyebrow">Active, disabled, and invited accounts</p><h2>Employee Directory</h2><p id="usersSummary">Loading team…</p></div>
+        <div class="staff-search"><span>⌕</span><input id="usersSearch" type="search" placeholder="Search name, email, or role"></div>
+      </div>
+      <div id="usersList" class="users-list"><div class="dashboard-empty">Loading users…</div></div>
+    </div>
+  </section>
+
+  <section class="admin-panel owner-only" data-admin-panel="owners">
+    <div class="owner-management-grid">
+      <article class="panel">
+        <div class="panel-head"><div><p class="eyebrow">Protected administration</p><h2>Current Owners</h2><p>At least one active Owner must always remain.</p></div></div>
+        <div id="ownersList" class="owners-list"><div class="dashboard-empty">Loading owners…</div></div>
+      </article>
+      <article class="panel">
+        <p class="eyebrow">Add an Owner</p>
+        <h2>Promote an Existing User</h2>
+        <p class="muted-copy">Select a Manager, Grounds, or Kitchen account. The promotion is logged immediately.</p>
+        <form id="promoteOwnerForm" class="invite-user-form">
+          <label><span>User</span><select id="promoteOwnerUser" required></select></label>
+          <button class="primary-btn" type="submit">Promote to Owner</button>
+        </form>
+        <hr class="soft-rule">
+        <p class="eyebrow">New Owner</p>
+        <h2>Invite a New Owner</h2>
+        <form id="inviteOwnerForm" class="invite-user-form">
+          <label><span>Full name</span><input id="inviteOwnerName" required maxlength="80"></label>
+          <label><span>Email</span><input id="inviteOwnerEmail" type="email" required></label>
+          <button class="primary-btn" type="submit">Invite Owner</button>
+        </form>
+      </article>
+    </div>
+  </section>
+
+  <section class="admin-panel owner-only" data-admin-panel="permissions">
+    <div class="panel">
+      <div class="panel-head permission-head">
+        <div><p class="eyebrow">Role access</p><h2>Permission Matrix</h2><p>Choose which modules each role can open. Owner access stays protected.</p></div>
+        <button id="savePermissions" class="primary-btn" type="button">Save Permissions</button>
+      </div>
+      <div id="permissionMatrix" class="permission-matrix-wrap"><div class="dashboard-empty">Loading permissions…</div></div>
+    </div>
+  </section>
+
+  <section class="admin-panel owner-only" data-admin-panel="audit">
+    <div class="panel">
+      <div class="panel-head">
+        <div><p class="eyebrow">Security history</p><h2>Audit Log</h2><p>Invitations, role changes, owner changes, disables, re-enables, and terminations.</p></div>
+        <button id="refreshAudit" class="secondary-btn" type="button">Refresh Log</button>
+      </div>
+      <div id="auditList" class="audit-list"><div class="dashboard-empty">Loading activity…</div></div>
+    </div>
+  </section>
+
+  <div id="inviteModal" class="modal-backdrop" hidden>
+    <div class="modal-card">
+      <button id="closeInviteModal" class="modal-close" type="button">×</button>
       <p class="eyebrow">New account</p>
-      <h2>Invite Team Member</h2>
-      <p id="invitePermissionNote">Choose the employee's role and send a secure signup invitation.</p>
+      <h2>Invite Employee</h2>
       <form id="inviteUserForm" class="invite-user-form">
         <label><span>Full name</span><input id="inviteName" type="text" maxlength="80" required placeholder="Employee name"></label>
         <label><span>Email address</span><input id="inviteEmail" type="email" required placeholder="employee@example.com"></label>
         <label><span>Role</span><select id="inviteRole" required></select></label>
+        <label><span>Phone (optional)</span><input id="invitePhone" type="tel" placeholder="(555) 555-5555"></label>
+        <label><span>Hire date (optional)</span><input id="inviteHireDate" type="date"></label>
         <button id="inviteUserButton" class="primary-btn" type="submit">Send Invitation</button>
       </form>
-      <div class="role-rules-card">
-        <b>Management rules</b>
-        <p id="roleRulesText">Loading your permission level…</p>
-      </div>
-    </aside>
+    </div>
+  </div>
 
-    <section class="panel users-list-panel">
-      <div class="panel-head users-list-head">
-        <div><p class="eyebrow">Active and invited accounts</p><h2>Team Members</h2><p id="usersSummary">Loading team…</p></div>
-        <div class="staff-search"><span>⌕</span><input id="usersSearch" type="search" placeholder="Search name or email"></div>
-      </div>
-      <div id="usersList" class="users-list"><div class="dashboard-empty">Loading users…</div></div>
-    </section>
+  <div id="profileModal" class="modal-backdrop" hidden>
+    <div class="modal-card large-modal">
+      <button id="closeProfileModal" class="modal-close" type="button">×</button>
+      <p class="eyebrow">Employee profile</p>
+      <h2 id="profileModalTitle">Manage User</h2>
+      <form id="profileForm" class="profile-form">
+        <input id="profileUserId" type="hidden">
+        <div class="profile-grid">
+          <label><span>Full name</span><input id="profileName" required></label>
+          <label><span>Email</span><input id="profileEmail" type="email" disabled></label>
+          <label><span>Phone</span><input id="profilePhone" type="tel"></label>
+          <label><span>Hire date</span><input id="profileHireDate" type="date"></label>
+          <label><span>Emergency contact</span><input id="profileEmergencyContact"></label>
+          <label><span>Emergency phone</span><input id="profileEmergencyPhone" type="tel"></label>
+          <label class="profile-span"><span>Internal notes</span><textarea id="profileNotes" rows="4"></textarea></label>
+        </div>
+        <div class="profile-actions">
+          <button class="primary-btn" type="submit">Save Profile</button>
+          <button id="sendRecoveryButton" class="secondary-btn" type="button">Send Password Reset</button>
+          <button id="toggleDisabledButton" class="warning-btn" type="button">Disable Account</button>
+          <button id="terminateFromProfile" class="user-terminate-btn" type="button">Terminate Account</button>
+        </div>
+      </form>
+    </div>
   </div>
 </section>
-<section class="view" data-view-panel="settings"><div class="page-head"><div><p class="eyebrow">Settings</p><h1>Operations Hub Settings</h1></div></div><div class="settings-grid"><article class="panel"><h2>Signed-in account</h2><p id="accountEmail">Loading…</p><span id="settingsRoleBadge" class="role-badge">Loading role</span><button id="settingsLogout" class="secondary-btn">Sign Out</button></article><article class="panel"><h2>Install on phone</h2><p>Use Add to Home Screen in Safari.</p><button id="settingsInstall" class="primary-btn">Install App</button></article></div></section></main></div><div id="toast" class="toast"></div><script src="/ops/dashboard-v2.js?v=40"></script><script src="/ops/clover-v2.js?v=30"></script><script src="/ops/staff.js?v=70"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"><script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script><script src="/ops/maintenance.js?v=20"></script><script src="/ops/weather.js?v=10"></script><script src="/ops/app.js?v=100"></script></body></html>
+
+<section class="view" data-view-panel="settings"><div class="page-head"><div><p class="eyebrow">Settings</p><h1>Operations Hub Settings</h1></div></div><div class="settings-grid"><article class="panel"><h2>Signed-in account</h2><p id="accountEmail">Loading…</p><span id="settingsRoleBadge" class="role-badge">Loading role</span><button id="settingsLogout" class="secondary-btn">Sign Out</button></article><article class="panel"><h2>Install on phone</h2><p>Use Add to Home Screen in Safari.</p><button id="settingsInstall" class="primary-btn">Install App</button></article></div></section></main></div><div id="toast" class="toast"></div><script src="/ops/dashboard-v2.js?v=40"></script><script src="/ops/clover-v2.js?v=30"></script><script src="/ops/staff.js?v=70"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"><script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script><script src="/ops/maintenance.js?v=20"></script><script src="/ops/weather.js?v=10"></script><script src="/ops/app.js?v=200"></script></body></html>
