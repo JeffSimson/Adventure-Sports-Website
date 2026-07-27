@@ -669,3 +669,103 @@ textarea:focus,input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(31
   .dashboard-action-grid{grid-template-columns:1fr}
   .dashboard-mini-chart{min-height:220px}
 }
+
+
+/* Website Control Center refresh */
+[data-view-panel="website"] .page-head{
+  padding:26px 28px;
+  margin-bottom:18px;
+  border:1px solid #dbe4ef;
+  border-radius:20px;
+  background:
+    radial-gradient(circle at 92% 0,rgba(49,112,205,.12),transparent 32%),
+    linear-gradient(135deg,#fff,#f7faff);
+  box-shadow:0 10px 30px rgba(7,28,59,.06)
+}
+[data-view-panel="website"] .page-head h1{
+  font-size:clamp(31px,3.3vw,47px)
+}
+[data-view-panel="website"] .editor-layout{
+  grid-template-columns:minmax(0,1.35fr) minmax(320px,.75fr)
+}
+[data-view-panel="website"] .control-panel{
+  padding:28px;
+  border:0;
+  box-shadow:0 16px 42px rgba(7,28,59,.09)
+}
+[data-view-panel="website"] .panel-head{
+  padding-bottom:16px;
+  border-bottom:1px solid #e8edf4
+}
+[data-view-panel="website"] .status-options{
+  gap:12px
+}
+[data-view-panel="website"] .status-option{
+  min-height:92px;
+  align-items:center;
+  padding:16px;
+  border:1px solid #dbe3ed;
+  background:#fafcff;
+  transition:.18s ease
+}
+[data-view-panel="website"] .status-option:hover{
+  transform:translateY(-1px);
+  border-color:#a9bfdc;
+  box-shadow:0 8px 20px rgba(7,28,59,.06)
+}
+[data-view-panel="website"] .status-option:has(input:checked){
+  border-color:#1767d2;
+  background:linear-gradient(135deg,#f6faff,#edf5ff);
+  box-shadow:0 0 0 3px rgba(23,103,210,.11)
+}
+[data-view-panel="website"] .status-option input{
+  width:18px;
+  height:18px;
+  accent-color:#1767d2
+}
+[data-view-panel="website"] textarea{
+  min-height:116px;
+  resize:vertical;
+  line-height:1.55;
+  background:#fbfcfe
+}
+[data-view-panel="website"] .change-summary{
+  padding:16px 18px;
+  border:1px solid #e2e8f0;
+  background:#f8fafc
+}
+[data-view-panel="website"] .form-actions{
+  padding-top:4px
+}
+[data-view-panel="website"] #publishControlsButton{
+  min-width:170px;
+  background:linear-gradient(135deg,#071c3b,#114c89);
+  box-shadow:0 9px 20px rgba(7,28,59,.18)
+}
+[data-view-panel="website"] .site-preview{
+  min-height:210px;
+  padding:26px;
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 85% 0,rgba(56,135,232,.25),transparent 35%),
+    linear-gradient(135deg,#071c3b,#12477f)
+}
+[data-view-panel="website"] .activity-panel{
+  box-shadow:0 12px 32px rgba(7,28,59,.07)
+}
+[data-view-panel="website"] .publish-notice.error{
+  border:1px solid #ffc7c1;
+  background:#fff0ee;
+  color:#b22820
+}
+[data-view-panel="website"] .publish-notice.success{
+  border:1px solid #bfe8d4;
+  background:#ecfaf3;
+  color:#13764f
+}
+
+@media(max-width:900px){
+  [data-view-panel="website"] .editor-layout{
+    grid-template-columns:1fr
+  }
+}
