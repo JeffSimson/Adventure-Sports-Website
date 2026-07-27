@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Adventure Sports Operations Hub</title><meta name="theme-color" content="#071c3b"><link rel="manifest" href="/ops/manifest.webmanifest"><link rel="icon" href="/uploads/branding/favicon.ico"><link rel="stylesheet" href="/ops/styles.css?v=70"></head><body>
 <div id="loginGate" class="login-gate" hidden><div class="login-card"><img src="/uploads/branding/adventure-logo.png" alt="Adventure Sports"><p class="eyebrow">Secure Management Portal</p><h1>Adventure Sports Operations Hub</h1><p>Sign in to manage the website and daily facility operations.</p><form id="loginForm" class="login-form"><label>Email address</label><input id="loginEmail" type="email" autocomplete="username" required><label>Password</label><input id="loginPassword" type="password" autocomplete="current-password" required><button id="loginButton" class="primary-btn">Sign In</button></form><p id="loginStatus" class="login-status">Enter the email and password used for the website admin.</p><a href="/admin/" class="secondary-btn login-fallback">Use Full Website Editor</a><a href="/" class="text-link">Return to public website</a></div></div>
-<div id="app" class="app-shell" hidden><aside class="sidebar" id="sidebar"><div class="brand-block"><img src="/uploads/branding/adventure-logo.png"><div><strong>Adventure Sports</strong><span>Operations Hub</span></div></div><nav class="main-nav"><button class="nav-item active" data-view="dashboard"><span>⌂</span>Dashboard</button><button class="nav-item" data-view="website"><span>◈</span>Website</button><button class="nav-item" data-view="clover"><span>$</span>Clover</button><button class="nav-item" data-view="staff"><span>👥</span>Staff</button><button class="nav-item" data-view="games"><span>⚾</span>Games</button><button class="nav-item" data-view="maintenance"><span>◇</span>Fields & Maintenance</button><button class="nav-item" data-view="reports"><span>▥</span>Reports</button><button class="nav-item" data-view="settings"><span>☰</span>Settings</button></nav><div class="sidebar-footer"><a href="/" target="_blank">View Public Website ↗</a><button id="logoutButton">Sign Out</button></div></aside>
+<div id="app" class="app-shell" hidden><aside class="sidebar" id="sidebar"><div class="brand-block"><img src="/uploads/branding/adventure-logo.png"><div><strong>Adventure Sports</strong><span>Operations Hub</span></div></div><nav class="main-nav"><button class="nav-item active" data-view="dashboard"><span>⌂</span>Dashboard</button><button class="nav-item" data-view="website"><span>◈</span>Website</button><button class="nav-item" data-view="clover"><span>$</span>Clover</button><button class="nav-item" data-view="staff"><span>👥</span>Staff</button><button class="nav-item" data-view="games"><span>⚾</span>Games</button><button class="nav-item" data-view="maintenance"><span>◇</span>Fields & Maintenance</button><button class="nav-item" data-view="weather"><span>☁</span>Weather Center</button><button class="nav-item" data-view="reports"><span>▥</span>Reports</button><button class="nav-item" data-view="settings"><span>☰</span>Settings</button></nav><div class="sidebar-footer"><a href="/" target="_blank">View Public Website ↗</a><button id="logoutButton">Sign Out</button></div></aside>
 <main class="main-area"><header class="mobile-header"><button id="menuButton" class="icon-button">☰</button><div><strong>Adventure Sports</strong><span>Operations Hub</span></div><button class="avatar">A</button></header>
 <section class="view active" data-view-panel="dashboard">
   <div class="dashboard-hero">
@@ -236,7 +236,7 @@
 
   <section class="maintenance-tab-panel active" data-maintenance-panel="fields">
     <div class="maintenance-section-head">
-      <div><p class="eyebrow">Eight-field overview</p><h2>Field Readiness</h2><p>Tap a field to inspect mounds, bases, grounds, and closing duties.</p></div>
+      <div><p class="eyebrow">Eight-field overview</p><h2>Field Readiness</h2><p>Tap a field to inspect pitching rubbers, bases, turf, rubber coverage, and closing duties.</p></div>
       <div class="maintenance-legend"><span><i class="good"></i>Good</span><span><i class="attention"></i>Needs attention</span><span><i class="urgent"></i>Maintenance required</span></div>
     </div>
     <div id="maintenanceFieldGrid" class="maintenance-field-grid"></div>
@@ -249,7 +249,7 @@
         <div id="openingChecklist" class="maintenance-checklist"></div>
       </article>
       <article class="panel maintenance-checklist-panel">
-        <div class="panel-head"><div><p class="eyebrow">Facility closing</p><h2>Closing Checklist</h2></div><span id="closingProgress" class="progress-pill">0 / 9</span></div>
+        <div class="panel-head"><div><p class="eyebrow">Facility closing</p><h2>Closing Checklist</h2></div><span id="closingProgress" class="progress-pill">0 / 10</span></div>
         <div id="closingChecklist" class="maintenance-checklist"></div>
       </article>
     </div>
@@ -313,4 +313,181 @@
     </footer>
   </section>
 </div>
-<section class="view placeholder-view" data-view-panel="reports"><div class="empty-state"><span>▥</span><h1>Reports</h1><p>Daily and weekly operations reporting.</p><b>Module planned</b></div></section><section class="view" data-view-panel="settings"><div class="page-head"><div><p class="eyebrow">Settings</p><h1>Operations Hub Settings</h1></div></div><div class="settings-grid"><article class="panel"><h2>Signed-in account</h2><p id="accountEmail">Loading…</p><button id="settingsLogout" class="secondary-btn">Sign Out</button></article><article class="panel"><h2>Install on phone</h2><p>Use Add to Home Screen in Safari.</p><button id="settingsInstall" class="primary-btn">Install App</button></article></div></section></main></div><div id="toast" class="toast"></div><script src="/ops/dashboard-v2.js?v=40"></script><script src="/ops/clover-v2.js?v=30"></script><script src="/ops/staff.js?v=70"></script><script src="/ops/maintenance.js?v=10"></script><script src="/ops/app.js?v=60"></script></body></html>
+
+<section class="view weather-view" data-view-panel="weather">
+  <div class="weather-hero">
+    <div>
+      <p class="eyebrow">Jackson, New Jersey</p>
+      <h1>Weather Operations Center</h1>
+      <p>Live operating conditions, hourly rain timing, wind and heat safety, radar, and field-status controls.</p>
+    </div>
+    <div class="weather-hero-actions">
+      <button id="weatherRefresh" class="secondary-btn" type="button">Refresh Weather</button>
+      <div class="weather-live-state">
+        <i id="weatherLiveDot" class="weather-live-dot loading"></i>
+        <span id="weatherLiveText">Loading live conditions…</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="weatherError" class="publish-notice" hidden></div>
+
+  <div class="weather-current-grid">
+    <article class="weather-current-main panel">
+      <div class="weather-current-heading">
+        <div>
+          <p class="eyebrow">Current conditions</p>
+          <h2 id="weatherCondition">Loading…</h2>
+          <p id="weatherUpdated">Waiting for weather data</p>
+        </div>
+        <div id="weatherIcon" class="weather-icon">☁</div>
+      </div>
+      <div class="weather-temperature-row">
+        <strong id="weatherTemperature">--°</strong>
+        <div>
+          <span>Feels like <b id="weatherFeels">--°</b></span>
+          <span>Today's high <b id="weatherHigh">--°</b></span>
+          <span>Today's low <b id="weatherLow">--°</b></span>
+        </div>
+      </div>
+    </article>
+
+    <article class="weather-metric-card">
+      <span>☂</span><small>Rain Chance</small><strong id="weatherRainChance">--%</strong><em id="weatherRainAmount">Next hour</em>
+    </article>
+    <article class="weather-metric-card">
+      <span>↗</span><small>Wind</small><strong id="weatherWind">-- mph</strong><em id="weatherGust">Gusts -- mph</em>
+    </article>
+    <article class="weather-metric-card">
+      <span>◌</span><small>Humidity</small><strong id="weatherHumidity">--%</strong><em id="weatherDewPoint">Dew point --°</em>
+    </article>
+    <article class="weather-metric-card">
+      <span>☀</span><small>UV Index</small><strong id="weatherUv">--</strong><em id="weatherUvLabel">Loading</em>
+    </article>
+    <article class="weather-metric-card">
+      <span>◐</span><small>Daylight</small><strong id="weatherSunset">--</strong><em id="weatherSunrise">Sunrise --</em>
+    </article>
+  </div>
+
+  <div class="weather-safety-grid">
+    <article id="weatherPlayStatusCard" class="weather-safety-card safe">
+      <div class="weather-safety-icon">✓</div>
+      <div>
+        <p class="eyebrow">Weather play status</p>
+        <h2 id="weatherPlayStatus">Safe to Play</h2>
+        <p id="weatherPlayReason">No major weather risk identified in the current forecast.</p>
+      </div>
+    </article>
+
+    <article id="weatherHeatCard" class="weather-safety-card safe">
+      <div class="weather-safety-icon">☀</div>
+      <div>
+        <p class="eyebrow">Heat safety</p>
+        <h2 id="weatherHeatStatus">Normal Conditions</h2>
+        <p id="weatherHeatReason">Standard hydration breaks.</p>
+      </div>
+    </article>
+
+    <article id="weatherWindCard" class="weather-safety-card safe">
+      <div class="weather-safety-icon">≋</div>
+      <div>
+        <p class="eyebrow">Wind safety</p>
+        <h2 id="weatherWindStatus">Normal Wind</h2>
+        <p id="weatherWindReason">No special action required.</p>
+      </div>
+    </article>
+  </div>
+
+  <div class="weather-tabs" role="tablist" aria-label="Weather sections">
+    <button class="weather-tab active" data-weather-tab="hourly" type="button">Hourly Timeline</button>
+    <button class="weather-tab" data-weather-tab="radar" type="button">Live Radar</button>
+    <button class="weather-tab" data-weather-tab="forecast" type="button">7-Day Forecast</button>
+    <button class="weather-tab" data-weather-tab="lightning" type="button">Lightning Timer</button>
+    <button class="weather-tab" data-weather-tab="fieldstatus" type="button">Field Status</button>
+  </div>
+
+  <section class="weather-tab-panel active" data-weather-panel="hourly">
+    <div class="weather-section-head">
+      <div><p class="eyebrow">Next 24 hours</p><h2>Hourly Weather Timeline</h2><p>See exactly when rain, wind, and temperature changes are expected.</p></div>
+      <div class="weather-hourly-legend"><span>Rain probability</span><span>Forecast conditions</span></div>
+    </div>
+    <div id="weatherHourlyList" class="weather-hourly-list">
+      <div class="dashboard-empty">Loading hourly forecast…</div>
+    </div>
+  </section>
+
+  <section class="weather-tab-panel" data-weather-panel="radar">
+    <div class="weather-section-head">
+      <div><p class="eyebrow">Precipitation radar</p><h2>Live Weather Radar</h2><p>Recent radar imagery centered on Adventure Sports in Jackson.</p></div>
+      <div class="weather-radar-controls">
+        <button id="weatherRadarPlay" class="secondary-btn" type="button">▶ Animate</button>
+        <button id="weatherRadarLatest" class="secondary-btn" type="button">Latest Frame</button>
+      </div>
+    </div>
+    <div class="weather-radar-shell">
+      <div id="weatherRadarMap" class="weather-radar-map"></div>
+      <div class="weather-radar-status"><span id="weatherRadarTime">Loading radar…</span><span>Radar: RainViewer</span></div>
+    </div>
+  </section>
+
+  <section class="weather-tab-panel" data-weather-panel="forecast">
+    <div class="weather-section-head">
+      <div><p class="eyebrow">Planning outlook</p><h2>7-Day Forecast</h2><p>Daily high, low, rain chance, wind, and operating outlook.</p></div>
+    </div>
+    <div id="weatherDailyGrid" class="weather-daily-grid">
+      <div class="dashboard-empty">Loading forecast…</div>
+    </div>
+  </section>
+
+  <section class="weather-tab-panel" data-weather-panel="lightning">
+    <div class="weather-lightning-layout">
+      <article class="panel weather-lightning-panel">
+        <p class="eyebrow">Manual safety control</p>
+        <h2>30-Minute Lightning Countdown</h2>
+        <p class="weather-lightning-warning"><b>This is a manual timer, not a lightning detector.</b> Start or restart it whenever lightning is observed or reported under your facility's safety policy.</p>
+        <div id="lightningTimerDisplay" class="lightning-timer-display">30:00</div>
+        <div id="lightningTimerStatus" class="lightning-timer-status ready">Ready to start</div>
+        <div class="lightning-timer-actions">
+          <button id="lightningStart" class="danger-btn" type="button">Clear Fields & Start Timer</button>
+          <button id="lightningRestart" class="secondary-btn" type="button">Restart 30 Minutes</button>
+          <button id="lightningReset" class="secondary-btn" type="button">Reset</button>
+        </div>
+      </article>
+      <article class="panel weather-lightning-log-panel">
+        <div class="panel-head"><div><p class="eyebrow">Safety record</p><h2>Lightning Timer Log</h2></div></div>
+        <div id="lightningLog" class="lightning-log"></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="weather-tab-panel" data-weather-panel="fieldstatus">
+    <div class="weather-section-head">
+      <div><p class="eyebrow">Public operating status</p><h2>Field Status Control</h2><p>Choose the operating status and copy the recommended announcement into the Website Control Center.</p></div>
+    </div>
+    <div class="weather-field-status-layout">
+      <article class="panel">
+        <div class="weather-status-options">
+          <button class="weather-status-option open active" data-weather-status="OPEN" type="button"><span>✓</span><div><b>Open</b><small>Operating normally</small></div></button>
+          <button class="weather-status-option delayed" data-weather-status="DELAYED" type="button"><span>!</span><div><b>Weather Delay</b><small>Play temporarily delayed</small></div></button>
+          <button class="weather-status-option closed" data-weather-status="CLOSED" type="button"><span>×</span><div><b>Closed</b><small>Facility closed for weather</small></div></button>
+          <button class="weather-status-option check" data-weather-status="CHECK SCHEDULE" type="button"><span>?</span><div><b>Check Schedule</b><small>Schedule updates may apply</small></div></button>
+        </div>
+      </article>
+      <article class="panel weather-announcement-panel">
+        <label for="weatherAnnouncement"><span>Recommended website announcement</span></label>
+        <textarea id="weatherAnnouncement" rows="6">All fields are open and operating as scheduled.</textarea>
+        <div class="weather-announcement-actions">
+          <button id="weatherCopyAnnouncement" class="secondary-btn" type="button">Copy Text</button>
+          <button id="weatherOpenWebsiteControl" class="primary-btn" type="button">Open Website Control</button>
+        </div>
+        <p>This does not publish automatically. Review the text in Website Control Center before publishing.</p>
+      </article>
+    </div>
+  </section>
+
+  <footer class="weather-source-note">
+    Forecast data from Open-Meteo. Radar data from RainViewer. Forecast-based safety indicators are decision support only and do not replace official warnings, local observations, or facility emergency procedures.
+  </footer>
+</section>
+
+<section class="view placeholder-view" data-view-panel="reports"><div class="empty-state"><span>▥</span><h1>Reports</h1><p>Daily and weekly operations reporting.</p><b>Module planned</b></div></section><section class="view" data-view-panel="settings"><div class="page-head"><div><p class="eyebrow">Settings</p><h1>Operations Hub Settings</h1></div></div><div class="settings-grid"><article class="panel"><h2>Signed-in account</h2><p id="accountEmail">Loading…</p><button id="settingsLogout" class="secondary-btn">Sign Out</button></article><article class="panel"><h2>Install on phone</h2><p>Use Add to Home Screen in Safari.</p><button id="settingsInstall" class="primary-btn">Install App</button></article></div></section></main></div><div id="toast" class="toast"></div><script src="/ops/dashboard-v2.js?v=40"></script><script src="/ops/clover-v2.js?v=30"></script><script src="/ops/staff.js?v=70"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"><script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script><script src="/ops/maintenance.js?v=20"></script><script src="/ops/weather.js?v=10"></script><script src="/ops/app.js?v=60"></script></body></html>

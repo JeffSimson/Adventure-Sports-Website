@@ -17,22 +17,22 @@ const BASE_CONDITIONS=[
   {value:'replace-now',label:'Replace Now'}
 ];
 const FIELD_ITEMS=[
-  ['baseballMound','Baseball mound'],
-  ['softballMound','Softball mound'],
+  ['pitchingRubber','Pitching rubber'],
+  ['homePlate','Home plate'],
   ['firstBase','First base'],
   ['secondBase','Second base'],
   ['thirdBase','Third base'],
-  ['homePlate','Home plate'],
-  ['infield','Infield surface'],
-  ['outfield','Outfield / turf'],
+  ['turfSurface','Turf surface'],
+  ['rubberCoverage','Turf rubber / infill coverage'],
+  ['seams','Turf seams and edges'],
   ['fencing','Fence & gates'],
   ['dugouts','Dugouts']
 ];
 const OPENING_TASKS=[
   'Unlock facility and field gates',
-  'Inspect all playing surfaces',
-  'Check mounds and bases',
-  'Inspect fences and backstops',
+  'Inspect all turf playing surfaces',
+  'Check pitching rubbers, home plates, and bases',
+  'Inspect turf seams, edges, fences, and backstops',
   'Confirm dugouts are clear',
   'Check restrooms and clubhouse',
   'Verify field lights and power',
@@ -43,11 +43,12 @@ const CLOSING_TASKS=[
   'Pick up all dugouts',
   'Clean benches and common areas',
   'Inspect and secure bases',
-  'Drag / groom fields as required',
-  'Check fences and gates',
+  'Groom turf as required',
+  'Add and spread turf rubber as needed',
+  'Check and lock all field gates',
   'Turn off field lights',
-  'Turn off water and equipment',
-  'Lock all facility gates'
+  'Put all grounds equipment away',
+  'Lock all clubhouse and facility doors'
 ];
 const DEFAULT_EQUIPMENT=[
   {id:'eq-turf',name:'SMG Sports Champ',type:'Turf maintenance',status:'good',hours:'',fuel:'N/A',serviceDue:'',notes:''},
@@ -81,8 +82,8 @@ function blankField(name){
   return {
     name,status:'good',notes:'',lastUpdated:null,updatedBy:'',
     items,
-    flags:{needsClay:false,needsChalk:false,needsPacking:false,needsDragging:false,needsLining:false},
-    checklist:{trash:false,dugouts:false,benches:false,gates:false,lights:false,water:false,dragged:false,lined:false}
+    flags:{needsRubber:false,needsGrooming:false,needsRepair:false,needsLining:false},
+    checklist:{trash:false,dugouts:false,benches:false,gates:false,doors:false,lights:false,equipment:false,groomed:false,rubber:false,lined:false}
   };
 }
 function blankDay(date){
@@ -188,7 +189,7 @@ function renderFields(){
     const f=fields[name];
     const checked=Object.values(f.checklist).filter(Boolean).length;
     const flags=Object.entries(f.flags).filter(([,v])=>v).map(([k])=>({
-      needsClay:'Clay',needsChalk:'Chalk',needsPacking:'Pack',needsDragging:'Drag',needsLining:'Line'
+      needsRubber:'Add Rubber',needsGrooming:'Groom',needsRepair:'Repair',needsLining:'Line'
     }[k]));
     return `<button class="maintenance-field-card ${esc(f.status)}" data-field="${name}" type="button">
       <div class="maintenance-field-top"><span class="maintenance-field-name">${name}</span><span class="maintenance-status-badge ${esc(f.status)}">${esc(conditionLabel(f.status))}</span></div>
@@ -315,10 +316,10 @@ function openField(name){
       ${FIELD_ITEMS.map(([key,label])=>`<label class="field-condition-row"><span>${esc(label)}</span><select data-field-condition="${key}">${selectOptions(baseKeys.has(key)?BASE_CONDITIONS:CONDITIONS,field.items[key])}</select></label>`).join('')}
     </div>
     <div class="field-needs-block"><h3>Work Needed</h3><div class="field-needs-grid">
-      ${[['needsClay','Needs clay'],['needsChalk','Needs chalk'],['needsPacking','Needs packing'],['needsDragging','Needs dragging'],['needsLining','Needs lining']].map(([key,label])=>`<label class="form-check"><input class="form-check-input" type="checkbox" data-field-flag="${key}" ${field.flags[key]?'checked':''}><span class="form-check-label">${label}</span></label>`).join('')}
+      ${[['needsRubber','Needs turf rubber added'],['needsGrooming','Needs turf grooming'],['needsRepair','Needs turf repair'],['needsLining','Needs field lining']].map(([key,label])=>`<label class="form-check"><input class="form-check-input" type="checkbox" data-field-flag="${key}" ${field.flags[key]?'checked':''}><span class="form-check-label">${label}</span></label>`).join('')}
     </div></div>
     <div class="field-needs-block"><h3>Field Closing Checklist</h3><div class="field-close-grid">
-      ${[['trash','Trash emptied'],['dugouts','Dugouts picked'],['benches','Benches cleaned'],['gates','Gates checked'],['lights','Lights off'],['water','Water off'],['dragged','Field dragged'],['lined','Field lined']].map(([key,label])=>`<label class="form-check"><input class="form-check-input" type="checkbox" data-field-close="${key}" ${field.checklist[key]?'checked':''}><span class="form-check-label">${label}</span></label>`).join('')}
+      ${[['trash','Trash emptied'],['dugouts','Dugouts picked'],['benches','Benches cleaned'],['gates','All gates locked'],['doors','All doors locked'],['lights','Lights off'],['equipment','Equipment put away'],['groomed','Turf groomed if needed'],['rubber','Rubber added and spread if needed'],['lined','Field lined if needed']].map(([key,label])=>`<label class="form-check"><input class="form-check-input" type="checkbox" data-field-close="${key}" ${field.checklist[key]?'checked':''}><span class="form-check-label">${label}</span></label>`).join('')}
     </div></div>`;
   $('#fieldMaintenanceModal').hidden=false;
   document.body.classList.add('maintenance-modal-open');
