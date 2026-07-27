@@ -35,6 +35,14 @@ async function verifyUser(event){
   if(!response.ok){
     throw Object.assign(new Error('Your login session could not be verified.'),{statusCode:401});
   }
+  const user=await response.json();
+  const ownerEmail=String(process.env.OWNER_EMAIL||'').trim().toLowerCase();
+  let role=String(user.app_metadata?.role||'').trim().toLowerCase();
+  if(ownerEmail&&String(user.email||'').toLowerCase()===ownerEmail)role='owner';
+  if(role!=='owner'){
+    throw Object.assign(new Error('Only an Owner can publish website changes.'),{statusCode:403});
+  }
+  return user;
 }
 
 async function github(path,options={}){

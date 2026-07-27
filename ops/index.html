@@ -1,6 +1,18 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Adventure Sports Operations Hub</title><meta name="theme-color" content="#071c3b"><link rel="manifest" href="/ops/manifest.webmanifest"><link rel="icon" href="/uploads/branding/favicon.ico"><link rel="stylesheet" href="/ops/styles.css?v=70"></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Adventure Sports Operations Hub</title><meta name="theme-color" content="#071c3b"><link rel="manifest" href="/ops/manifest.webmanifest"><link rel="icon" href="/uploads/branding/favicon.ico"><link rel="stylesheet" href="/ops/styles.css?v=100"></head><body>
 <div id="loginGate" class="login-gate" hidden><div class="login-card"><img src="/uploads/branding/adventure-logo.png" alt="Adventure Sports"><p class="eyebrow">Secure Management Portal</p><h1>Adventure Sports Operations Hub</h1><p>Sign in to manage the website and daily facility operations.</p><form id="loginForm" class="login-form"><label>Email address</label><input id="loginEmail" type="email" autocomplete="username" required><label>Password</label><input id="loginPassword" type="password" autocomplete="current-password" required><button id="loginButton" class="primary-btn">Sign In</button></form><p id="loginStatus" class="login-status">Enter the email and password used for the website admin.</p><a href="/admin/" class="secondary-btn login-fallback">Use Full Website Editor</a><a href="/" class="text-link">Return to public website</a></div></div>
-<div id="app" class="app-shell" hidden><aside class="sidebar" id="sidebar"><div class="brand-block"><img src="/uploads/branding/adventure-logo.png"><div><strong>Adventure Sports</strong><span>Operations Hub</span></div></div><nav class="main-nav"><button class="nav-item active" data-view="dashboard"><span>⌂</span>Dashboard</button><button class="nav-item" data-view="website"><span>◈</span>Website</button><button class="nav-item" data-view="clover"><span>$</span>Clover</button><button class="nav-item" data-view="staff"><span>👥</span>Staff</button><button class="nav-item" data-view="games"><span>⚾</span>Games</button><button class="nav-item" data-view="maintenance"><span>◇</span>Fields & Maintenance</button><button class="nav-item" data-view="weather"><span>☁</span>Weather Center</button><button class="nav-item" data-view="reports"><span>▥</span>Reports</button><button class="nav-item" data-view="settings"><span>☰</span>Settings</button></nav><div class="sidebar-footer"><a href="/" target="_blank">View Public Website ↗</a><button id="logoutButton">Sign Out</button></div></aside>
+<div id="app" class="app-shell" hidden><aside class="sidebar" id="sidebar"><div class="brand-block"><img src="/uploads/branding/adventure-logo.png"><div><strong>Adventure Sports</strong><span>Operations Hub</span></div></div><nav class="main-nav">
+<button class="nav-item active" data-view="dashboard"><span>⌂</span>Dashboard</button>
+<button class="nav-item" data-view="website"><span>◈</span>Website</button>
+<button class="nav-item" data-view="clover"><span>$</span>Clover</button>
+<button class="nav-item" data-view="staff"><span>👥</span>Staff</button>
+<button class="nav-item" data-view="games"><span>⚾</span>Games</button>
+<button class="nav-item" data-view="maintenance"><span>◇</span>Fields & Maintenance</button>
+<button class="nav-item" data-view="weather"><span>☁</span>Weather Center</button>
+<button class="nav-item" data-view="reports"><span>▥</span>Reports</button>
+<button class="nav-item" data-view="kitchen"><span>🍔</span>Kitchen</button>
+<button class="nav-item" data-view="users"><span>♙</span>Team Management</button>
+<button class="nav-item" data-view="settings"><span>☰</span>Settings</button>
+</nav><div class="sidebar-role-card"><span class="avatar">A</span><div><strong id="sidebarUserName">Administrator</strong><small id="sidebarRoleName">Loading role…</small></div></div><div class="sidebar-footer"><a href="/" target="_blank">View Public Website ↗</a><button id="logoutButton">Sign Out</button></div></aside>
 <main class="main-area"><header class="mobile-header"><button id="menuButton" class="icon-button">☰</button><div><strong>Adventure Sports</strong><span>Operations Hub</span></div><button class="avatar">A</button></header>
 <section class="view active" data-view-panel="dashboard">
   <div class="dashboard-hero">
@@ -490,4 +502,53 @@
   </footer>
 </section>
 
-<section class="view placeholder-view" data-view-panel="reports"><div class="empty-state"><span>▥</span><h1>Reports</h1><p>Daily and weekly operations reporting.</p><b>Module planned</b></div></section><section class="view" data-view-panel="settings"><div class="page-head"><div><p class="eyebrow">Settings</p><h1>Operations Hub Settings</h1></div></div><div class="settings-grid"><article class="panel"><h2>Signed-in account</h2><p id="accountEmail">Loading…</p><button id="settingsLogout" class="secondary-btn">Sign Out</button></article><article class="panel"><h2>Install on phone</h2><p>Use Add to Home Screen in Safari.</p><button id="settingsInstall" class="primary-btn">Install App</button></article></div></section></main></div><div id="toast" class="toast"></div><script src="/ops/dashboard-v2.js?v=40"></script><script src="/ops/clover-v2.js?v=30"></script><script src="/ops/staff.js?v=70"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"><script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script><script src="/ops/maintenance.js?v=20"></script><script src="/ops/weather.js?v=10"></script><script src="/ops/app.js?v=60"></script></body></html>
+<section class="view placeholder-view" data-view-panel="reports"><div class="empty-state"><span>▥</span><h1>Reports</h1><p>Daily and weekly operations reporting.</p><b>Module planned</b></div></section>
+<section class="view kitchen-view" data-view-panel="kitchen">
+  <div class="page-head">
+    <div><p class="eyebrow">Kitchen Operations</p><h1>Kitchen Center</h1><p>Kitchen checklists, stock, prep notes, and closing information will live here.</p></div>
+  </div>
+  <div class="settings-grid">
+    <article class="panel"><h2>Kitchen Opening</h2><p>Opening checklist and prep assignments are ready for the next kitchen module.</p><span class="progress-pill">Module planned</span></article>
+    <article class="panel"><h2>Kitchen Inventory</h2><p>Track food, drinks, paper goods, and low-stock items.</p><span class="progress-pill">Module planned</span></article>
+  </div>
+</section>
+
+<section class="view users-view" data-view-panel="users">
+  <div class="users-hero">
+    <div>
+      <p class="eyebrow">Access Administration</p>
+      <h1>Team & Role Management</h1>
+      <p>Invite employees, assign access, and terminate accounts according to your management level.</p>
+    </div>
+    <button id="usersRefresh" class="secondary-btn" type="button">Refresh Team</button>
+  </div>
+
+  <div id="usersNotice" class="publish-notice" hidden></div>
+
+  <div class="users-layout">
+    <aside class="panel invite-panel">
+      <p class="eyebrow">New account</p>
+      <h2>Invite Team Member</h2>
+      <p id="invitePermissionNote">Choose the employee's role and send a secure signup invitation.</p>
+      <form id="inviteUserForm" class="invite-user-form">
+        <label><span>Full name</span><input id="inviteName" type="text" maxlength="80" required placeholder="Employee name"></label>
+        <label><span>Email address</span><input id="inviteEmail" type="email" required placeholder="employee@example.com"></label>
+        <label><span>Role</span><select id="inviteRole" required></select></label>
+        <button id="inviteUserButton" class="primary-btn" type="submit">Send Invitation</button>
+      </form>
+      <div class="role-rules-card">
+        <b>Management rules</b>
+        <p id="roleRulesText">Loading your permission level…</p>
+      </div>
+    </aside>
+
+    <section class="panel users-list-panel">
+      <div class="panel-head users-list-head">
+        <div><p class="eyebrow">Active and invited accounts</p><h2>Team Members</h2><p id="usersSummary">Loading team…</p></div>
+        <div class="staff-search"><span>⌕</span><input id="usersSearch" type="search" placeholder="Search name or email"></div>
+      </div>
+      <div id="usersList" class="users-list"><div class="dashboard-empty">Loading users…</div></div>
+    </section>
+  </div>
+</section>
+<section class="view" data-view-panel="settings"><div class="page-head"><div><p class="eyebrow">Settings</p><h1>Operations Hub Settings</h1></div></div><div class="settings-grid"><article class="panel"><h2>Signed-in account</h2><p id="accountEmail">Loading…</p><span id="settingsRoleBadge" class="role-badge">Loading role</span><button id="settingsLogout" class="secondary-btn">Sign Out</button></article><article class="panel"><h2>Install on phone</h2><p>Use Add to Home Screen in Safari.</p><button id="settingsInstall" class="primary-btn">Install App</button></article></div></section></main></div><div id="toast" class="toast"></div><script src="/ops/dashboard-v2.js?v=40"></script><script src="/ops/clover-v2.js?v=30"></script><script src="/ops/staff.js?v=70"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"><script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script><script src="/ops/maintenance.js?v=20"></script><script src="/ops/weather.js?v=10"></script><script src="/ops/app.js?v=100"></script></body></html>

@@ -1173,3 +1173,30 @@ body.maintenance-modal-open{overflow:hidden}
   .lightning-timer-display{font-size:58px}
   .weather-status-options{grid-template-columns:1fr}
 }
+
+
+/* =========================================================
+   ROLE & USER MANAGEMENT
+   ========================================================= */
+[hidden]{display:none!important}
+.sidebar-role-card{display:flex;align-items:center;gap:10px;margin:12px 12px 3px;padding:11px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);border-radius:13px}
+.sidebar-role-card .avatar{width:34px;height:34px;border-radius:10px;background:#2e7fb9;color:#fff;display:grid;place-items:center;font-size:13px;font-weight:900}
+.sidebar-role-card strong,.sidebar-role-card small{display:block}.sidebar-role-card strong{font-size:12px;color:#fff}.sidebar-role-card small{font-size:9px;color:#a9bfd7;margin-top:2px;text-transform:uppercase;letter-spacing:.08em;font-weight:800}
+.role-badge{display:inline-flex;align-items:center;width:max-content;padding:6px 9px;border-radius:999px;font-size:10px;font-weight:900;background:#eef3f8;color:#496078;margin:7px 0 14px}
+.role-badge[data-role="owner"]{background:#fff0c9;color:#805a00}.role-badge[data-role="manager"]{background:#e7efff;color:#28569d}.role-badge[data-role="grounds"]{background:#e5f6eb;color:#217143}.role-badge[data-role="kitchen"]{background:#fff0e5;color:#a34e13}
+.users-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;padding:28px;border-radius:22px;background:linear-gradient(135deg,#0b274f,#154f81);color:#fff;margin-bottom:18px}
+.users-hero h1{font-size:clamp(28px,3vw,40px);margin:3px 0 7px}.users-hero p{margin:0;color:#c8d8e9}.users-hero .eyebrow{color:#92c7eb}
+.users-layout{display:grid;grid-template-columns:330px 1fr;gap:16px}.invite-panel,.users-list-panel{padding:20px}
+.invite-panel h2{margin:4px 0 6px;color:#173653}.invite-panel>p{font-size:12px;color:#78879a}
+.invite-user-form{display:grid;gap:12px;margin-top:18px}.invite-user-form label span{display:block;font-size:10px;color:#617286;font-weight:850;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
+.invite-user-form input,.invite-user-form select,.user-role-control select{width:100%;box-sizing:border-box;border:1px solid #d8e2ec;border-radius:11px;padding:11px;background:#fff;font:inherit;font-size:12px;color:#2a425b}
+.role-rules-card{margin-top:17px;background:#eff5fa;border:1px solid #d8e5ef;border-radius:12px;padding:12px}.role-rules-card b{font-size:11px;color:#294866}.role-rules-card p{font-size:10px;line-height:1.5;color:#6f8092;margin:5px 0 0}
+.users-list-head{align-items:center}.users-list{display:grid}.user-row{display:grid;grid-template-columns:42px minmax(190px,1fr) 150px 190px;gap:12px;align-items:center;padding:14px 4px;border-bottom:1px solid #edf1f5}
+.user-row:last-child{border-bottom:0}.user-avatar{width:40px;height:40px;border-radius:12px;background:#e8f1f8;color:#215b89;display:grid;place-items:center;font-weight:900}
+.user-info b,.user-info span,.user-info small{display:block}.user-info b{font-size:13px;color:#263f59}.user-info span{font-size:11px;color:#62758a;margin:2px 0}.user-info small{font-size:9px;color:#96a1af}
+.user-actions{display:flex;gap:7px;justify-content:flex-end;align-items:center}.user-actions .secondary-btn{padding:9px 10px;font-size:10px}
+.user-terminate-btn{border:1px solid #e8b8b8;background:#fff4f4;color:#b52f2f;border-radius:10px;padding:9px 10px;font:inherit;font-size:10px;font-weight:850;cursor:pointer}.user-terminate-btn:hover{background:#ffe6e6}
+.protected-account{font-size:9px;color:#95a0ad;font-weight:850;text-transform:uppercase;letter-spacing:.06em}.error-text{color:#b52e2e}
+body[data-role="grounds"] .dashboard-view-only,body[data-role="kitchen"] .dashboard-view-only{display:none!important}
+@media(max-width:1050px){.users-layout{grid-template-columns:1fr}.user-row{grid-template-columns:42px 1fr 135px}.user-actions{grid-column:2/-1;justify-content:flex-start}}
+@media(max-width:650px){.users-hero{align-items:flex-start;flex-direction:column}.user-row{grid-template-columns:40px 1fr}.user-role-control,.user-actions{grid-column:2}.user-actions{flex-wrap:wrap}.users-list-head{align-items:flex-start;flex-direction:column}.users-list-head .staff-search{width:100%}}

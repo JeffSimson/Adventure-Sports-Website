@@ -1,3 +1,18 @@
+
+async function verifyStaffAccess(event){
+  const authorization=event.headers.authorization||event.headers.Authorization;
+  if(!authorization?.startsWith('Bearer '))throw Object.assign(new Error('You are not signed in.'),{statusCode:401});
+  const siteUrl=process.env.URL||process.env.DEPLOY_PRIME_URL;
+  const response=await fetch(`${siteUrl}/.netlify/identity/user`,{headers:{Authorization:authorization}});
+  if(!response.ok)throw Object.assign(new Error('Your login session could not be verified.'),{statusCode:401});
+  const user=await response.json();
+  const ownerEmail=String(process.env.OWNER_EMAIL||'').trim().toLowerCase();
+  let role=String(user.app_metadata?.role||'').trim().toLowerCase();
+  if(ownerEmail&&String(user.email||'').toLowerCase()===ownerEmail)role='owner';
+  if(!['owner','manager'].includes(role))throw Object.assign(new Error('Only Owners and Managers can access staffing.'),{statusCode:403});
+  return user;
+}
+
 const GOOGLE_SCHEDULE_URL =
   process.env.STAFF_GOOGLE_SHEETS_URL ||
   "https://script.google.com/macros/s/AKfycbw9scSqtOlPYdpnHPoqnk04xYDYkjizbv_V4ygmhCNTAH83TSfEtPa-shD8xe9ktmVz/exec";
