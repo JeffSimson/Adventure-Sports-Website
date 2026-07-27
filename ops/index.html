@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Adventure Sports Operations Hub</title><meta name="theme-color" content="#071c3b"><link rel="manifest" href="/ops/manifest.webmanifest"><link rel="icon" href="/uploads/branding/favicon.ico"><link rel="stylesheet" href="/ops/styles.css?v=70"></head><body>
 <div id="loginGate" class="login-gate" hidden><div class="login-card"><img src="/uploads/branding/adventure-logo.png" alt="Adventure Sports"><p class="eyebrow">Secure Management Portal</p><h1>Adventure Sports Operations Hub</h1><p>Sign in to manage the website and daily facility operations.</p><form id="loginForm" class="login-form"><label>Email address</label><input id="loginEmail" type="email" autocomplete="username" required><label>Password</label><input id="loginPassword" type="password" autocomplete="current-password" required><button id="loginButton" class="primary-btn">Sign In</button></form><p id="loginStatus" class="login-status">Enter the email and password used for the website admin.</p><a href="/admin/" class="secondary-btn login-fallback">Use Full Website Editor</a><a href="/" class="text-link">Return to public website</a></div></div>
-<div id="app" class="app-shell" hidden><aside class="sidebar" id="sidebar"><div class="brand-block"><img src="/uploads/branding/adventure-logo.png"><div><strong>Adventure Sports</strong><span>Operations Hub</span></div></div><nav class="main-nav"><button class="nav-item active" data-view="dashboard"><span>⌂</span>Dashboard</button><button class="nav-item" data-view="website"><span>◈</span>Website</button><button class="nav-item" data-view="clover"><span>$</span>Clover</button><button class="nav-item" data-view="staff"><span>👥</span>Staff</button><button class="nav-item" data-view="games"><span>⚾</span>Games</button><button class="nav-item" data-view="fields"><span>◇</span>Fields</button><button class="nav-item" data-view="maintenance"><span>⚙</span>Maintenance</button><button class="nav-item" data-view="reports"><span>▥</span>Reports</button><button class="nav-item" data-view="settings"><span>☰</span>Settings</button></nav><div class="sidebar-footer"><a href="/" target="_blank">View Public Website ↗</a><button id="logoutButton">Sign Out</button></div></aside>
+<div id="app" class="app-shell" hidden><aside class="sidebar" id="sidebar"><div class="brand-block"><img src="/uploads/branding/adventure-logo.png"><div><strong>Adventure Sports</strong><span>Operations Hub</span></div></div><nav class="main-nav"><button class="nav-item active" data-view="dashboard"><span>⌂</span>Dashboard</button><button class="nav-item" data-view="website"><span>◈</span>Website</button><button class="nav-item" data-view="clover"><span>$</span>Clover</button><button class="nav-item" data-view="staff"><span>👥</span>Staff</button><button class="nav-item" data-view="games"><span>⚾</span>Games</button><button class="nav-item" data-view="maintenance"><span>◇</span>Fields & Maintenance</button><button class="nav-item" data-view="reports"><span>▥</span>Reports</button><button class="nav-item" data-view="settings"><span>☰</span>Settings</button></nav><div class="sidebar-footer"><a href="/" target="_blank">View Public Website ↗</a><button id="logoutButton">Sign Out</button></div></aside>
 <main class="main-area"><header class="mobile-header"><button id="menuButton" class="icon-button">☰</button><div><strong>Adventure Sports</strong><span>Operations Hub</span></div><button class="avatar">A</button></header>
 <section class="view active" data-view-panel="dashboard">
   <div class="dashboard-hero">
@@ -135,7 +135,7 @@
         <button data-go="website"><span>◈</span><div><b>Website</b><small>Update public status</small></div></button>
         <button data-go="clover"><span>$</span><div><b>Clover</b><small>Full sales center</small></div></button>
         <button data-go="staff"><span>👥</span><div><b>Staff</b><small>Live daily schedule</small></div></button>
-        <button data-go="fields"><span>◇</span><div><b>Fields</b><small>Coming soon</small></div></button>
+        <button data-go="maintenance"><span>◇</span><div><b>Maintenance</b><small>Fields, issues & equipment</small></div></button>
       </div>
     </article>
   </div>
@@ -199,4 +199,118 @@
       </article>
     </aside>
   </div>
-</section><section class="view placeholder-view" data-view-panel="games"><div class="empty-state"><span>⚾</span><h1>Game Schedule</h1><p>Today's games, fields and timeslots will appear here.</p><b>Connection planned</b></div></section><section class="view placeholder-view" data-view-panel="fields"><div class="empty-state"><span>◇</span><h1>Field Conditions</h1><p>Mobile inspections for fields A1 through D2.</p><b>Connection planned</b></div></section><section class="view placeholder-view" data-view-panel="maintenance"><div class="empty-state"><span>⚙</span><h1>Maintenance</h1><p>Work orders, equipment and checklists.</p><b>Module planned</b></div></section><section class="view placeholder-view" data-view-panel="reports"><div class="empty-state"><span>▥</span><h1>Reports</h1><p>Daily and weekly operations reporting.</p><b>Module planned</b></div></section><section class="view" data-view-panel="settings"><div class="page-head"><div><p class="eyebrow">Settings</p><h1>Operations Hub Settings</h1></div></div><div class="settings-grid"><article class="panel"><h2>Signed-in account</h2><p id="accountEmail">Loading…</p><button id="settingsLogout" class="secondary-btn">Sign Out</button></article><article class="panel"><h2>Install on phone</h2><p>Use Add to Home Screen in Safari.</p><button id="settingsInstall" class="primary-btn">Install App</button></article></div></section></main></div><div id="toast" class="toast"></div><script src="/ops/dashboard-v2.js?v=40"></script><script src="/ops/clover-v2.js?v=30"></script><script src="/ops/staff.js?v=70"></script><script src="/ops/app.js?v=60"></script></body></html>
+</section><section class="view placeholder-view" data-view-panel="games"><div class="empty-state"><span>⚾</span><h1>Game Schedule</h1><p>Today's games, fields and timeslots will appear here.</p><b>Connection planned</b></div></section>
+<section class="view maintenance-view" data-view-panel="maintenance">
+  <div class="maintenance-hero">
+    <div>
+      <p class="eyebrow">Facility Operations</p>
+      <h1>Field & Maintenance Command Center</h1>
+      <p>Inspect every field, complete daily duties, report problems, and track equipment from one screen.</p>
+    </div>
+    <div class="maintenance-hero-actions">
+      <label class="maintenance-date-control"><span>Work date</span><input id="maintenanceDate" type="date"></label>
+      <button id="maintenanceToday" class="secondary-btn" type="button">Today</button>
+      <button id="maintenanceRefresh" class="secondary-btn" type="button">Refresh</button>
+      <div class="maintenance-sync-state"><i id="maintenanceSyncDot" class="maintenance-sync-dot ready"></i><span id="maintenanceSyncText">Saved on this device</span></div>
+    </div>
+  </div>
+
+  <div id="maintenanceNotice" class="publish-notice" hidden></div>
+
+  <div class="maintenance-kpi-grid">
+    <article class="maintenance-kpi good"><span>✓</span><small>Fields Good</small><strong id="maintenanceGoodCount">8 / 8</strong><em>ready for play</em></article>
+    <article class="maintenance-kpi attention"><span>!</span><small>Needs Attention</small><strong id="maintenanceAttentionCount">0</strong><em>field items</em></article>
+    <article class="maintenance-kpi urgent"><span>⚠</span><small>Open Issues</small><strong id="maintenanceIssueCount">0</strong><em>not resolved</em></article>
+    <article class="maintenance-kpi"><span>⚙</span><small>Equipment Issues</small><strong id="maintenanceEquipmentCount">0</strong><em>need service</em></article>
+    <article class="maintenance-kpi"><span>☑</span><small>Completed Today</small><strong id="maintenanceCompletedCount">0</strong><em>checklist items</em></article>
+    <article class="maintenance-kpi readiness"><span>◆</span><small>Fields Ready</small><strong id="maintenanceReadyLabel">YES</strong><em id="maintenanceReadyNote">all fields operational</em></article>
+  </div>
+
+  <div class="maintenance-tabs" role="tablist" aria-label="Maintenance sections">
+    <button class="maintenance-tab active" data-maintenance-tab="fields" type="button">Field Status</button>
+    <button class="maintenance-tab" data-maintenance-tab="daily" type="button">Daily Checklist</button>
+    <button class="maintenance-tab" data-maintenance-tab="issues" type="button">Issues</button>
+    <button class="maintenance-tab" data-maintenance-tab="equipment" type="button">Equipment</button>
+    <button class="maintenance-tab" data-maintenance-tab="history" type="button">Activity</button>
+  </div>
+
+  <section class="maintenance-tab-panel active" data-maintenance-panel="fields">
+    <div class="maintenance-section-head">
+      <div><p class="eyebrow">Eight-field overview</p><h2>Field Readiness</h2><p>Tap a field to inspect mounds, bases, grounds, and closing duties.</p></div>
+      <div class="maintenance-legend"><span><i class="good"></i>Good</span><span><i class="attention"></i>Needs attention</span><span><i class="urgent"></i>Maintenance required</span></div>
+    </div>
+    <div id="maintenanceFieldGrid" class="maintenance-field-grid"></div>
+  </section>
+
+  <section class="maintenance-tab-panel" data-maintenance-panel="daily">
+    <div class="maintenance-two-column">
+      <article class="panel maintenance-checklist-panel">
+        <div class="panel-head"><div><p class="eyebrow">Facility opening</p><h2>Opening Checklist</h2></div><span id="openingProgress" class="progress-pill">0 / 8</span></div>
+        <div id="openingChecklist" class="maintenance-checklist"></div>
+      </article>
+      <article class="panel maintenance-checklist-panel">
+        <div class="panel-head"><div><p class="eyebrow">Facility closing</p><h2>Closing Checklist</h2></div><span id="closingProgress" class="progress-pill">0 / 9</span></div>
+        <div id="closingChecklist" class="maintenance-checklist"></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="maintenance-tab-panel" data-maintenance-panel="issues">
+    <div class="maintenance-section-head">
+      <div><p class="eyebrow">Problem tracking</p><h2>Open Maintenance Issues</h2><p>Report a problem and keep it visible until someone resolves it.</p></div>
+      <button id="addMaintenanceIssue" class="primary-btn" type="button">+ Report Issue</button>
+    </div>
+    <div class="maintenance-filter-row">
+      <div class="staff-search"><span>⌕</span><input id="maintenanceIssueSearch" type="search" placeholder="Search field, equipment, or issue"></div>
+      <select id="maintenanceIssueFilter"><option value="open">Open issues</option><option value="all">All issues</option><option value="high">High priority</option><option value="resolved">Resolved</option></select>
+    </div>
+    <div id="maintenanceIssueList" class="maintenance-issue-list"></div>
+  </section>
+
+  <section class="maintenance-tab-panel" data-maintenance-panel="equipment">
+    <div class="maintenance-section-head">
+      <div><p class="eyebrow">Asset condition</p><h2>Equipment Tracker</h2><p>Update hours, fuel, service status, and repair notes.</p></div>
+      <button id="addEquipment" class="primary-btn" type="button">+ Add Equipment</button>
+    </div>
+    <div id="maintenanceEquipmentGrid" class="maintenance-equipment-grid"></div>
+  </section>
+
+  <section class="maintenance-tab-panel" data-maintenance-panel="history">
+    <div class="maintenance-section-head">
+      <div><p class="eyebrow">Recorded changes</p><h2>Maintenance Activity</h2><p>Recent field checks, completed tasks, issue updates, and equipment changes.</p></div>
+      <button id="clearMaintenanceHistory" class="secondary-btn" type="button">Clear History</button>
+    </div>
+    <div id="maintenanceHistory" class="maintenance-history"></div>
+  </section>
+</section>
+
+<div id="fieldMaintenanceModal" class="maintenance-modal" hidden>
+  <div class="maintenance-modal-backdrop" data-close-maintenance-modal></div>
+  <section class="maintenance-modal-card" role="dialog" aria-modal="true" aria-labelledby="fieldModalTitle">
+    <header class="maintenance-modal-header">
+      <div><p class="eyebrow">Field inspection</p><h2 id="fieldModalTitle">Field A1</h2><p id="fieldModalSubtitle">Update field condition and checklist items.</p></div>
+      <button class="maintenance-modal-close" data-close-maintenance-modal type="button" aria-label="Close">×</button>
+    </header>
+    <div id="fieldModalBody" class="maintenance-modal-body"></div>
+    <footer class="maintenance-modal-footer">
+      <button class="secondary-btn" data-close-maintenance-modal type="button">Cancel</button>
+      <button id="saveFieldInspection" class="primary-btn" type="button">Save Inspection</button>
+    </footer>
+  </section>
+</div>
+
+<div id="maintenanceFormModal" class="maintenance-modal" hidden>
+  <div class="maintenance-modal-backdrop" data-close-form-modal></div>
+  <section class="maintenance-modal-card maintenance-form-modal-card" role="dialog" aria-modal="true" aria-labelledby="maintenanceFormTitle">
+    <header class="maintenance-modal-header">
+      <div><p class="eyebrow" id="maintenanceFormEyebrow">Maintenance</p><h2 id="maintenanceFormTitle">Report Issue</h2></div>
+      <button class="maintenance-modal-close" data-close-form-modal type="button" aria-label="Close">×</button>
+    </header>
+    <form id="maintenanceDynamicForm" class="maintenance-modal-body"></form>
+    <footer class="maintenance-modal-footer">
+      <button class="secondary-btn" data-close-form-modal type="button">Cancel</button>
+      <button id="saveMaintenanceForm" class="primary-btn" type="button">Save</button>
+    </footer>
+  </section>
+</div>
+<section class="view placeholder-view" data-view-panel="reports"><div class="empty-state"><span>▥</span><h1>Reports</h1><p>Daily and weekly operations reporting.</p><b>Module planned</b></div></section><section class="view" data-view-panel="settings"><div class="page-head"><div><p class="eyebrow">Settings</p><h1>Operations Hub Settings</h1></div></div><div class="settings-grid"><article class="panel"><h2>Signed-in account</h2><p id="accountEmail">Loading…</p><button id="settingsLogout" class="secondary-btn">Sign Out</button></article><article class="panel"><h2>Install on phone</h2><p>Use Add to Home Screen in Safari.</p><button id="settingsInstall" class="primary-btn">Install App</button></article></div></section></main></div><div id="toast" class="toast"></div><script src="/ops/dashboard-v2.js?v=40"></script><script src="/ops/clover-v2.js?v=30"></script><script src="/ops/staff.js?v=70"></script><script src="/ops/maintenance.js?v=10"></script><script src="/ops/app.js?v=60"></script></body></html>

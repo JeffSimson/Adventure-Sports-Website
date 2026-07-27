@@ -831,3 +831,212 @@ textarea:focus,input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(31
     justify-content:center
   }
 }
+
+
+/* =========================================================
+   FIELD & MAINTENANCE OPERATIONS
+   ========================================================= */
+.maintenance-view{padding-bottom:48px}
+.maintenance-hero{
+  display:flex;justify-content:space-between;gap:28px;align-items:flex-end;
+  padding:30px;border-radius:24px;color:#fff;
+  background:linear-gradient(135deg,#061a39 0%,#0d376e 62%,#1265aa 100%);
+  box-shadow:0 18px 44px rgba(4,25,58,.18);margin-bottom:20px
+}
+.maintenance-hero h1{margin:5px 0 8px;font-size:clamp(28px,3.2vw,42px);letter-spacing:-.035em}
+.maintenance-hero p{max-width:700px;margin:0;color:rgba(255,255,255,.78)}
+.maintenance-hero .eyebrow{color:#79c7ff}
+.maintenance-hero-actions{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;justify-content:flex-end}
+.maintenance-date-control{display:grid;gap:5px;font-size:12px;font-weight:750;color:rgba(255,255,255,.72)}
+.maintenance-date-control input{
+  min-height:42px;border:1px solid rgba(255,255,255,.25);border-radius:12px;
+  background:rgba(255,255,255,.12);color:#fff;padding:0 12px;font:inherit;color-scheme:dark
+}
+.maintenance-sync-state{
+  min-height:42px;display:flex;align-items:center;gap:9px;padding:0 14px;
+  border:1px solid rgba(255,255,255,.22);border-radius:12px;background:rgba(255,255,255,.1);
+  font-size:13px;font-weight:750;white-space:nowrap
+}
+.maintenance-sync-dot{width:10px;height:10px;border-radius:50%;background:#64dda4;box-shadow:0 0 0 4px rgba(100,221,164,.16)}
+.maintenance-sync-dot.syncing{background:#75b8ff;animation:staffPulse 1.1s ease-in-out infinite}
+.maintenance-sync-dot.error{background:#ff7373}
+.maintenance-kpi-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-bottom:22px}
+.maintenance-kpi{
+  min-height:136px;background:#fff;border:1px solid #e4ebf4;border-radius:18px;padding:17px;
+  display:flex;flex-direction:column;box-shadow:0 8px 24px rgba(8,35,72,.055)
+}
+.maintenance-kpi>span{
+  width:36px;height:36px;border-radius:11px;display:grid;place-items:center;
+  background:#edf4fb;color:#15548d;font-weight:900;margin-bottom:14px
+}
+.maintenance-kpi small{font-size:12px;color:#718096;font-weight:750}
+.maintenance-kpi strong{font-size:27px;line-height:1.1;margin:4px 0;color:#10253e}
+.maintenance-kpi em{font-size:12px;color:#8492a6;font-style:normal;margin-top:auto}
+.maintenance-kpi.good>span{background:#e6f8ef;color:#11854f}
+.maintenance-kpi.attention>span{background:#fff5d9;color:#a96600}
+.maintenance-kpi.urgent>span{background:#ffeded;color:#c83232}
+.maintenance-kpi.readiness{background:#0c3262;color:#fff;border-color:#0c3262}
+.maintenance-kpi.readiness small,.maintenance-kpi.readiness strong{color:#fff}
+.maintenance-kpi.readiness em{color:rgba(255,255,255,.72)}
+.maintenance-kpi.readiness>span{background:rgba(255,255,255,.14);color:#fff}
+.maintenance-kpi.readiness.not-ready{background:#8f2525;border-color:#8f2525}
+.maintenance-tabs{
+  display:flex;gap:7px;overflow:auto;padding:5px;background:#e9eff6;border-radius:15px;margin-bottom:20px;
+  scrollbar-width:none
+}
+.maintenance-tabs::-webkit-scrollbar{display:none}
+.maintenance-tab{
+  border:0;background:transparent;color:#56667b;border-radius:11px;padding:11px 17px;
+  font:inherit;font-size:13px;font-weight:800;white-space:nowrap;cursor:pointer
+}
+.maintenance-tab.active{background:#fff;color:#0d3a6b;box-shadow:0 4px 12px rgba(8,35,72,.08)}
+.maintenance-tab-panel{display:none}
+.maintenance-tab-panel.active{display:block}
+.maintenance-section-head{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin:2px 0 17px
+}
+.maintenance-section-head h2{font-size:24px;margin:2px 0 4px;color:#122a45}
+.maintenance-section-head p{margin:0;color:#77869a}
+.maintenance-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;font-weight:750;color:#65758a}
+.maintenance-legend span{display:flex;align-items:center;gap:6px}
+.maintenance-legend i{width:9px;height:9px;border-radius:50%;background:#49b879}
+.maintenance-legend i.attention{background:#e4a62d}.maintenance-legend i.urgent{background:#dc4e4e}
+.maintenance-field-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}
+.maintenance-field-card{
+  border:1px solid #e0e8f1;background:#fff;border-radius:20px;padding:17px;text-align:left;
+  color:#172b44;cursor:pointer;box-shadow:0 8px 24px rgba(9,35,69,.055);
+  transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease
+}
+.maintenance-field-card:hover{transform:translateY(-2px);box-shadow:0 13px 30px rgba(9,35,69,.1)}
+.maintenance-field-card.good{border-top:5px solid #35ae72}
+.maintenance-field-card.attention{border-top:5px solid #e5a52c}
+.maintenance-field-card.urgent{border-top:5px solid #d74b4b}
+.maintenance-field-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.maintenance-field-name{font-size:25px;font-weight:900;letter-spacing:-.03em}
+.maintenance-status-badge{
+  display:inline-flex;border-radius:999px;padding:6px 9px;background:#e8f7ef;color:#147a4b;
+  font-size:10px;font-weight:850;text-transform:uppercase;letter-spacing:.035em
+}
+.maintenance-status-badge.attention,.maintenance-status-badge.replace-soon{background:#fff4d6;color:#986000}
+.maintenance-status-badge.urgent,.maintenance-status-badge.replace-now{background:#ffe9e9;color:#b92e2e}
+.maintenance-field-diamond{height:106px;position:relative;display:grid;place-items:center;margin:8px 0}
+.maintenance-field-diamond i{
+  width:69px;height:69px;display:block;transform:rotate(45deg);
+  border:2px solid #bdd1e4;border-radius:8px;background:#eff6fb
+}
+.maintenance-field-diamond b{position:absolute;font-size:18px;color:#174b78}
+.maintenance-field-details{display:grid;grid-template-columns:1fr 1fr;gap:10px;border-top:1px solid #edf1f5;padding-top:12px}
+.maintenance-field-details small{display:block;font-size:10px;text-transform:uppercase;font-weight:750;color:#8795a7}
+.maintenance-field-details strong{font-size:13px;color:#243b55}
+.maintenance-field-flags{display:flex;gap:5px;flex-wrap:wrap;margin-top:12px;min-height:24px}
+.maintenance-field-flags span{font-size:10px;font-weight:800;padding:4px 7px;border-radius:7px;background:#fff1d7;color:#8b5700}
+.maintenance-field-flags span.clear{background:#eef6f2;color:#397156}
+.maintenance-field-note{font-size:12px;color:#66768b;margin:10px 0 0;padding-top:10px;border-top:1px solid #edf1f5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.maintenance-two-column{display:grid;grid-template-columns:1fr 1fr;gap:17px}
+.maintenance-checklist-panel{padding:20px}
+.maintenance-checklist{display:grid;gap:8px}
+.maintenance-task{
+  display:flex;align-items:center;gap:12px;border:1px solid #e3eaf2;border-radius:13px;padding:12px;
+  cursor:pointer;transition:background .15s,border-color .15s
+}
+.maintenance-task:hover{border-color:#b9d0e6}
+.maintenance-task input{position:absolute;opacity:0;pointer-events:none}
+.maintenance-task-check{
+  width:28px;height:28px;border:2px solid #cbd7e3;border-radius:8px;display:grid;place-items:center;
+  color:transparent;font-weight:900;flex:0 0 auto
+}
+.maintenance-task b{display:block;font-size:13px;color:#253b54}
+.maintenance-task small{display:block;font-size:11px;color:#8a97a7;margin-top:2px}
+.maintenance-task.completed{background:#eef9f3;border-color:#bce4ce}
+.maintenance-task.completed .maintenance-task-check{background:#29a568;border-color:#29a568;color:#fff}
+.maintenance-task.completed b{text-decoration:line-through;color:#537060}
+.maintenance-filter-row{display:flex;justify-content:space-between;gap:12px;margin-bottom:16px}
+.maintenance-filter-row .staff-search{max-width:480px;flex:1}
+.maintenance-filter-row select{border:1px solid #dce5ef;border-radius:12px;background:#fff;padding:0 13px;min-height:42px;font:inherit}
+.maintenance-issue-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.maintenance-issue-card{background:#fff;border:1px solid #e2e9f1;border-left:5px solid #e4a52c;border-radius:17px;padding:17px;box-shadow:0 7px 20px rgba(8,35,72,.05)}
+.maintenance-issue-card.priority-high{border-left-color:#d84646}.maintenance-issue-card.priority-low{border-left-color:#4f91c9}
+.maintenance-issue-card.resolved{opacity:.68;border-left-color:#54ad7b}
+.maintenance-issue-head{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.maintenance-priority{font-size:9px;font-weight:900;letter-spacing:.06em;background:#fff0d4;color:#8c5700;padding:5px 7px;border-radius:6px}
+.priority-high .maintenance-priority{background:#ffe8e8;color:#af2c2c}.priority-low .maintenance-priority{background:#e9f3fb;color:#246391}
+.maintenance-issue-location{font-size:11px;font-weight:800;margin-left:7px;color:#65758a}
+.maintenance-issue-status{font-size:10px;font-weight:800;color:#688095}
+.maintenance-issue-card h3{margin:14px 0 6px;font-size:17px;color:#19314c}
+.maintenance-issue-card p{font-size:13px;line-height:1.5;color:#64748a;min-height:40px}
+.maintenance-issue-meta{display:grid;gap:3px;font-size:10px;color:#8a98a8;border-top:1px solid #edf1f5;padding-top:11px}
+.maintenance-card-actions{display:flex;gap:8px;margin-top:13px}
+.maintenance-equipment-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.maintenance-equipment-card{background:#fff;border:1px solid #e1e9f1;border-top:5px solid #37a96e;border-radius:18px;padding:18px;box-shadow:0 8px 24px rgba(8,35,72,.055)}
+.maintenance-equipment-card.attention{border-top-color:#e3a32b}.maintenance-equipment-card.urgent{border-top-color:#d94b4b}
+.maintenance-equipment-icon{width:42px;height:42px;border-radius:12px;background:#e9f2fa;display:grid;place-items:center;color:#15548d;font-size:20px}
+.maintenance-equipment-title{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin:13px 0}
+.maintenance-equipment-title h3{margin:0;color:#16314e;font-size:17px}.maintenance-equipment-title p{margin:3px 0 0;color:#7c8a9c;font-size:12px}
+.maintenance-equipment-card dl{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:0}
+.maintenance-equipment-card dl div{background:#f5f8fb;border-radius:10px;padding:9px;min-width:0}
+.maintenance-equipment-card dt{font-size:9px;text-transform:uppercase;color:#8996a7;font-weight:800}.maintenance-equipment-card dd{font-size:11px;font-weight:800;color:#334b65;margin:3px 0 0;overflow-wrap:anywhere}
+.maintenance-equipment-notes{font-size:12px;color:#6f7d8e;min-height:36px;border-top:1px solid #edf1f5;padding-top:11px}
+.maintenance-equipment-card>.secondary-btn{width:100%}
+.maintenance-history{display:grid;gap:9px;max-width:900px}
+.maintenance-history-row{display:flex;gap:13px;align-items:flex-start;background:#fff;border:1px solid #e3eaf2;border-radius:14px;padding:13px}
+.maintenance-history-icon{width:36px;height:36px;border-radius:10px;background:#eaf3fb;color:#15538c;display:grid;place-items:center;font-weight:900;flex:0 0 auto}
+.maintenance-history-icon.issue{background:#ffeded;color:#c33838}.maintenance-history-icon.equipment{background:#fff4dc;color:#9b6300}.maintenance-history-icon.checklist{background:#e8f8ef;color:#188052}
+.maintenance-history-row h3{font-size:13px;margin:0;color:#273d57}.maintenance-history-row p{font-size:12px;margin:3px 0;color:#65768a}.maintenance-history-row small{font-size:10px;color:#94a0af}
+.maintenance-modal[hidden]{display:none}
+.maintenance-modal{position:fixed;inset:0;z-index:500;display:grid;place-items:center;padding:18px}
+.maintenance-modal-backdrop{position:absolute;inset:0;background:rgba(3,17,38,.68);backdrop-filter:blur(4px)}
+.maintenance-modal-card{
+  position:relative;z-index:1;background:#fff;border-radius:22px;width:min(900px,100%);max-height:min(90vh,850px);
+  display:flex;flex-direction:column;box-shadow:0 28px 80px rgba(0,0,0,.3);overflow:hidden
+}
+.maintenance-form-modal-card{width:min(680px,100%)}
+.maintenance-modal-header{display:flex;justify-content:space-between;gap:20px;padding:22px 24px;border-bottom:1px solid #e5ebf2}
+.maintenance-modal-header h2{margin:3px 0;font-size:25px;color:#142f4d}.maintenance-modal-header p{margin:0;color:#7b899b}
+.maintenance-modal-close{width:38px;height:38px;border:0;background:#eef3f8;border-radius:11px;font-size:25px;cursor:pointer;color:#476078}
+.maintenance-modal-body{padding:22px 24px;overflow:auto}
+.maintenance-modal-footer{display:flex;justify-content:flex-end;gap:10px;padding:16px 24px;border-top:1px solid #e5ebf2;background:#f8fafc}
+body.maintenance-modal-open{overflow:hidden}
+.field-inspection-status{display:grid;grid-template-columns:220px 1fr;gap:14px;margin-bottom:18px}
+.field-inspection-status label,.maintenance-form-grid label{display:grid;gap:6px;font-size:12px;font-weight:800;color:#4d6076}
+.field-inspection-status select,.field-inspection-status textarea,.maintenance-form-grid input,.maintenance-form-grid select,.maintenance-form-grid textarea,.field-condition-row select{
+  border:1px solid #d8e2ec;border-radius:11px;padding:10px 11px;font:inherit;background:#fff;color:#203850;width:100%;box-sizing:border-box
+}
+.field-inspection-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.field-condition-row{display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid #e3eaf2;border-radius:12px;padding:10px 12px;font-size:13px;font-weight:750;color:#344c66}
+.field-condition-row select{width:175px;padding:8px}
+.field-needs-block{margin-top:20px;border-top:1px solid #e6ecf2;padding-top:17px}
+.field-needs-block h3{font-size:15px;color:#263f5b;margin:0 0 12px}
+.field-needs-grid,.field-close-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.field-close-grid{grid-template-columns:repeat(4,1fr)}
+.field-needs-grid .form-check,.field-close-grid .form-check{border:1px solid #e0e8f0;border-radius:11px;padding:10px;background:#f8fafc}
+.maintenance-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.maintenance-form-grid .full{grid-column:1/-1}
+
+@media(max-width:1180px){
+  .maintenance-kpi-grid{grid-template-columns:repeat(3,1fr)}
+  .maintenance-field-grid{grid-template-columns:repeat(2,1fr)}
+  .maintenance-issue-list,.maintenance-equipment-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:760px){
+  .maintenance-hero{padding:22px;align-items:flex-start;flex-direction:column}
+  .maintenance-hero-actions{width:100%;justify-content:flex-start}
+  .maintenance-date-control{width:100%}.maintenance-date-control input{width:100%;box-sizing:border-box}
+  .maintenance-sync-state{width:100%;justify-content:center}
+  .maintenance-kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .maintenance-field-grid,.maintenance-two-column,.maintenance-issue-list,.maintenance-equipment-grid{grid-template-columns:1fr}
+  .maintenance-section-head{align-items:flex-start;flex-direction:column}
+  .maintenance-filter-row{flex-direction:column}.maintenance-filter-row .staff-search{max-width:none}
+  .field-inspection-status,.field-inspection-grid{grid-template-columns:1fr}
+  .field-needs-grid,.field-close-grid{grid-template-columns:repeat(2,1fr)}
+  .maintenance-form-grid{grid-template-columns:1fr}.maintenance-form-grid .full{grid-column:auto}
+  .maintenance-modal{padding:0;align-items:end}
+  .maintenance-modal-card{max-height:94vh;border-radius:20px 20px 0 0}
+  .maintenance-modal-header,.maintenance-modal-body,.maintenance-modal-footer{padding-left:17px;padding-right:17px}
+}
+@media(max-width:430px){
+  .maintenance-kpi-grid{grid-template-columns:1fr 1fr}
+  .maintenance-kpi{min-height:125px;padding:14px}.maintenance-kpi strong{font-size:23px}
+  .maintenance-field-grid{gap:11px}
+  .field-needs-grid,.field-close-grid{grid-template-columns:1fr}
+  .field-condition-row{align-items:flex-start;flex-direction:column}.field-condition-row select{width:100%}
+}
