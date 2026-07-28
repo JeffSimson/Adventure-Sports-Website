@@ -1,758 +1,137 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Adventure Sports Operations Hub</title><meta name="theme-color" content="#071c3b"><link rel="manifest" href="/ops/manifest.webmanifest"><link rel="icon" href="/uploads/branding/favicon.ico"><link rel="stylesheet" href="/ops/styles.css?v=713"></head><body>
-<div id="loginGate" class="login-gate" hidden><div class="login-card"><img src="/uploads/branding/adventure-logo.png" alt="Adventure Sports"><p class="eyebrow">Secure Management Portal</p><h1>Adventure Sports Operations Hub</h1><p>Sign in to manage the website and daily facility operations.</p><form id="loginForm" class="login-form"><label>Email address</label><input id="loginEmail" type="email" autocomplete="username" required><label>Password</label><input id="loginPassword" type="password" autocomplete="current-password" required><button id="loginButton" class="primary-btn">Sign In</button></form><p id="loginStatus" class="login-status">Enter the email and password used for the website admin.</p><a href="/admin/" class="secondary-btn login-fallback">Use Full Website Editor</a><a href="/" class="text-link">Return to public website</a></div></div>
-<div id="app" class="app-shell" hidden><aside class="sidebar" id="sidebar"><div class="brand-block"><img src="/uploads/branding/adventure-logo.png"><div><strong>Adventure Sports</strong><span>Operations Hub <b class="v71-badge">V7.1</b></span></div></div><nav class="main-nav">
-<button class="nav-item active" data-view="dashboard"><span>⌂</span>Operations Center</button>
-<button class="nav-item" data-view="website"><span>◈</span>Website</button>
-<button class="nav-item" data-view="clover"><span>$</span>Clover</button>
-<button class="nav-item" data-view="staff"><span>👥</span>Staff</button>
-<button class="nav-item" data-view="games"><span>⚾</span>Games</button>
-<button class="nav-item" data-view="maintenance"><span>◇</span>Fields & Maintenance</button>
-<button class="nav-item" data-view="weather"><span>☁</span>Weather Center</button>
-<button class="nav-item" data-view="reports"><span>▥</span>Reports</button>
-<button class="nav-item" data-view="kitchen"><span>🍔</span>Kitchen</button>
-<button class="nav-item" data-view="notifications"><span>🔔</span>Notifications</button>
-<button class="nav-item" data-view="users"><span>♙</span>Team Management</button>
-<button class="nav-item" data-view="settings"><span>☰</span>Settings</button>
-</nav><div class="sidebar-role-card"><span class="avatar">A</span><div><strong id="sidebarUserName">Administrator</strong><small id="sidebarRoleName">Loading role…</small></div></div><div class="sidebar-footer"><a href="/" target="_blank">View Public Website ↗</a><button id="logoutButton">Sign Out</button></div></aside>
-<main class="main-area"><header class="mobile-header"><button id="menuButton" class="icon-button">☰</button><div><strong>Adventure Sports</strong><span>Operations Hub</span></div><button class="avatar">A</button></header>
-<section class="view active" data-view-panel="dashboard">
-  <div class="dashboard-hero">
-    <div class="dashboard-hero-copy">
-      <p class="eyebrow dashboard-eyebrow">Adventure Sports Command Center</p>
-      <h1><span id="greeting">Good Afternoon</span>, <span id="userName">Administrator</span></h1>
-      <p>Live facility controls, Clover performance and operational alerts in one place.</p>
-      <div class="hero-actions">
-        <button class="primary-btn hero-primary" data-go="website">Update Facility</button>
-        <button class="hero-secondary" data-go="clover">Open Clover</button>
-        <a href="/" target="_blank" class="hero-link">View Public Website ↗</a>
-      </div>
-    </div>
-
-    <div class="hero-status-card">
-      <div class="hero-status-top">
-        <span id="dashboardLiveDot" class="live-dot"></span>
-        <span>Live Facility Status</span>
-      </div>
-      <strong id="facilityStatus">Loading…</strong>
-      <p id="dashboardAnnouncement">Loading current announcement…</p>
-      <button class="small-btn" data-go="website">Edit status and announcement</button>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Adventure Sports Operations Hub</title>
+  <meta name="theme-color" content="#071c3b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Adventure Ops">
+  <link rel="manifest" href="/ops/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/uploads/branding/apple-touch-icon.png">
+  <link rel="icon" href="/uploads/branding/favicon.ico">
+  <link rel="stylesheet" href="/ops/styles.css?v=2">
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body>
+  <div id="loginGate" class="login-gate" hidden>
+    <div class="login-card">
+      <img src="/uploads/branding/adventure-logo.png" alt="Adventure Sports">
+      <p class="eyebrow">Secure Management Portal</p>
+      <h1>Adventure Sports Operations Hub</h1>
+      <p>Sign in to manage the website and access facility operations.</p>
+      <button id="loginButton" class="primary-btn">Sign In</button>
+      <a href="/" class="text-link">Return to public website</a>
     </div>
   </div>
 
-  <div class="dashboard-primary-grid">
-    <article class="command-metric command-metric-main">
-      <div class="command-metric-head">
-        <span class="command-icon">$</span>
-        <small>Net Sales Today</small>
+  <div id="app" class="app-shell" hidden>
+    <aside class="sidebar" id="sidebar">
+      <div class="brand-block">
+        <img src="/uploads/branding/adventure-logo.png" alt="Adventure Sports">
+        <div><strong>Adventure Sports</strong><span>Operations Hub</span></div>
       </div>
-      <strong id="dashboardSales">Connecting…</strong>
-      <em id="dashboardSalesNote">Loading Clover</em>
-      <div class="metric-progress"><span id="dashboardSalesProgress"></span></div>
-    </article>
-
-    <article class="command-metric">
-      <div class="command-metric-head">
-        <span class="command-icon gate">🎟</span>
-        <small>Front Gate</small>
+      <nav class="main-nav" aria-label="Main navigation">
+        <button class="nav-item active" data-view="dashboard"><span>⌂</span>Dashboard</button>
+        <button class="nav-item" data-view="website"><span>◈</span>Website</button>
+        <button class="nav-item" data-view="clover"><span>$</span>Clover</button>
+        <button class="nav-item" data-view="staff"><span>👥</span>Staff</button>
+        <button class="nav-item" data-view="games"><span>⚾</span>Games</button>
+        <button class="nav-item" data-view="fields"><span>◇</span>Fields</button>
+        <button class="nav-item" data-view="maintenance"><span>⚙</span>Maintenance</button>
+        <button class="nav-item" data-view="reports"><span>▥</span>Reports</button>
+        <button class="nav-item" data-view="settings"><span>☰</span>Settings</button>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="/" target="_blank" rel="noopener">View Public Website ↗</a>
+        <button id="logoutButton">Sign Out</button>
       </div>
-      <strong id="dashboardFrontGate">$0.00</strong>
-      <em id="dashboardFrontGateShare">0% of net sales</em>
-    </article>
-
-    <article class="command-metric">
-      <div class="command-metric-head">
-        <span class="command-icon kitchen">🍔</span>
-        <small>Kitchen</small>
-      </div>
-      <strong id="dashboardKitchen">$0.00</strong>
-      <em id="dashboardKitchenShare">0% of net sales</em>
-    </article>
-
-    <article class="command-metric">
-      <div class="command-metric-head">
-        <span class="command-icon">#</span>
-        <small>Transactions</small>
-      </div>
-      <strong id="dashboardTransactions">—</strong>
-      <em id="dashboardTicket">Average ticket —</em>
-    </article>
-  </div>
-
-  <div class="dashboard-secondary-grid">
-    <article class="panel dashboard-chart-card">
-      <div class="panel-head">
-        <div>
-          <p class="eyebrow">Today at a glance</p>
-          <h2>Hourly Sales Pace</h2>
-        </div>
-        <span id="dashboardUpdated" class="data-time">Waiting for Clover</span>
-      </div>
-      <div id="dashboardMiniChart" class="dashboard-mini-chart">
-        <div class="chart-empty">Connecting to Clover…</div>
-      </div>
-    </article>
-
-    <article class="panel dashboard-health-card">
-      <div class="panel-head">
-        <div>
-          <p class="eyebrow">System health</p>
-          <h2>Operations Status</h2>
-        </div>
-        <span class="health-pulse"></span>
-      </div>
-
-      <div class="health-list">
-        <button class="health-row" data-go="website">
-          <span class="health-icon ready">✓</span>
-          <div><b>Website Controls</b><small>Facility status and announcement</small></div>
-          <strong>Ready</strong>
-        </button>
-
-        <button class="health-row" data-go="clover">
-          <span id="dashboardCloverHealthIcon" class="health-icon loading">↻</span>
-          <div><b>Clover POS</b><small id="dashboardCloverHealthText">Connecting securely</small></div>
-          <strong id="dashboardCloverHealth">Loading</strong>
-        </button>
-
-        <button class="health-row" data-go="clover">
-          <span id="dashboardInventoryIcon" class="health-icon ready">✓</span>
-          <div><b>Inventory</b><small id="dashboardInventoryText">Checking tracked items</small></div>
-          <strong id="dashboardInventoryCount">—</strong>
-        </button>
-      </div>
-    </article>
-  </div>
-
-  <div class="dashboard-bottom-grid">
-    <article class="panel">
-      <div class="panel-head">
-        <div>
-          <p class="eyebrow">Latest Clover activity</p>
-          <h2>Recent Orders</h2>
-        </div>
-        <button class="secondary-btn compact-btn" data-go="clover">View All</button>
-      </div>
-      <div id="dashboardRecentOrders" class="dashboard-order-list">
-        <div class="dashboard-empty">Waiting for Clover data…</div>
-      </div>
-    </article>
-
-    <article class="panel">
-      <div class="panel-head">
-        <div>
-          <p class="eyebrow">Fast access</p>
-          <h2>Quick Actions</h2>
-        </div>
-      </div>
-      <div class="dashboard-action-grid">
-        <button data-go="website"><span>◈</span><div><b>Website</b><small>Update public status</small></div></button>
-        <button data-go="clover"><span>$</span><div><b>Clover</b><small>Full sales center</small></div></button>
-        <button data-go="staff"><span>👥</span><div><b>Staff</b><small>Live daily schedule</small></div></button>
-        <button data-go="maintenance"><span>◇</span><div><b>Maintenance</b><small>Fields, issues & equipment</small></div></button><button data-go="notifications"><span>🔔</span><div><b>Notify Staff</b><small>Role-based alerts</small></div></button>
-      </div>
-    </article>
-  </div>
-</section>
-<section class="view" data-view-panel="website"><div class="page-head"><div><p class="eyebrow">Website Manager</p><h1>Website Control Center</h1><p>Control exactly what visitors see on the public website.</p></div><div class="head-actions"><a class="secondary-btn" href="/admin/">Website Editor</a><a class="secondary-btn" href="/" target="_blank">View Live Site ↗</a></div></div><div id="publishNotice" class="publish-notice" hidden></div><div class="editor-layout"><form id="quickControlsForm" class="panel control-panel"><div class="panel-head"><div><p class="eyebrow">Public website controls</p><h2>Facility Update</h2></div><span id="editorState" class="connection-badge loading">Loading</span></div><fieldset class="status-fieldset"><legend>Facility Status</legend><div class="status-options"><label class="status-option open"><input type="radio" name="fieldStatus" value="OPEN"><span><b>Open</b><small>Operating normally</small></span></label><label class="status-option delayed"><input type="radio" name="fieldStatus" value="DELAYED"><span><b>Delayed</b><small>Games or opening delayed</small></span></label><label class="status-option closed"><input type="radio" name="fieldStatus" value="CLOSED"><span><b>Closed</b><small>Facility is closed</small></span></label><label class="status-option check"><input type="radio" name="fieldStatus" value="CHECK SCHEDULE"><span><b>Check Schedule</b><small>Review schedule</small></span></label></div></fieldset><div class="form-field"><div class="label-row"><label>Homepage Announcement</label><span id="announcementCount">0 / 240</span></div><textarea id="announcementInput" maxlength="240" rows="5"></textarea></div><div class="change-summary"><span>Current live status</span><strong id="currentLiveStatus">Loading…</strong><span>Unsaved changes</span><strong id="changeState">None</strong></div><div class="form-actions"><button id="resetControlsButton" class="secondary-btn" type="button">Reset Changes</button><button id="publishControlsButton" class="primary-btn">Publish Changes</button></div></form><aside class="preview-column"><article class="panel"><div class="panel-head"><div><p class="eyebrow">Live preview</p><h2>What visitors will see</h2></div></div><div id="sitePreview" class="site-preview"><div class="preview-status-row"><span id="previewDot" class="preview-dot"></span><strong id="previewStatus">OPEN</strong></div><p id="previewAnnouncement">Loading announcement…</p></div></article><article class="panel activity-panel"><p class="eyebrow">Publishing information</p><h2>Current Website File</h2><dl><div><dt>File</dt><dd>content/site.json</dd></div><div><dt>Signed in as</dt><dd id="publisherEmail">Loading…</dd></div><div><dt>Last loaded</dt><dd id="lastLoadedTime">—</dd></div></dl></article></aside></div></section>
-<section class="view" data-view-panel="clover">
-<div class="page-head"><div><p class="eyebrow">Clover POS</p><h1>Clover Sales Center</h1><p id="cloverSubtitle">Secure live sales, revenue breakdowns and inventory.</p></div><div class="head-actions"><span id="cloverConnection" class="connection-badge loading">Connecting</span><button id="refreshClover" class="secondary-btn">Refresh</button></div></div>
-<div class="clover-toolbar panel"><div class="range-tabs"><button class="range-tab active" data-clover-range="today">Today</button><button class="range-tab" data-clover-range="yesterday">Yesterday</button><button class="range-tab" data-clover-range="week">This Week</button><button class="range-tab" data-clover-range="month">This Month</button><button class="range-tab" data-clover-range="custom">Custom</button></div><form id="cloverCustomRange" class="custom-range" hidden><label><span>Start</span><input id="cloverStartDate" type="date" required></label><label><span>End</span><input id="cloverEndDate" type="date" required></label><button class="primary-btn" type="submit">Apply</button></form><div class="clover-range-summary"><small>Viewing</small><strong id="cloverRangeLabel">Today</strong></div></div>
-<div id="cloverNotice" class="publish-notice" hidden></div>
-<div class="clover-kpi-grid"><article class="metric-card featured"><span class="metric-icon">$</span><small>Total Net Sales</small><strong id="cloverNetSales">$0.00</strong><em id="cloverRefunds">Refunds $0.00</em></article><article class="metric-card gate-card"><span class="metric-icon">🎟</span><small>Front Gate Sales</small><strong id="cloverFrontGateSales">$0.00</strong><em id="cloverFrontGatePercent">0% of net sales</em></article><article class="metric-card kitchen-card"><span class="metric-icon">🍔</span><small>Kitchen Sales</small><strong id="cloverKitchenSales">$0.00</strong><em id="cloverKitchenPercent">0% of net sales</em></article><article class="metric-card"><span class="metric-icon">#</span><small>Transactions</small><strong id="cloverTransactions">0</strong><em id="cloverOrders">0 Clover orders</em></article><article class="metric-card"><span class="metric-icon">Ø</span><small>Average Ticket</small><strong id="cloverAverageTicket">$0.00</strong><em>Gross sales ÷ transactions</em></article><article class="metric-card"><span class="metric-icon">↗</span><small>Gross Sales</small><strong id="cloverGrossSales">$0.00</strong><em id="cloverMerchant">Connecting…</em></article></div>
-<div class="clover-analytics-grid"><article class="panel"><div class="panel-head"><div><p class="eyebrow">Revenue trend</p><h2 id="cloverChartTitle">Sales by Hour</h2></div><span id="cloverUpdated" class="data-time">Waiting</span></div><div id="cloverSalesChart" class="bar-chart"><div class="chart-empty">Connecting to Clover…</div></div></article><article class="panel"><div class="panel-head"><div><p class="eyebrow">Sales mix</p><h2>Front Gate vs. Kitchen</h2></div></div><div class="sales-split-visual"><div class="split-ring" id="cloverSplitRing"><div><strong id="cloverSplitTotal">$0</strong><small>Net sales</small></div></div><div class="split-legend"><div><span class="legend-dot gate"></span><div><b>Front Gate</b><small id="cloverGateLegend">$0.00</small></div></div><div><span class="legend-dot kitchen"></span><div><b>Kitchen</b><small id="cloverKitchenLegend">$0.00</small></div></div></div></div></article></div>
-<div class="clover-grid"><article class="panel"><div class="panel-head"><div><p class="eyebrow">Live activity</p><h2>Recent Orders</h2></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Time</th><th>Order</th><th>Employee</th><th>Total</th></tr></thead><tbody id="recentOrdersBody"><tr><td colspan="4" class="empty-row">Connecting to Clover…</td></tr></tbody></table></div></article><article class="panel"><div class="panel-head"><div><p class="eyebrow">Performance</p><h2>Top Selling Items</h2></div></div><ol id="topItemsList" class="ranking-list"><li class="empty-list">Waiting for Clover data…</li></ol></article></div>
-<article class="panel"><div class="panel-head"><div><p class="eyebrow">Stock monitoring</p><h2>Low Inventory Alerts</h2></div><span class="progress-pill">20 or fewer</span></div><div id="inventoryAlerts" class="inventory-grid"><div class="inventory-empty">Checking inventory…</div></div></article></section>
-<section class="view staff-view" data-view-panel="staff">
-  <div class="staff-hero">
-    <div>
-      <p class="eyebrow">Staff Operations</p>
-      <h1>Daily Staff Command Center</h1>
-      <p>Live shift coverage built directly from the Base Schedule workbook.</p>
-    </div>
-    <div class="staff-hero-actions">
-      <label class="staff-date-control"><span>Schedule date</span><select id="staffDateSelect"></select></label>
-      <button id="staffTodayButton" class="secondary-btn">Today</button><button id="staffRefreshButton" class="secondary-btn">Refresh</button><div class="staff-live-state"><i id="staffLiveDot" class="staff-live-dot syncing"></i><span id="staffLiveText">Connecting…</span></div>
-    </div>
-  </div>
-
-  <div id="staffNotice" class="publish-notice" hidden></div>
-
-  <div class="staff-kpi-grid">
-    <article class="staff-kpi primary"><span class="staff-kpi-icon">👥</span><small>Scheduled</small><strong id="staffScheduledCount">0</strong><em id="staffScheduledNote">employees today</em></article>
-    <article class="staff-kpi live"><span class="staff-kpi-icon">●</span><small>Working Now</small><strong id="staffWorkingCount">0</strong><em id="staffWorkingNote">currently on shift</em></article>
-    <article class="staff-kpi"><span class="staff-kpi-icon">↗</span><small>Scheduled Later</small><strong id="staffLaterCount">0</strong><em>upcoming shifts</em></article>
-    <article class="staff-kpi"><span class="staff-kpi-icon">✓</span><small>Completed</small><strong id="staffCompletedCount">0</strong><em>finished shifts</em></article>
-    <article class="staff-kpi"><span class="staff-kpi-icon">⏱</span><small>Labor Hours</small><strong id="staffLaborHours">0</strong><em>total scheduled</em></article>
-    <article class="staff-kpi"><span class="staff-kpi-icon">🌙</span><small>Closing Staff</small><strong id="staffCloserCount">0</strong><em id="staffClosingTime">latest coverage</em></article>
-  </div>
-
-  <div class="staff-layout">
-    <section class="panel staff-main-panel">
-      <div class="panel-head staff-panel-head">
-        <div><p class="eyebrow">Selected day</p><h2 id="staffDayHeading">Daily Schedule</h2><p id="staffDaySummary">Loading shifts…</p></div>
-        <div class="staff-tools"><div class="staff-search"><span>⌕</span><input id="staffSearch" type="search" placeholder="Search employee or role"></div><select id="staffStatusFilter"><option value="all">All shifts</option><option value="working">Working now</option><option value="later">Scheduled later</option><option value="completed">Completed</option></select></div>
-      </div>
-      <div id="staffCoverageBar" class="staff-coverage-bar"></div>
-      <div id="staffShiftCards" class="staff-shift-cards"><div class="dashboard-empty">Loading Base Schedule…</div></div>
-    </section>
-
-    <aside class="staff-side-column">
-      <article class="panel staff-coverage-panel">
-        <div class="panel-head"><div><p class="eyebrow">Coverage</p><h2>Opening & Closing</h2></div></div>
-        <div class="coverage-summary"><div><span class="coverage-symbol morning">☀</span><div><small>First staff in</small><strong id="staffFirstIn">—</strong><p id="staffOpeners">No schedule loaded</p></div></div><div><span class="coverage-symbol night">☾</span><div><small>Last staff out</small><strong id="staffLastOut">—</strong><p id="staffClosers">No schedule loaded</p></div></div></div>
-      </article>
-
-      <article class="panel staff-timeline-panel">
-        <div class="panel-head"><div><p class="eyebrow">Day timeline</p><h2>Shift Starts</h2></div></div>
-        <div id="staffTimeline" class="staff-timeline"></div>
-      </article>
-
-      <article class="panel staff-source-panel">
-        <p class="eyebrow">Schedule source</p><h2>Base Schedule</h2><p>This page reads the live <b>Base Schedule</b> directly from Google Sheets and refreshes every 30 seconds.</p><dl><div><dt>Google Sheet tab</dt><dd id="staffSourceName">Base Schedule</dd></div><div><dt>Loaded dates</dt><dd id="staffLoadedDates">—</dd></div><div><dt>Last synced</dt><dd id="staffDataUpdated">—</dd></div></dl>
-      </article>
     </aside>
-  </div>
-</section><section class="view games-view" data-view-panel="games">
-  <div class="page-head games-page-head">
-    <div><p class="eyebrow">Cup Championship Week</p><h1>Games Command Center</h1><p id="gamesSelectedDay">July 28–August 3, 2026</p></div>
-    <div class="head-actions"><button id="gamesTodayButton" class="primary-btn" type="button">Jump to Today</button></div>
-  </div>
-  <div id="gamesSummary" class="games-summary-grid"></div><div id="gamesOpsAlert" class="games-ops-alert" hidden></div>
-  <div class="panel games-week-panel">
-    <div class="panel-head"><div><p class="eyebrow">Tournament matrix</p><h2>Weekly Game Schedule</h2></div><div id="gamesDayTabs" class="games-day-tabs"></div></div>
-    <div id="gamesMatrix" class="games-matrix-wrap"></div>
-  </div>
-  <div class="panel games-field-panel">
-    <div class="panel-head"><div><p class="eyebrow">Grounds setup</p><h2>Field Configuration</h2><p>Pitching distance, base distance, division, and required changes.</p></div></div>
-    <div id="gamesFieldCards" class="games-field-grid"></div>
-  </div>
-</section>
-<section class="view maintenance-view" data-view-panel="maintenance">
-  <div class="maintenance-hero">
-    <div>
-      <p class="eyebrow">Facility Operations</p>
-      <h1>Field & Maintenance Command Center</h1>
-      <p>Inspect every field, complete daily duties, report problems, and track equipment from one screen.</p>
-    </div>
-    <div class="maintenance-hero-actions">
-      <label class="maintenance-date-control"><span>Work date</span><input id="maintenanceDate" type="date"></label>
-      <button id="maintenanceToday" class="secondary-btn" type="button">Today</button>
-      <button id="maintenanceRefresh" class="secondary-btn" type="button">Refresh</button>
-      <div class="maintenance-sync-state"><i id="maintenanceSyncDot" class="maintenance-sync-dot ready"></i><span id="maintenanceSyncText">Saved on this device</span></div>
-    </div>
-  </div>
 
-  <div id="maintenanceNotice" class="publish-notice" hidden></div>
+    <main class="main-area">
+      <header class="mobile-header">
+        <button id="menuButton" class="icon-button" aria-label="Open menu">☰</button>
+        <div><strong>Adventure Sports</strong><span>Operations Hub</span></div>
+        <button id="profileButton" class="avatar">A</button>
+      </header>
 
-  <div class="maintenance-kpi-grid">
-    <article class="maintenance-kpi good"><span>✓</span><small>Fields Good</small><strong id="maintenanceGoodCount">8 / 8</strong><em>ready for play</em></article>
-    <article class="maintenance-kpi attention"><span>!</span><small>Needs Attention</small><strong id="maintenanceAttentionCount">0</strong><em>field items</em></article>
-    <article class="maintenance-kpi urgent"><span>⚠</span><small>Open Issues</small><strong id="maintenanceIssueCount">0</strong><em>not resolved</em></article>
-    <article class="maintenance-kpi"><span>⚙</span><small>Equipment Issues</small><strong id="maintenanceEquipmentCount">0</strong><em>need service</em></article>
-    <article class="maintenance-kpi"><span>☑</span><small>Completed Today</small><strong id="maintenanceCompletedCount">0</strong><em>checklist items</em></article>
-    <article class="maintenance-kpi readiness"><span>◆</span><small>Fields Ready</small><strong id="maintenanceReadyLabel">YES</strong><em id="maintenanceReadyNote">all fields operational</em></article>
-  </div>
-
-  <div class="maintenance-tabs" role="tablist" aria-label="Maintenance sections">
-    <button class="maintenance-tab active" data-maintenance-tab="fields" type="button">Field Status</button>
-    <button class="maintenance-tab" data-maintenance-tab="daily" type="button">Daily Checklist</button>
-    <button class="maintenance-tab" data-maintenance-tab="issues" type="button">Issues</button>
-    <button class="maintenance-tab" data-maintenance-tab="equipment" type="button">Equipment</button>
-    <button class="maintenance-tab" data-maintenance-tab="history" type="button">Activity</button>
-  </div>
-
-  <section class="maintenance-tab-panel active" data-maintenance-panel="fields">
-    <div class="maintenance-section-head">
-      <div><p class="eyebrow">Eight-field overview</p><h2>Field Readiness</h2><p>Tap a field to inspect pitching rubbers, bases, turf, rubber coverage, and closing duties.</p></div>
-      <div class="maintenance-legend"><span><i class="good"></i>Good</span><span><i class="attention"></i>Needs attention</span><span><i class="urgent"></i>Maintenance required</span></div>
-    </div>
-    <div id="maintenanceFieldGrid" class="maintenance-field-grid"></div>
-  </section>
-
-  <section class="maintenance-tab-panel" data-maintenance-panel="daily">
-    <div class="maintenance-two-column">
-      <article class="panel maintenance-checklist-panel">
-        <div class="panel-head"><div><p class="eyebrow">Facility opening</p><h2>Opening Checklist</h2></div><span id="openingProgress" class="progress-pill">0 / 8</span></div>
-        <div id="openingChecklist" class="maintenance-checklist"></div>
-      </article>
-      <article class="panel maintenance-checklist-panel">
-        <div class="panel-head"><div><p class="eyebrow">Facility closing</p><h2>Closing Checklist</h2></div><span id="closingProgress" class="progress-pill">0 / 10</span></div>
-        <div id="closingChecklist" class="maintenance-checklist"></div>
-      </article>
-    </div>
-  </section>
-
-  <section class="maintenance-tab-panel" data-maintenance-panel="issues">
-    <div class="maintenance-section-head">
-      <div><p class="eyebrow">Problem tracking</p><h2>Open Maintenance Issues</h2><p>Report a problem and keep it visible until someone resolves it.</p></div>
-      <button id="addMaintenanceIssue" class="primary-btn" type="button">+ Report Issue</button>
-    </div>
-    <div class="maintenance-filter-row">
-      <div class="staff-search"><span>⌕</span><input id="maintenanceIssueSearch" type="search" placeholder="Search field, equipment, or issue"></div>
-      <select id="maintenanceIssueFilter"><option value="open">Open issues</option><option value="all">All issues</option><option value="high">High priority</option><option value="resolved">Resolved</option></select>
-    </div>
-    <div id="maintenanceIssueList" class="maintenance-issue-list"></div>
-  </section>
-
-  <section class="maintenance-tab-panel" data-maintenance-panel="equipment">
-    <div class="maintenance-section-head">
-      <div><p class="eyebrow">Asset condition</p><h2>Equipment Tracker</h2><p>Update hours, fuel, service status, and repair notes.</p></div>
-      <button id="addEquipment" class="primary-btn" type="button">+ Add Equipment</button>
-    </div>
-    <div id="maintenanceEquipmentGrid" class="maintenance-equipment-grid"></div>
-  </section>
-
-  <section class="maintenance-tab-panel" data-maintenance-panel="history">
-    <div class="maintenance-section-head">
-      <div><p class="eyebrow">Recorded changes</p><h2>Maintenance Activity</h2><p>Recent field checks, completed tasks, issue updates, and equipment changes.</p></div>
-      <button id="clearMaintenanceHistory" class="secondary-btn" type="button">Clear History</button>
-    </div>
-    <div id="maintenanceHistory" class="maintenance-history"></div>
-  </section>
-</section>
-
-<div id="fieldMaintenanceModal" class="maintenance-modal" hidden>
-  <div class="maintenance-modal-backdrop" data-close-maintenance-modal></div>
-  <section class="maintenance-modal-card" role="dialog" aria-modal="true" aria-labelledby="fieldModalTitle">
-    <header class="maintenance-modal-header">
-      <div><p class="eyebrow">Field inspection</p><h2 id="fieldModalTitle">Field A1</h2><p id="fieldModalSubtitle">Update field condition and checklist items.</p></div>
-      <button class="maintenance-modal-close" data-close-maintenance-modal type="button" aria-label="Close">×</button>
-    </header>
-    <div id="fieldModalBody" class="maintenance-modal-body"></div>
-    <footer class="maintenance-modal-footer">
-      <button class="secondary-btn" data-close-maintenance-modal type="button">Cancel</button>
-      <button id="saveFieldInspection" class="primary-btn" type="button">Save Inspection</button>
-    </footer>
-  </section>
-</div>
-
-<div id="maintenanceFormModal" class="maintenance-modal" hidden>
-  <div class="maintenance-modal-backdrop" data-close-form-modal></div>
-  <section class="maintenance-modal-card maintenance-form-modal-card" role="dialog" aria-modal="true" aria-labelledby="maintenanceFormTitle">
-    <header class="maintenance-modal-header">
-      <div><p class="eyebrow" id="maintenanceFormEyebrow">Maintenance</p><h2 id="maintenanceFormTitle">Report Issue</h2></div>
-      <button class="maintenance-modal-close" data-close-form-modal type="button" aria-label="Close">×</button>
-    </header>
-    <form id="maintenanceDynamicForm" class="maintenance-modal-body"></form>
-    <footer class="maintenance-modal-footer">
-      <button class="secondary-btn" data-close-form-modal type="button">Cancel</button>
-      <button id="saveMaintenanceForm" class="primary-btn" type="button">Save</button>
-    </footer>
-  </section>
-</div>
-
-<section class="view weather-view" data-view-panel="weather">
-  <div class="weather-hero">
-    <div>
-      <p class="eyebrow">Jackson, New Jersey</p>
-      <h1>Weather Operations Center</h1>
-      <p>Live operating conditions, hourly rain timing, wind and heat safety, radar, and field-status controls.</p>
-    </div>
-    <div class="weather-hero-actions">
-      <button id="weatherRefresh" class="secondary-btn" type="button">Refresh Weather</button>
-      <div class="weather-live-state">
-        <i id="weatherLiveDot" class="weather-live-dot loading"></i>
-        <span id="weatherLiveText">Loading live conditions…</span>
-      </div>
-    </div>
-  </div>
-
-  <div id="weatherError" class="publish-notice" hidden></div>
-
-  <div class="weather-current-grid">
-    <article class="weather-current-main panel">
-      <div class="weather-current-heading">
-        <div>
-          <p class="eyebrow">Current conditions</p>
-          <h2 id="weatherCondition">Loading…</h2>
-          <p id="weatherUpdated">Waiting for weather data</p>
+      <section class="view active" data-view-panel="dashboard">
+        <div class="page-head">
+          <div><p class="eyebrow">Adventure Sports Control Center</p><h1><span id="greeting">Good Afternoon</span>, <span id="userName">Administrator</span> 👋</h1><p>Manage the website and run daily operations from one secure place.</p></div>
+          <div class="head-actions"><button id="installButton" class="secondary-btn" hidden>Install App</button><a href="/" target="_blank" class="secondary-btn">View Website ↗</a></div>
         </div>
-        <div id="weatherIcon" class="weather-icon">☁</div>
-      </div>
-      <div class="weather-temperature-row">
-        <strong id="weatherTemperature">--°</strong>
-        <div>
-          <span>Feels like <b id="weatherFeels">--°</b></span>
-          <span>Today's high <b id="weatherHigh">--°</b></span>
-          <span>Today's low <b id="weatherLow">--°</b></span>
+
+        <div class="status-banner">
+          <div><span class="live-dot"></span><div><small>Facility Status</small><strong id="facilityStatus">Loading…</strong></div></div>
+          <button class="small-btn" data-go="website">Update Status</button>
         </div>
-      </div>
-    </article>
 
-    <article class="weather-metric-card">
-      <span>☂</span><small>Rain Chance</small><strong id="weatherRainChance">--%</strong><em id="weatherRainAmount">Next hour</em>
-    </article>
-    <article class="weather-metric-card">
-      <span>↗</span><small>Wind</small><strong id="weatherWind">-- mph</strong><em id="weatherGust">Gusts -- mph</em>
-    </article>
-    <article class="weather-metric-card">
-      <span>◌</span><small>Humidity</small><strong id="weatherHumidity">--%</strong><em id="weatherDewPoint">Dew point --°</em>
-    </article>
-    <article class="weather-metric-card">
-      <span>☀</span><small>UV Index</small><strong id="weatherUv">--</strong><em id="weatherUvLabel">Loading</em>
-    </article>
-    <article class="weather-metric-card">
-      <span>◐</span><small>Daylight</small><strong id="weatherSunset">--</strong><em id="weatherSunrise">Sunrise --</em>
-    </article>
-  </div>
-
-  <div class="weather-safety-grid">
-    <article id="weatherPlayStatusCard" class="weather-safety-card safe">
-      <div class="weather-safety-icon">✓</div>
-      <div>
-        <p class="eyebrow">Weather play status</p>
-        <h2 id="weatherPlayStatus">Safe to Play</h2>
-        <p id="weatherPlayReason">No major weather risk identified in the current forecast.</p>
-      </div>
-    </article>
-
-    <article id="weatherHeatCard" class="weather-safety-card safe">
-      <div class="weather-safety-icon">☀</div>
-      <div>
-        <p class="eyebrow">Heat safety</p>
-        <h2 id="weatherHeatStatus">Normal Conditions</h2>
-        <p id="weatherHeatReason">Standard hydration breaks.</p>
-      </div>
-    </article>
-
-    <article id="weatherWindCard" class="weather-safety-card safe">
-      <div class="weather-safety-icon">≋</div>
-      <div>
-        <p class="eyebrow">Wind safety</p>
-        <h2 id="weatherWindStatus">Normal Wind</h2>
-        <p id="weatherWindReason">No special action required.</p>
-      </div>
-    </article>
-  </div>
-
-  <div class="weather-tabs" role="tablist" aria-label="Weather sections">
-    <button class="weather-tab active" data-weather-tab="hourly" type="button">Hourly Timeline</button>
-    <button class="weather-tab" data-weather-tab="radar" type="button">Live Radar</button>
-    <button class="weather-tab" data-weather-tab="forecast" type="button">7-Day Forecast</button>
-    <button class="weather-tab" data-weather-tab="lightning" type="button">Lightning Timer</button>
-    <button class="weather-tab" data-weather-tab="fieldstatus" type="button">Field Status</button>
-  </div>
-
-  <section class="weather-tab-panel active" data-weather-panel="hourly">
-    <div class="weather-section-head">
-      <div><p class="eyebrow">Next 24 hours</p><h2>Hourly Weather Timeline</h2><p>See exactly when rain, wind, and temperature changes are expected.</p></div>
-      <div class="weather-hourly-legend"><span>Rain probability</span><span>Forecast conditions</span></div>
-    </div>
-    <div id="weatherHourlyList" class="weather-hourly-list">
-      <div class="dashboard-empty">Loading hourly forecast…</div>
-    </div>
-  </section>
-
-  <section class="weather-tab-panel" data-weather-panel="radar">
-    <div class="weather-section-head">
-      <div><p class="eyebrow">Precipitation radar</p><h2>Live Weather Radar</h2><p>Recent radar imagery centered on Adventure Sports in Jackson.</p></div>
-      <div class="weather-radar-controls">
-        <button id="weatherRadarPlay" class="secondary-btn" type="button">▶ Animate</button>
-        <button id="weatherRadarLatest" class="secondary-btn" type="button">Latest Frame</button>
-      </div>
-    </div>
-    <div class="weather-radar-shell">
-      <div id="weatherRadarMap" class="weather-radar-map"></div>
-      <div class="weather-radar-status"><span id="weatherRadarTime">Loading radar…</span><span>Radar: RainViewer</span></div>
-    </div>
-  </section>
-
-  <section class="weather-tab-panel" data-weather-panel="forecast">
-    <div class="weather-section-head">
-      <div><p class="eyebrow">Planning outlook</p><h2>7-Day Forecast</h2><p>Daily high, low, rain chance, wind, and operating outlook.</p></div>
-    </div>
-    <div id="weatherDailyGrid" class="weather-daily-grid">
-      <div class="dashboard-empty">Loading forecast…</div>
-    </div>
-  </section>
-
-  <section class="weather-tab-panel" data-weather-panel="lightning">
-    <div class="weather-lightning-layout">
-      <article class="panel weather-lightning-panel">
-        <p class="eyebrow">Manual safety control</p>
-        <h2>30-Minute Lightning Countdown</h2>
-        <p class="weather-lightning-warning"><b>This is a manual timer, not a lightning detector.</b> Start or restart it whenever lightning is observed or reported under your facility's safety policy.</p>
-        <div id="lightningTimerDisplay" class="lightning-timer-display">30:00</div>
-        <div id="lightningTimerStatus" class="lightning-timer-status ready">Ready to start</div>
-        <div class="lightning-timer-actions">
-          <button id="lightningStart" class="danger-btn" type="button">Clear Fields & Start Timer</button>
-          <button id="lightningRestart" class="secondary-btn" type="button">Restart 30 Minutes</button>
-          <button id="lightningReset" class="secondary-btn" type="button">Reset</button>
+        <div class="metrics-grid">
+          <article class="metric-card"><span class="metric-icon">$</span><small>Sales Today</small><strong>Not connected</strong><em>Clover setup pending</em></article>
+          <article class="metric-card"><span class="metric-icon">⚾</span><small>Games Today</small><strong>Not connected</strong><em>Schedule connection pending</em></article>
+          <article class="metric-card"><span class="metric-icon">👥</span><small>Staff Today</small><strong>Not connected</strong><em>Google Sheet pending</em></article>
+          <article class="metric-card"><span class="metric-icon">◇</span><small>Fields Ready</small><strong>Not connected</strong><em>Condition sheet pending</em></article>
         </div>
-      </article>
-      <article class="panel weather-lightning-log-panel">
-        <div class="panel-head"><div><p class="eyebrow">Safety record</p><h2>Lightning Timer Log</h2></div></div>
-        <div id="lightningLog" class="lightning-log"></div>
-      </article>
-    </div>
-  </section>
 
-  <section class="weather-tab-panel" data-weather-panel="fieldstatus">
-    <div class="weather-section-head">
-      <div><p class="eyebrow">Public operating status</p><h2>Field Status Control</h2><p>Choose the operating status and copy the recommended announcement into the Website Control Center.</p></div>
-    </div>
-    <div class="weather-field-status-layout">
-      <article class="panel">
-        <div class="weather-status-options">
-          <button class="weather-status-option open active" data-weather-status="OPEN" type="button"><span>✓</span><div><b>Open</b><small>Operating normally</small></div></button>
-          <button class="weather-status-option delayed" data-weather-status="DELAYED" type="button"><span>!</span><div><b>Weather Delay</b><small>Play temporarily delayed</small></div></button>
-          <button class="weather-status-option closed" data-weather-status="CLOSED" type="button"><span>×</span><div><b>Closed</b><small>Facility closed for weather</small></div></button>
-          <button class="weather-status-option check" data-weather-status="CHECK SCHEDULE" type="button"><span>?</span><div><b>Check Schedule</b><small>Schedule updates may apply</small></div></button>
+        <div class="content-grid">
+          <article class="panel quick-panel">
+            <div class="panel-head"><div><p class="eyebrow">Quick actions</p><h2>What do you need to do?</h2></div></div>
+            <div class="quick-grid">
+              <button data-go="website"><span>◈</span><b>Update Website</b><small>Status, announcements, events and photos</small></button>
+              <button data-go="clover"><span>$</span><b>View Clover</b><small>Sales, items and inventory</small></button>
+              <button data-go="staff"><span>👥</span><b>View Staff</b><small>Today's schedule and coverage</small></button>
+              <button data-go="fields"><span>◇</span><b>Check Fields</b><small>Conditions and inspections</small></button>
+            </div>
+          </article>
+          <aside class="panel setup-panel">
+            <div class="panel-head"><div><p class="eyebrow">Connection progress</p><h2>System Setup</h2></div><span class="progress-pill">1 of 4 started</span></div>
+            <ol class="setup-list">
+              <li class="current"><span>1</span><div><b>Connect Clover POS</b><small>Developer app created; secure connection next.</small></div></li>
+              <li><span>2</span><div><b>Connect Staffing Sheet</b><small>Automatic staffing schedule.</small></div></li>
+              <li><span>3</span><div><b>Connect Game Schedule</b><small>Games, fields and timeslots.</small></div></li>
+              <li><span>4</span><div><b>Connect Field Conditions</b><small>Live inspection and maintenance status.</small></div></li>
+            </ol>
+          </aside>
         </div>
-      </article>
-      <article class="panel weather-announcement-panel">
-        <label for="weatherAnnouncement"><span>Recommended website announcement</span></label>
-        <textarea id="weatherAnnouncement" rows="6">All fields are open and operating as scheduled.</textarea>
-        <div class="weather-announcement-actions">
-          <button id="weatherCopyAnnouncement" class="secondary-btn" type="button">Copy Text</button>
-          <button id="weatherOpenWebsiteControl" class="primary-btn" type="button">Open Website Control</button>
+      </section>
+
+      <section class="view" data-view-panel="website">
+        <div class="page-head"><div><p class="eyebrow">Website Manager</p><h1>Manage adventurenj.com</h1><p>Every website control will ultimately live here. The existing editor remains available while the new mobile controls are built.</p></div><a class="primary-btn link-btn" href="/admin/">Open Full Website Editor</a></div>
+        <div class="website-hero panel">
+          <div><p class="eyebrow">Live website status</p><h2 id="websiteStatusTitle">Checking current settings…</h2><p id="websiteAnnouncement">Loading announcement…</p></div>
+          <div class="website-live-actions"><a href="/admin/" class="primary-btn link-btn">Edit Website</a><a href="/" target="_blank" class="secondary-btn">Preview Live Site ↗</a></div>
         </div>
-        <p>This does not publish automatically. Review the text in Website Control Center before publishing.</p>
-      </article>
-    </div>
-  </section>
-
-  <footer class="weather-source-note">
-    Forecast data from Open-Meteo. Radar data from RainViewer. Forecast-based safety indicators are decision support only and do not replace official warnings, local observations, or facility emergency procedures.
-  </footer>
-</section>
-
-<section class="view placeholder-view" data-view-panel="reports"><div class="empty-state"><span>▥</span><h1>Reports</h1><p>Daily and weekly operations reporting.</p><b>Module planned</b></div></section>
-<section class="view kitchen-view" data-view-panel="kitchen">
-  <div class="page-head">
-    <div><p class="eyebrow">Kitchen Operations</p><h1>Kitchen Center</h1><p>Kitchen checklists, stock, prep notes, and closing information will live here.</p></div>
-  </div>
-  <div class="settings-grid">
-    <article class="panel"><h2>Kitchen Opening</h2><p>Opening checklist and prep assignments are ready for the next kitchen module.</p><span class="progress-pill">Module planned</span></article>
-    <article class="panel"><h2>Kitchen Inventory</h2><p>Track food, drinks, paper goods, and low-stock items.</p><span class="progress-pill">Module planned</span></article>
-  </div>
-</section>
-
-
-
-<section class="view notifications-view" data-view-panel="notifications">
-  <div class="users-hero notifications-hero">
-    <div>
-      <p class="eyebrow">V7 Communications</p>
-      <h1>Notification Command Center</h1>
-      <p>Send secure role-based alerts, control who can see operational information, and manage every enrolled device.</p>
-    </div>
-    <div class="hero-actions">
-      <button id="enableNotifications" class="secondary-btn" type="button">Enable on This Device</button>
-      <button id="refreshNotifications" class="primary-btn" type="button">Refresh</button>
-    </div>
-  </div>
-
-  <div id="notificationStatus" class="publish-notice" hidden></div>
-
-  <div class="notification-command-grid">
-    <article id="sendNotificationPanel" class="panel notification-composer">
-      <div class="panel-head">
-        <div><p class="eyebrow">Broadcast</p><h2>Send Staff Notification</h2><p>Only approved roles can send. Recipients are selected by their backend role.</p></div>
-        <span id="notificationPermissionBadge" class="role-badge">Checking access</span>
-      </div>
-      <form id="notificationForm" class="notification-form">
-        <div class="notification-template-row">
-          <button type="button" class="template-chip" data-template-title="Weather Delay" data-template-body="Games and operations are temporarily delayed due to weather. Please wait for the next update." data-template-priority="high">Weather Delay</button>
-          <button type="button" class="template-chip" data-template-title="Field Closed" data-template-body="The selected field is closed until further notice. Check the Operations Hub for updates." data-template-priority="high">Field Closed</button>
-          <button type="button" class="template-chip" data-template-title="Schedule Update" data-template-body="Your work schedule has been updated. Please open the Operations Hub and review the change." data-template-priority="normal">Schedule Update</button>
-          <button type="button" class="template-chip emergency" data-template-title="Emergency Alert" data-template-body="Important emergency update from Adventure Sports. Open the Operations Hub immediately for instructions." data-template-priority="emergency">Emergency</button>
+        <div class="module-grid">
+          <a href="/admin/" class="module-card"><span>●</span><b>Field Status & Announcement</b><small>Open, closed, delayed and homepage message</small></a>
+          <a href="/admin/#/collections/content/entries/events" class="module-card"><span>⚾</span><b>Events & Tournaments</b><small>Add dates, registrations, logos and details</small></a>
+          <a href="/admin/#/collections/content/entries/gallery" class="module-card"><span>▣</span><b>Photo Gallery</b><small>Upload and arrange public photos</small></a>
+          <a href="/admin/#/collections/content/entries/site" class="module-card"><span>⌂</span><b>Homepage & Facility Info</b><small>Hours, contact information and homepage content</small></a>
+          <a href="/admin/#/collections/content/entries/rentals" class="module-card"><span>◆</span><b>Rentals & Pricing</b><small>Rates, request types and rental contacts</small></a>
+          <a href="/admin/#/collections/content/entries/clubhouse" class="module-card"><span>☕</span><b>Clubhouse & Menu</b><small>Menu links, photos and clubhouse content</small></a>
         </div>
-        <label><span>Notification title</span><input id="notificationTitle" maxlength="90" required placeholder="Example: Weather Delay"></label>
-        <label><span>Message</span><textarea id="notificationBody" maxlength="500" rows="4" required placeholder="Type the alert employees should receive"></textarea></label>
-        <div class="notification-form-grid">
-          <label><span>Priority</span><select id="notificationPriority"><option value="normal">Normal</option><option value="high">High</option><option value="emergency">Emergency</option></select></label>
-          <label><span>Open when tapped</span><select id="notificationUrl"><option value="/ops/">Operations Hub</option><option value="/ops/#weather">Weather Center</option><option value="/ops/#staff">Staff</option><option value="/">Public Website</option></select></label>
+      </section>
+
+      <section class="view" data-view-panel="clover">
+        <div class="page-head"><div><p class="eyebrow">Clover POS</p><h1>Sales & Inventory</h1><p>Your Clover app has been created. The next step is connecting it securely to this dashboard.</p></div><span class="connection-badge pending">Setup in progress</span></div>
+        <div class="connection-card panel">
+          <div class="connection-icon">$</div><div><p class="eyebrow">Next connection step</p><h2>Finish the secure Clover OAuth setup</h2><p>Once connected, this page will show live sales, transactions, top items, hourly performance and inventory alerts.</p><div class="check-row"><span>✓ Private Clover app created</span><span>✓ Read-only permissions selected</span><span>○ REST/OAuth configuration</span><span>○ Netlify credentials</span><span>○ Merchant authorization</span></div></div>
         </div>
-        <fieldset class="audience-fieldset">
-          <legend>Send to</legend>
-          <label class="audience-option"><input type="radio" name="notificationAudience" value="everyone" checked><span><strong>Everyone</strong><small>All enrolled employees</small></span></label>
-          <label class="audience-option"><input type="radio" name="notificationAudience" value="roles"><span><strong>Selected roles</strong><small>Choose one or more roles below</small></span></label>
-          <div id="notificationRoleChoices" class="role-choice-grid">
-            <label><input type="checkbox" value="owner"> Owners</label>
-            <label><input type="checkbox" value="manager"> Managers</label>
-            <label><input type="checkbox" value="grounds"> Grounds</label>
-            <label><input type="checkbox" value="kitchen"> Kitchen</label>
-            <label><input type="checkbox" value="cashier"> Cashiers</label>
-          </div>
-        </fieldset>
-        <button id="sendNotificationButton" class="primary-btn notification-send-btn" type="submit">Send Notification</button>
-      </form>
-    </article>
+        <div class="metrics-grid muted"><article class="metric-card"><small>Gross Sales</small><strong>—</strong><em>Awaiting connection</em></article><article class="metric-card"><small>Transactions</small><strong>—</strong><em>Awaiting connection</em></article><article class="metric-card"><small>Average Ticket</small><strong>—</strong><em>Awaiting connection</em></article><article class="metric-card"><small>Inventory Alerts</small><strong>—</strong><em>Awaiting connection</em></article></div>
+      </section>
 
-    <aside class="notification-side-stack">
-      <article class="panel device-card">
-        <p class="eyebrow">This device</p>
-        <h2>Push Status</h2>
-        <div class="device-status-line"><span id="deviceStatusDot" class="device-status-dot"></span><strong id="deviceStatusText">Checking browser…</strong></div>
-        <p id="deviceStatusHelp">Employees must install the app and allow notifications.</p>
-      </article>
-      <article class="panel privacy-card">
-        <p class="eyebrow">Privacy by role</p>
-        <h2>Staff Presence Is Restricted</h2>
-        <p>Clocked-in and staff-presence information is hidden from Grounds, Kitchen, and Cashier roles by default. Owners control this below.</p>
-        <span class="privacy-lock">🔒 Owner-controlled visibility</span>
-      </article>
-      <article class="panel">
-        <p class="eyebrow">Enrolled devices</p>
-        <h2 id="deviceCount">—</h2>
-        <p>Active phones, tablets, and computers registered to receive alerts.</p>
-      </article>
-    </aside>
+      <section class="view placeholder-view" data-view-panel="staff"><div class="empty-state"><span>👥</span><h1>Staff Schedule</h1><p>This section will automatically read your staffing Google Sheet and show today's shifts, coverage and labor hours.</p><b>Coming after Clover is connected</b></div></section>
+      <section class="view placeholder-view" data-view-panel="games"><div class="empty-state"><span>⚾</span><h1>Game Schedule</h1><p>This section will show today's games, field assignments, first and last game, and timeslot matrices.</p><b>Connection planned</b></div></section>
+      <section class="view placeholder-view" data-view-panel="fields"><div class="empty-state"><span>◇</span><h1>Field Conditions</h1><p>This section will read your field-condition sheet and provide mobile inspections for A1 through D2.</p><b>Connection planned</b></div></section>
+      <section class="view placeholder-view" data-view-panel="maintenance"><div class="empty-state"><span>⚙</span><h1>Maintenance</h1><p>Work orders, equipment service, photos, opening tasks and closing checklists will live here.</p><b>Module planned</b></div></section>
+      <section class="view placeholder-view" data-view-panel="reports"><div class="empty-state"><span>▥</span><h1>Reports</h1><p>Daily sales, games, staffing and field-condition summaries will be generated here.</p><b>Module planned</b></div></section>
+      <section class="view" data-view-panel="settings">
+        <div class="page-head"><div><p class="eyebrow">Settings</p><h1>Operations Hub Settings</h1><p>Account and app controls.</p></div></div>
+        <div class="settings-grid"><article class="panel"><h2>Signed-in account</h2><p id="accountEmail">Loading…</p><button id="settingsLogout" class="secondary-btn">Sign Out</button></article><article class="panel"><h2>Install on phone</h2><p>On iPhone, open this page in Safari, tap Share, then tap <b>Add to Home Screen</b>.</p><button id="settingsInstall" class="primary-btn">Install App</button></article></div>
+      </section>
+    </main>
   </div>
-
-  <div class="notification-lower-grid">
-    <article class="panel">
-      <div class="panel-head"><div><p class="eyebrow">Recent broadcasts</p><h2>Notification History</h2></div></div>
-      <div id="notificationHistory" class="notification-history"><div class="dashboard-empty">Loading notifications…</div></div>
-    </article>
-    <article id="notificationAccessPanel" class="panel owner-only">
-      <div class="panel-head"><div><p class="eyebrow">Owner controls</p><h2>Visibility & Sending Power</h2><p>Control exactly what each role can see and who can broadcast alerts.</p></div><button id="saveNotificationAccess" class="primary-btn" type="button">Save Controls</button></div>
-      <div id="notificationAccessMatrix" class="notification-access-matrix"><div class="dashboard-empty">Loading controls…</div></div>
-    </article>
-  </div>
-
-  <article id="notificationDevicesPanel" class="panel owner-manager-only">
-    <div class="panel-head"><div><p class="eyebrow">Enrollment</p><h2>Registered Devices</h2><p>Device tokens are protected and never displayed.</p></div></div>
-    <div id="notificationDevices" class="notification-devices"><div class="dashboard-empty">Loading devices…</div></div>
-  </article>
-</section>
-
-<section class="view users-view" data-view-panel="users">
-  <div class="users-hero">
-    <div>
-      <p class="eyebrow">Identity & Access</p>
-      <h1>People & Permissions</h1>
-      <p>Invite employees, manage owners, control module access, and review every account change.</p>
-    </div>
-    <div class="hero-actions">
-      <button id="usersRefresh" class="secondary-btn" type="button">Refresh</button>
-      <button id="openInviteModal" class="primary-btn" type="button">Invite Employee</button>
-    </div>
-  </div>
-
-  <div id="usersNotice" class="publish-notice" hidden></div>
-
-  <div class="admin-tabs" role="tablist">
-    <button class="admin-tab active" data-admin-tab="people">People</button>
-    <button class="admin-tab owner-only" data-admin-tab="owners">Owners</button>
-    <button class="admin-tab owner-only" data-admin-tab="permissions">Permissions</button>
-    <button class="admin-tab owner-only" data-admin-tab="notification-access">Notification Access</button>
-    <button class="admin-tab owner-only" data-admin-tab="audit">Audit Log</button>
-  </div>
-
-  <section class="admin-panel active" data-admin-panel="people">
-    <div class="panel users-list-panel">
-      <div class="panel-head users-list-head">
-        <div><p class="eyebrow">Active, disabled, and invited accounts</p><h2>Employee Directory</h2><p id="usersSummary">Loading team…</p></div>
-        <div class="staff-search"><span>⌕</span><input id="usersSearch" type="search" placeholder="Search name, email, or role"></div>
-      </div>
-      <div id="usersList" class="users-list"><div class="dashboard-empty">Loading users…</div></div>
-    </div>
-  </section>
-
-  <section class="admin-panel owner-only" data-admin-panel="owners">
-    <div class="owner-management-grid">
-      <article class="panel">
-        <div class="panel-head"><div><p class="eyebrow">Protected administration</p><h2>Current Owners</h2><p>At least one active Owner must always remain.</p></div></div>
-        <div id="ownersList" class="owners-list"><div class="dashboard-empty">Loading owners…</div></div>
-      </article>
-      <article class="panel">
-        <p class="eyebrow">Add an Owner</p>
-        <h2>Promote an Existing User</h2>
-        <p class="muted-copy">Select a Manager, Grounds, or Kitchen account. The promotion is logged immediately.</p>
-        <form id="promoteOwnerForm" class="invite-user-form">
-          <label><span>User</span><select id="promoteOwnerUser" required></select></label>
-          <button class="primary-btn" type="submit">Promote to Owner</button>
-        </form>
-        <hr class="soft-rule">
-        <p class="eyebrow">New Owner</p>
-        <h2>Invite a New Owner</h2>
-        <form id="inviteOwnerForm" class="invite-user-form">
-          <label><span>Full name</span><input id="inviteOwnerName" required maxlength="80"></label>
-          <label><span>Email</span><input id="inviteOwnerEmail" type="email" required></label>
-          <button class="primary-btn" type="submit">Invite Owner</button>
-        </form>
-      </article>
-    </div>
-  </section>
-
-  <section class="admin-panel owner-only" data-admin-panel="permissions">
-    <div class="panel">
-      <div class="panel-head permission-head">
-        <div><p class="eyebrow">Role access</p><h2>Permission Matrix</h2><p>Choose which modules each role can open. Owner access stays protected.</p></div>
-        <button id="savePermissions" class="primary-btn" type="button">Save Permissions</button>
-      </div>
-      <div id="permissionMatrix" class="permission-matrix-wrap"><div class="dashboard-empty">Loading permissions…</div></div>
-    </div>
-  </section>
-
-
-  <section class="admin-panel owner-only" data-admin-panel="notification-access">
-    <div class="panel">
-      <div class="panel-head permission-head">
-        <div><p class="eyebrow">Role privacy and communication</p><h2>Notification Access Controls</h2><p>Manage who sees staff presence, delivery details, the operations feed, and notification history.</p></div>
-        <button class="primary-btn open-notification-controls" type="button">Open Notification Controls</button>
-      </div>
-      <div class="permission-explainer-grid">
-        <div><strong>Staff Presence</strong><p>Controls clocked-in and working-now information. Disabled for regular employees by default.</p></div>
-        <div><strong>Delivery Reports</strong><p>Controls recipient totals, sent counts, and failure counts.</p></div>
-        <div><strong>Operations Feed</strong><p>Controls access to internal updates and announcements.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="admin-panel owner-only" data-admin-panel="audit">
-    <div class="panel">
-      <div class="panel-head">
-        <div><p class="eyebrow">Security history</p><h2>Audit Log</h2><p>Invitations, role changes, owner changes, disables, re-enables, and terminations.</p></div>
-        <button id="refreshAudit" class="secondary-btn" type="button">Refresh Log</button>
-      </div>
-      <div id="auditList" class="audit-list"><div class="dashboard-empty">Loading activity…</div></div>
-    </div>
-  </section>
-
-  <div id="inviteModal" class="modal-backdrop" hidden>
-    <div class="modal-card">
-      <button id="closeInviteModal" class="modal-close" type="button">×</button>
-      <p class="eyebrow">New account</p>
-      <h2>Invite Employee</h2>
-      <form id="inviteUserForm" class="invite-user-form">
-        <label><span>Full name</span><input id="inviteName" type="text" maxlength="80" required placeholder="Employee name"></label>
-        <label><span>Email address</span><input id="inviteEmail" type="email" required placeholder="employee@example.com"></label>
-        <label><span>Role</span><select id="inviteRole" required></select></label>
-        <label><span>Phone (optional)</span><input id="invitePhone" type="tel" placeholder="(555) 555-5555"></label>
-        <label><span>Hire date (optional)</span><input id="inviteHireDate" type="date"></label>
-        <button id="inviteUserButton" class="primary-btn" type="submit">Send Invitation</button>
-      </form>
-    </div>
-  </div>
-
-  <div id="profileModal" class="modal-backdrop" hidden>
-    <div class="modal-card large-modal">
-      <button id="closeProfileModal" class="modal-close" type="button">×</button>
-      <p class="eyebrow">Employee profile</p>
-      <h2 id="profileModalTitle">Manage User</h2>
-      <form id="profileForm" class="profile-form">
-        <input id="profileUserId" type="hidden">
-        <div class="profile-grid">
-          <label><span>Full name</span><input id="profileName" required></label>
-          <label><span>Email</span><input id="profileEmail" type="email" disabled></label>
-          <label><span>Phone</span><input id="profilePhone" type="tel"></label>
-          <label><span>Hire date</span><input id="profileHireDate" type="date"></label>
-          <label><span>Emergency contact</span><input id="profileEmergencyContact"></label>
-          <label><span>Emergency phone</span><input id="profileEmergencyPhone" type="tel"></label>
-          <label class="profile-span"><span>Internal notes</span><textarea id="profileNotes" rows="4"></textarea></label>
-        </div>
-        <div class="profile-actions">
-          <button class="primary-btn" type="submit">Save Profile</button>
-          <button id="sendRecoveryButton" class="secondary-btn" type="button">Send Password Reset</button>
-          <button id="toggleDisabledButton" class="warning-btn" type="button">Disable Account</button>
-          <button id="terminateFromProfile" class="user-terminate-btn" type="button">Terminate Account</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</section>
-
-<section class="view" data-view-panel="settings"><div class="page-head"><div><p class="eyebrow">Settings</p><h1>Operations Hub Settings</h1></div></div><div class="settings-grid"><article class="panel"><h2>Signed-in account</h2><p id="accountEmail">Loading…</p><span id="settingsRoleBadge" class="role-badge">Loading role</span><button id="settingsLogout" class="secondary-btn">Sign Out</button></article><article class="panel"><h2>Install on phone</h2><p>Use Add to Home Screen in Safari.</p><button id="settingsInstall" class="primary-btn">Install App</button></article></div></section></main></div><div id="toast" class="toast"></div><script src="/ops/dashboard-v2.js?v=40"></script><script src="/ops/clover-v2.js?v=30"></script><script src="/ops/staff.js?v=70"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"><script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script><script src="/ops/maintenance.js?v=20"></script><script src="/ops/weather.js?v=10"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script><script src="/ops/app.js?v=700"></script><script src="/ops/notifications-v7.js?v=712"></script><script src="/ops/games-v71.js?v=715"></script><script src="/ops/phase-one-v71.js?v=710"></script></body></html>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="/ops/app.js?v=2"></script>
+</body>
+</html>

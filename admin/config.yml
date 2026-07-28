@@ -3,15 +3,22 @@ backend:
   name: git-gateway
   branch: main
 
+site_url: "https://adventurenj.com"
+display_url: "https://adventurenj.com"
+logo_url: "/uploads/branding/adventure-logo.png"
+show_preview_links: true
+publish_mode: simple
+
 media_folder: "uploads"
 public_folder: "/uploads"
 
 collections:
   - name: "content"
-    label: "Website Content"
+    label: "Website Manager"
     files:
-      - label: "Main Website Settings"
+      - label: "Homepage & Facility Info"
         name: "site"
+        description: "Update the homepage, field status, announcement, contact details, hours, links and slider photos."
         file: "content/site.json"
         format: "json"
         fields:
@@ -60,8 +67,9 @@ collections:
             widget: "list"
             field: { label: "Photo", name: "photo", widget: "image" }
 
-      - label: "Events"
+      - label: "Events & Registration"
         name: "events"
+        description: "Add, edit, feature or remove tournaments and events. Use Bulk Event Import for several events at once."
         file: "content/events.json"
         format: "json"
         fields:
@@ -88,8 +96,9 @@ collections:
               - { label: "Description", name: "description", widget: "text", required: false }
               - { label: "Show on Homepage Upcoming Events", name: "featured", widget: "boolean", default: false }
 
-      - label: "Resources"
+      - label: "Partners & Resources"
         name: "resources"
+        description: "Manage partner organizations, resource links and logos."
         file: "content/resources.json"
         format: "json"
         fields:
@@ -101,8 +110,9 @@ collections:
               - { label: "Website Link", name: "url", widget: "string" }
               - { label: "Logo", name: "logo", widget: "image" }
 
-      - label: "Gallery"
+      - label: "Photo Gallery"
         name: "gallery"
+        description: "Upload and arrange photos shown in the public gallery."
         file: "content/gallery.json"
         format: "json"
         fields:
@@ -114,8 +124,9 @@ collections:
               - { label: "Image", name: "image", widget: "image" }
               - { label: "Caption", name: "caption", widget: "text", required: false }
 
-      - label: "Clubhouse"
+      - label: "Clubhouse & Menu"
         name: "clubhouse"
+        description: "Edit clubhouse wording, menu link and featured photos."
         file: "content/clubhouse.json"
         format: "json"
         fields:
@@ -130,8 +141,9 @@ collections:
               - { label: "Image", name: "image", widget: "image" }
               - { label: "Caption", name: "caption", widget: "string" }
 
-      - label: "Private Rentals"
+      - label: "Rentals & Pricing"
         name: "rentals"
+        description: "Update rates, rental types and the emails that receive requests."
         file: "content/rentals.json"
         format: "json"
         fields:
@@ -151,8 +163,9 @@ collections:
               - { label: "Name", name: "name", widget: "string" }
               - { label: "Description", name: "description", widget: "text" }
 
-      - label: "Safety / Rules / Refund"
+      - label: "Safety, Rules & Refunds"
         name: "safety"
+        description: "Maintain park safety information, rules, insurance requirements and refund policies."
         file: "content/safety.json"
         format: "json"
         fields:

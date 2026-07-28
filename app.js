@@ -21,7 +21,32 @@ function staticHomeFallback(){
 
 const esc = (s="") => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 const img = (s="") => !s ? "" : (s.startsWith("/") || s.startsWith("http") ? s : "/" + s);
-async function getJSON(path){ const r = await fetch(path+"?v="+Date.now()); if(!r.ok) throw new Error(path); return r.json(); }
+async function getJSON(path){
+  const liveFiles={
+    '/content/site.json':'site',
+    '/content/rentals.json':'rentals',
+    '/content/clubhouse.json':'clubhouse',
+    '/content/safety.json':'safety'
+  };
+  const key=liveFiles[path];
+  if(key){
+    try{
+      const live=await fetch('/.netlify/functions/live-content?file='+encodeURIComponent(key)+'&v='+Date.now(),{cache:'no-store'});
+      if(live.ok){
+        const data=await live.json();
+        if(data&&typeof data==='object'){
+          delete data.__revision;
+          delete data.__publishedAt;
+          delete data.__publishedBy;
+        }
+        return data;
+      }
+    }catch(error){console.warn('Using published content fallback.',error)}
+  }
+  const response=await fetch(path+'?v='+Date.now(),{cache:'no-store'});
+  if(!response.ok)throw new Error(path);
+  return response.json();
+}
 
 function todayISO(){
   const d = new Date();
@@ -193,50 +218,3 @@ setTimeout(staticHomeFallback, 1200);
     targets.forEach(el=>io.observe(el));
   }
 })();
-
-/* V3 one-second live facility status — preserves all polished design markup. */
-let aseLastLiveSignature='';
-
-async function aseFetchLiveStatus(){
-  try{
-    const response=await fetch('/.netlify/functions/live-content?t='+Date.now(),{
-      cache:'no-store',
-      headers:{'Cache-Control':'no-cache'}
-    });
-    if(!response.ok)return null;
-    return await response.json();
-  }catch(error){
-    return null;
-  }
-}
-
-async function aseRefreshLiveStatus(){
-  const live=await aseFetchLiveStatus();
-  if(!live)return;
-  const signature=[
-    live.fieldStatus||'',
-    live.announcement||'',
-    live.updatedAt||''
-  ].join('|');
-  if(signature===aseLastLiveSignature)return;
-  aseLastLiveSignature=signature;
-
-  if(typeof renderFixedStatus==='function'){
-    renderFixedStatus(live);
-  }
-}
-
-function aseStartLiveStatus(){
-  aseRefreshLiveStatus();
-  window.setInterval(aseRefreshLiveStatus,1000);
-}
-
-if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded',aseStartLiveStatus);
-}else{
-  aseStartLiveStatus();
-}
-
-document.addEventListener('visibilitychange',()=>{
-  if(!document.hidden)aseRefreshLiveStatus();
-});
