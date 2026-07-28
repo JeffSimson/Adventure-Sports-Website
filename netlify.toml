@@ -29,3 +29,11 @@
   for = "/ops/manifest.webmanifest"
   [headers.values]
     Content-Type = "application/manifest+json"
+
+[[headers]]
+  for = "/ops/firebase-messaging-sw.js"
+  [headers.values]
+    Content-Type = "application/javascript; charset=utf-8"
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Service-Worker-Allowed = "/ops/"
+    Access-Control-Allow-Origin = "*"

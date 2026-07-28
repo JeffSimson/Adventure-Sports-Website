@@ -50,8 +50,25 @@ async function initFirebase(){
   if(!window.firebase)throw Error('Firebase did not load. Refresh the page and try again.');
   if(!firebase.apps.length)firebase.initializeApp(FIREBASE_CONFIG);
   messaging=firebase.messaging();
-  const reg=await navigator.serviceWorker.register('/firebase-messaging-sw.js?v=711',{scope:'/'});
-  await navigator.serviceWorker.ready;
+  // Remove the broken V7.1 root worker before installing the corrected /ops worker.
+  const registrations=await navigator.serviceWorker.getRegistrations();
+  for(const existing of registrations){
+    if(existing.scope===location.origin+'/' || existing.active?.scriptURL?.includes('/firebase-messaging-sw.js')){
+      await existing.unregister().catch(()=>false);
+    }
+  }
+  const reg=await navigator.serviceWorker.register('/ops/firebase-messaging-sw.js?v=712',{scope:'/ops/',updateViaCache:'none'});
+  await reg.update().catch(()=>{});
+  await new Promise((resolve,reject)=>{
+    const worker=reg.installing||reg.waiting||reg.active;
+    if(!worker)return reject(Error('The notification service worker did not start.'));
+    if(worker.state==='activated')return resolve();
+    const timer=setTimeout(()=>reject(Error('The notification service worker timed out while starting.')),12000);
+    worker.addEventListener('statechange',()=>{
+      if(worker.state==='activated'){clearTimeout(timer);resolve()}
+      if(worker.state==='redundant'){clearTimeout(timer);reject(Error('The notification service worker was rejected by the browser.'))}
+    });
+  });
   updateDeviceStatus();
   return reg;
 }
@@ -63,7 +80,7 @@ async function enableNotifications(){
     if(permission==='default')permission=await Notification.requestPermission();
     if(permission!=='granted')throw Error(permission==='denied'?'Notifications are blocked. Allow them in your browser/site settings, then try again.':'Notification permission was not granted.');
     const fcmToken=await messaging.getToken({vapidKey:VAPID,serviceWorkerRegistration:reg});
-    if(!fcmToken)throw Error('Firebase did not return a device token. Check Firebase Cloud Messaging and the VAPID key.');
+    if(!fcmToken)throw Error('Firebase did not return a device token. Confirm the Firebase Cloud Messaging Registration API is enabled and this domain is allowed.');
     await api(ENDPOINTS.register,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
       token:fcmToken,endpoint:reg.scope,device:navigator.userAgent.slice(0,220),platform:navigator.platform||''
     })});
@@ -73,7 +90,7 @@ async function enableNotifications(){
     notice('Success — this device is enrolled and ready to receive alerts.','success',true);
     updateDeviceStatus(true);await loadData();
     if(reg.showNotification){await reg.showNotification('Adventure Sports notifications enabled',{body:'This device is now registered for Operations Hub alerts.',icon:'/uploads/branding/adventure-logo.png',badge:'/uploads/branding/adventure-logo.png',tag:'ase-enabled-test'}).catch(()=>{});}
-  }catch(e){console.error('Notification enrollment failed',e);notice(`Could not enable notifications: ${e.message}`,'error',true);updateDeviceStatus(false,e.message)}
+  }catch(e){console.error('Notification enrollment failed',e);let message=e&&e.message?e.message:String(e);if(/cors|cross-origin|network/i.test(message)){message='Firebase blocked the device registration request. The corrected service worker is installed, but Firebase must allow adventurenj.com and the Cloud Messaging Registration API must be enabled.';}notice(`Could not enable notifications: ${message}`,'error',true);updateDeviceStatus(false,message)}
   finally{setEnableButton(Notification.permission==='granted'?'Re-enroll This Device':'Enable on This Device',false)}
 }
 function updateDeviceStatus(registered,errorMessage=''){
