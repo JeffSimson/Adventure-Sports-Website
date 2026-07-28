@@ -2,6 +2,12 @@
   publish = "."
   command = ""
 
+
+[build.environment]
+  # Firebase browser API keys are public identifiers used by the web client.
+  # Netlify Smart Detection otherwise blocks the deploy when it sees the AIza value.
+  SECRETS_SCAN_SMART_DETECTION_OMIT_VALUES = "AIzaSyCJ2bzP2XdpSvbqdr4eg5ALHcQUBAFXQ1E"
+
 [functions]
   directory = "netlify/functions"
 
