@@ -1,0 +1,17 @@
+Adventure Sports Operations Hub V7.1.9
+
+Push notification changes:
+- Explicit Re-enroll now deletes the current Firebase token before requesting a fresh token.
+- Existing registration for the same device is replaced instead of duplicated.
+- notification-send now writes detailed per-device FCM acceptance/rejection logs in Netlify.
+- Invalid/unregistered tokens are removed automatically.
+- Delivery records include a safe 12-character token fingerprint for comparison; full tokens are never exposed.
+
+After deployment:
+1. Have the affected employee open the installed iPhone Home Screen app.
+2. Press Re-enroll This Device once.
+3. Close the app completely.
+4. Send a new test alert.
+5. In Netlify > Logs & metrics > Functions > notification-send, the log now identifies each device as FCM accepted or rejected.
+
+Important: "FCM accepted" means Firebase accepted the message for delivery. It does not prove iOS displayed it. If the employee's token is accepted but no banner appears, verify iPhone Settings > Notifications > Adventure Sports Operations has Allow Notifications, Lock Screen, Notification Center, and Banners enabled, and that Focus modes are not silencing the app.

@@ -84,8 +84,15 @@ async function enableNotifications(){
     let permission=Notification.permission;
     if(permission==='default')permission=await Notification.requestPermission();
     if(permission!=='granted')throw Error(permission==='denied'?'Notifications are blocked. Allow them in your browser/site settings, then try again.':'Notification permission was not granted.');
-    // Reuse the browser's current valid token. The server replaces the existing
-    // registration for this stable device ID, preventing duplicate records.
+    // An explicit re-enrollment must create a fresh FCM/Web Push subscription.
+    // iOS can keep returning a stale token after a Home Screen app is restored,
+    // updated, or reinstalled. Delete the current token first, then request a new
+    // one against the active /ops service worker and the configured VAPID key.
+    try{
+      const oldToken=await messaging.getToken({vapidKey:VAPID,serviceWorkerRegistration:reg});
+      if(oldToken)await messaging.deleteToken().catch(()=>false);
+    }catch(resetError){console.warn('Existing push token could not be reset',resetError)}
+    await new Promise(resolve=>setTimeout(resolve,500));
     const fcmToken=await messaging.getToken({vapidKey:VAPID,serviceWorkerRegistration:reg});
     if(!fcmToken)throw Error('Firebase did not return a device token. Confirm the Firebase Cloud Messaging Registration API is enabled and this domain is allowed.');
     await api(ENDPOINTS.register,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({

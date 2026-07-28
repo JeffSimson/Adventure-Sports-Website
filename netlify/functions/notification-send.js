@@ -1,8 +1,10 @@
+const crypto=require('crypto');
 const {json,verifiedUser,requireRole}=require('./_role-auth');
 const {getStoreValue,setStoreValue}=require('./_v2-storage');
 const {appendAudit}=require('./_audit');
 const {sendFCM}=require('./_firebase-fcm');
 const clean=v=>String(v||'').trim();
+const fingerprint=v=>crypto.createHash('sha256').update(String(v||'')).digest('hex').slice(0,12);
 exports.handler=async event=>{try{
   const actor=await verifiedUser(event);requireRole(actor,['owner','manager']);
   if(event.httpMethod!=='POST')return json(405,{error:'Method not allowed.'});
@@ -18,13 +20,30 @@ exports.handler=async event=>{try{
   const id=`n_${Date.now()}_${Math.random().toString(36).slice(2,7)}`;
   const payload={title,body,url:b.url||'/ops/',priority:b.priority||'normal',notificationId:id};
   const origin=`https://${event.headers?.host||event.headers?.Host||'adventurenj.com'}`;
-  const results=await Promise.allSettled(selected.map(r=>sendFCM(r,payload,origin)));
-  const invalidTokens=[],failures=[];results.forEach((res,i)=>{if(res.status==='rejected'){const message=res.reason?.message||'Unknown Firebase error';const code=res.reason?.code||'';failures.push({deviceId:selected[i].deviceId||'',email:selected[i].email||'',code,message});if(/UNREGISTERED|not found|registration-token-not-registered|Requested entity was not found/i.test(message+' '+code))invalidTokens.push(selected[i].token)}});
+  console.log(`[push ${id}] starting; registrations=${all.length}; selected=${selected.length}; audience=${b.audience||'roles'}`);
+  const settled=await Promise.allSettled(selected.map(r=>sendFCM(r,payload,origin)));
+  const invalidTokens=[],failures=[],accepted=[];
+  settled.forEach((res,i)=>{
+    const registration=selected[i]||{};
+    const device={deviceId:registration.deviceId||'',email:registration.email||'',name:registration.name||'',role:registration.role||'',platform:registration.platform||'',tokenFingerprint:fingerprint(registration.token)};
+    if(res.status==='fulfilled'){
+      const messageName=res.value?.name||'';
+      accepted.push({...device,messageName});
+      console.log(`[push ${id}] FCM accepted token=${device.tokenFingerprint} user=${device.email||device.name||'unknown'} message=${messageName||'accepted'}`);
+      return;
+    }
+    const message=res.reason?.message||'Unknown Firebase error';
+    const code=res.reason?.code||'';
+    failures.push({...device,code,message});
+    console.error(`[push ${id}] FCM rejected token=${device.tokenFingerprint} user=${device.email||device.name||'unknown'} code=${code||'unknown'} message=${message}`);
+    if(/UNREGISTERED|not found|registration-token-not-registered|Requested entity was not found/i.test(message+' '+code))invalidTokens.push(registration.token);
+  });
   if(invalidTokens.length)await setStoreValue('ase-notifications','registrations',all.filter(r=>!invalidTokens.includes(r.token)));
-  const sent=results.filter(x=>x.status==='fulfilled').length,failed=results.length-sent;
+  const sent=accepted.length,failed=failures.length;
+  console.log(`[push ${id}] complete; accepted=${sent}; rejected=${failed}; invalidRemoved=${invalidTokens.length}. FCM acceptance confirms handoff, not on-device display.`);
   let history=await getStoreValue('ase-notifications','history',[]);
-  const record={id,title,body,audience:b.audience||'roles',roles,users,priority:b.priority||'normal',url:b.url||'/ops/',createdAt:new Date().toISOString(),createdBy:{id:actor.user.id,email:actor.user.email,name:actor.user.user_metadata?.full_name||actor.user.email,role:actor.role},targeted:selected.length,sent,failed,removedInvalid:invalidTokens.length,failures:failures.slice(0,20)};
+  const record={id,title,body,audience:b.audience||'roles',roles,users,priority:b.priority||'normal',url:b.url||'/ops/',createdAt:new Date().toISOString(),createdBy:{id:actor.user.id,email:actor.user.email,name:actor.user.user_metadata?.full_name||actor.user.email,role:actor.role},targeted:selected.length,sent,failed,removedInvalid:invalidTokens.length,accepted:accepted.slice(0,50),failures:failures.slice(0,50)};
   history.unshift(record);history=history.slice(0,250);await setStoreValue('ase-notifications','history',history);
   await appendAudit(actor,'notification-sent',`Sent "${title}" to ${sent} device${sent===1?'':'s'}.`,'🔔');
   return json(200,{ok:true,record});
-}catch(e){return json(e.statusCode||500,{error:e.message})}};
+}catch(e){console.error('[push] fatal error',e);return json(e.statusCode||500,{error:e.message})}};

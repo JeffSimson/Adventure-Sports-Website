@@ -1,5 +1,7 @@
+const crypto=require('crypto');
 const {json,verifiedUser,requireRole}=require('./_role-auth');
 const {getStoreValue,setStoreValue}=require('./_v2-storage');
+const fingerprint=v=>crypto.createHash('sha256').update(String(v||'')).digest('hex').slice(0,12);
 function dedupe(rows=[]){const m=new Map();for(const r of rows){if(!r?.token)continue;const k=r.deviceId||r.token;const old=m.get(k);if(!old||String(r.updatedAt||'')>String(old.updatedAt||''))m.set(k,r)}return [...m.values()]}
 exports.handler=async event=>{try{
   const actor=await verifiedUser(event);requireRole(actor,['owner','manager','grounds','kitchen','cashier']);
@@ -10,6 +12,6 @@ exports.handler=async event=>{try{
   let registrations=dedupe(await getStoreValue('ase-notifications','registrations',[]));
   await setStoreValue('ase-notifications','registrations',registrations);
   if(!visibility.deliveryReports)registrations=[];
-  const devices=registrations.map(({token,...x})=>x);
+  const devices=registrations.map(({token,...x})=>({...x,tokenFingerprint:fingerprint(token)}));
   return json(200,{ok:true,history,devices,visibility,canSend:(settings.sendRoles||[]).includes(actor.role),settings:actor.role==='owner'?settings:undefined});
 }catch(e){return json(e.statusCode||500,{error:e.message})}};
