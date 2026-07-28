@@ -21,7 +21,36 @@ const ENDPOINTS={
 };
 const ROLES=['owner','manager','grounds','kitchen','cashier'];
 const LABELS={owner:'Owner',manager:'Manager',grounds:'Grounds',kitchen:'Kitchen',cashier:'Cashier'};
-let messaging=null,currentData=null,currentSettings=null;
+let messaging=null,currentData=null,currentSettings=null,foregroundHandlerAttached=false;
+
+function attachForegroundMessaging(reg){
+  if(foregroundHandlerAttached||!messaging?.onMessage)return;
+  foregroundHandlerAttached=true;
+  messaging.onMessage(async payload=>{
+    const n=payload?.notification||{};
+    const d=payload?.data||{};
+    const title=n.title||d.title||'Adventure Sports';
+    const body=n.body||d.body||'Open the Operations Hub for details.';
+    notice(`${title}: ${body}`,'success',true);
+    // FCM does not automatically display an OS banner while the Home Screen
+    // app is open. Display it ourselves so foreground and background delivery
+    // behave the same on iPhone. This is independent of dashboard visibility
+    // permissions; those controls only affect what the user can view in-app.
+    if(Notification.permission==='granted'&&reg?.showNotification){
+      await reg.showNotification(title,{
+        body,
+        icon:'/uploads/branding/adventure-logo.png',
+        badge:'/uploads/branding/adventure-logo.png',
+        tag:d.notificationId||`ase-foreground-${Date.now()}`,
+        renotify:true,
+        requireInteraction:d.priority==='emergency',
+        data:{url:d.url||'/ops/'}
+      }).catch(error=>console.warn('Foreground notification display failed',error));
+    }
+    loadData();
+  });
+}
+
 function stableDeviceId(){
   let id=localStorage.getItem('asePushDeviceId');
   if(!id){id=(crypto.randomUUID?crypto.randomUUID():'dev_'+Date.now()+'_'+Math.random().toString(36).slice(2));localStorage.setItem('asePushDeviceId',id)}
@@ -62,7 +91,7 @@ async function initFirebase(){
       await existing.unregister().catch(()=>false);
     }
   }
-  const reg=await navigator.serviceWorker.register('/ops/firebase-messaging-sw.js?v=718',{scope:'/ops/',updateViaCache:'none'});
+  const reg=await navigator.serviceWorker.register('/ops/firebase-messaging-sw.js?v=720',{scope:'/ops/',updateViaCache:'none'});
   await reg.update().catch(()=>{});
   await new Promise((resolve,reject)=>{
     const worker=reg.installing||reg.waiting||reg.active;
@@ -74,6 +103,7 @@ async function initFirebase(){
       if(worker.state==='redundant'){clearTimeout(timer);reject(Error('The notification service worker was rejected by the browser.'))}
     });
   });
+  attachForegroundMessaging(reg);
   updateDeviceStatus();
   return reg;
 }
@@ -202,10 +232,6 @@ function wire(){
     document.querySelector('[data-view="notifications"]')?.click();
     setTimeout(()=>$('#notificationAccessPanel')?.scrollIntoView({behavior:'smooth'}),250);
   }));
-  messaging?.onMessage?.(payload=>{
-    notice(payload.notification?.title?`${payload.notification.title}: ${payload.notification.body||''}`:'New Adventure Sports notification');
-    loadData();
-  });
   document.addEventListener('click',e=>{
     if(e.target.closest('[data-view="notifications"]'))setTimeout(loadData,100);
   });
