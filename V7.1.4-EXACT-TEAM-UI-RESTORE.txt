@@ -1,0 +1,4 @@
+Adventure Sports Operations Hub V7.1.4
+
+This update restores Team Management to the exact original compact white-row appearance.
+Only Team Management presentation code was changed. The working V7.1.2 notification/service-worker fix remains intact.

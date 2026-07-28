@@ -45,10 +45,8 @@ function applyPreview(r){
 function polishTeamCards(){
  const list=$('#usersList');if(!list)return;
  list.querySelectorAll('.user-row').forEach(card=>{
-  card.classList.add('v71-team-card');
-  const info=card.querySelector('.user-info');if(info&&!info.querySelector('.v71-team-status')){
-   const status=document.createElement('span');status.className='v71-team-status';status.textContent=card.textContent.includes('Disabled')?'Disabled':card.textContent.includes('pending')?'Invite Pending':'Active';info.appendChild(status);
-  }
+  card.classList.remove('v71-team-card');
+  card.querySelectorAll('.v71-team-status').forEach(el=>el.remove());
  });
 }
 function relabel(){
