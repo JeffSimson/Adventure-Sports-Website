@@ -1,0 +1,4 @@
+V7.1.3
+
+Restores the Team Management employee rows and Permission Matrix to the previous dark navy card styling.
+Push notification fixes from V7.1.2 are unchanged.
