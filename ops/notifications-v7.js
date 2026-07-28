@@ -33,45 +33,59 @@ async function api(url,options={}){
   return d;
 }
 function role(){return document.querySelector('#settingsRoleBadge')?.dataset?.role||''}
-function notice(msg,type='success'){
+function notice(msg,type='success',sticky=false){
   const el=$('#notificationStatus');if(!el)return;
   el.textContent=msg;el.className='publish-notice '+type;el.hidden=false;
-  clearTimeout(el._t);el._t=setTimeout(()=>el.hidden=true,5000);
+  clearTimeout(el._t);if(!sticky)el._t=setTimeout(()=>el.hidden=true,9000);
 }
+function setEnableButton(text,busy=false){const b=$('#enableNotifications');if(!b)return;b.textContent=text;b.disabled=busy;}
+
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 function fmtDate(v){try{return new Date(v).toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'})}catch{return v||''}}
 
 async function initFirebase(){
-  if(!('serviceWorker' in navigator)||!('Notification' in window)||!window.firebase)return;
+  if(!window.isSecureContext)throw Error('Notifications require HTTPS. Open the live Netlify site, not a local file.');
+  if(!('serviceWorker' in navigator))throw Error('This browser does not support service workers.');
+  if(!('Notification' in window))throw Error('This browser does not support web notifications.');
+  if(!window.firebase)throw Error('Firebase did not load. Refresh the page and try again.');
   if(!firebase.apps.length)firebase.initializeApp(FIREBASE_CONFIG);
   messaging=firebase.messaging();
-  await navigator.serviceWorker.register('/firebase-messaging-sw.js',{scope:'/'});
+  const reg=await navigator.serviceWorker.register('/firebase-messaging-sw.js?v=711',{scope:'/'});
+  await navigator.serviceWorker.ready;
   updateDeviceStatus();
+  return reg;
 }
 async function enableNotifications(){
+  setEnableButton('Enabling…',true);notice('Checking browser permission and registering this device…','info',true);
   try{
-    if(!messaging)await initFirebase();
-    if(!messaging)throw Error('Push notifications are not supported in this browser.');
-    const permission=await Notification.requestPermission();
-    if(permission!=='granted')throw Error('Notifications were not allowed on this device.');
-    const reg=await navigator.serviceWorker.ready;
+    const reg=await initFirebase();
+    let permission=Notification.permission;
+    if(permission==='default')permission=await Notification.requestPermission();
+    if(permission!=='granted')throw Error(permission==='denied'?'Notifications are blocked. Allow them in your browser/site settings, then try again.':'Notification permission was not granted.');
     const fcmToken=await messaging.getToken({vapidKey:VAPID,serviceWorkerRegistration:reg});
-    if(!fcmToken)throw Error('Firebase did not return a device token.');
+    if(!fcmToken)throw Error('Firebase did not return a device token. Check Firebase Cloud Messaging and the VAPID key.');
     await api(ENDPOINTS.register,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-      token:fcmToken,endpoint:reg.scope,device:navigator.userAgent.slice(0,220)
+      token:fcmToken,endpoint:reg.scope,device:navigator.userAgent.slice(0,220),platform:navigator.platform||''
     })});
-    notice('Notifications are enabled on this device.');
-    updateDeviceStatus();loadData();
-  }catch(e){notice(e.message,'error');updateDeviceStatus()}
+    const verify=await api(ENDPOINTS.register);
+    if(!verify.registrations?.length)throw Error('The browser allowed notifications, but the device registration did not save.');
+    localStorage.setItem('asePushRegistered','1');
+    notice('Success — this device is enrolled and ready to receive alerts.','success',true);
+    updateDeviceStatus(true);await loadData();
+    if(reg.showNotification){await reg.showNotification('Adventure Sports notifications enabled',{body:'This device is now registered for Operations Hub alerts.',icon:'/uploads/branding/adventure-logo.png',badge:'/uploads/branding/adventure-logo.png',tag:'ase-enabled-test'}).catch(()=>{});}
+  }catch(e){console.error('Notification enrollment failed',e);notice(`Could not enable notifications: ${e.message}`,'error',true);updateDeviceStatus(false,e.message)}
+  finally{setEnableButton(Notification.permission==='granted'?'Re-enroll This Device':'Enable on This Device',false)}
 }
-function updateDeviceStatus(){
-  const text=$('#deviceStatusText'),dot=$('#deviceStatusDot'),help=$('#deviceStatusHelp');
-  if(!text)return;
-  if(!('Notification' in window)){text.textContent='Not supported';dot.dataset.state='off';help.textContent='Use Safari, Chrome, Edge, or an installed Home Screen app.';return}
-  const p=Notification.permission;
-  if(p==='granted'){text.textContent='Notifications enabled';dot.dataset.state='on';help.textContent='This device can receive Adventure Sports alerts.'}
-  else if(p==='denied'){text.textContent='Notifications blocked';dot.dataset.state='off';help.textContent='Open browser or phone settings to allow notifications.'}
-  else{text.textContent='Notifications not enabled';dot.dataset.state='pending';help.textContent='Press Enable on This Device and approve the prompt.'}
+function updateDeviceStatus(registered,errorMessage=''){
+  const text=$('#deviceStatusText'),dot=$('#deviceStatusDot'),help=$('#deviceStatusHelp');if(!text)return;
+  if(!window.isSecureContext){text.textContent='HTTPS required';dot.dataset.state='off';help.textContent='Open the deployed HTTPS website.';return}
+  if(!('Notification' in window)){text.textContent='Not supported';dot.dataset.state='off';help.textContent='Use a current browser. On iPhone, add the site to the Home Screen first.';return}
+  const p=Notification.permission, saved=registered===true||localStorage.getItem('asePushRegistered')==='1';
+  if(errorMessage){text.textContent='Enrollment failed';dot.dataset.state='off';help.textContent=errorMessage;return}
+  if(p==='granted'&&saved){text.textContent='Device enrolled';dot.dataset.state='on';help.textContent='This device is registered and can receive Adventure Sports alerts.'}
+  else if(p==='granted'){text.textContent='Permission allowed — enrollment needed';dot.dataset.state='pending';help.textContent='Press Re-enroll This Device to finish Firebase registration.'}
+  else if(p==='denied'){text.textContent='Notifications blocked';dot.dataset.state='off';help.textContent='Allow notifications in browser/site settings, then press Enable again.'}
+  else{text.textContent='Not enabled';dot.dataset.state='pending';help.textContent='Press Enable on This Device and approve the browser prompt.'}
 }
 function renderHistory(items=[],visibility={}){
   const box=$('#notificationHistory');if(!box)return;
@@ -167,7 +181,7 @@ function wire(){
 }
 async function boot(){
   wire();updateDeviceStatus();
-  try{await initFirebase()}catch{}
+  try{await initFirebase();if(Notification.permission==='granted'){const mine=await api(ENDPOINTS.register);if(mine.registrations?.length){localStorage.setItem('asePushRegistered','1');updateDeviceStatus(true)}}}catch(e){console.warn(e)}
   const wait=setInterval(()=>{if(token()){clearInterval(wait);loadData()}},300);
   setTimeout(()=>clearInterval(wait),15000);
 }

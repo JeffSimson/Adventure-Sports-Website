@@ -1,0 +1,18 @@
+ADVENTURE SPORTS OPERATIONS HUB V7.1.1
+
+Changes:
+- Unified the Operations Hub around the existing Adventure Sports blue-and-white colors.
+- Replaced dark mismatched cards with readable white cards and consistent text contrast.
+- Added the Cup Championship Games Command Center with the July 28–August 3 matrix and field setup cards.
+- Rebuilt notification enrollment feedback. The Enable button now registers the service worker, requests permission, obtains an FCM token, saves it through the Netlify function, verifies registration, and shows a local confirmation notification.
+
+NETLIFY REQUIRED ENVIRONMENT VARIABLE:
+FIREBASE_SERVICE_ACCOUNT_JSON = the full Firebase service-account JSON (or base64 encoded JSON).
+
+Firebase Console requirements:
+- Cloud Messaging API (HTTP v1) enabled
+- Web Push certificate/VAPID key must match the key used by the app
+- The deployed site must use HTTPS
+
+iPhone requirement:
+Install the Operations Hub to the Home Screen first, open the installed app, sign in, then press Enable on This Device. iOS web push does not work from a normal Safari tab.
