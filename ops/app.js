@@ -35,6 +35,7 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const token=()=>session?.token?.access_token||'';
 const authHeaders=(extra={})=>({Authorization:'Bearer '+token(),...extra});
 const role=()=>profile?.role||'unassigned';
+window.ASE_OPS={api,role,toast,getProfile:()=>profile,getSession:()=>session};
 const allowed=view=>(permissions[role()]||[]).includes(view);
 const defaultView=()=>(permissions[role()]||[])[0]||null;
 const fullName=u=>(u?.user_metadata?.full_name||u?.user_metadata?.name||u?.name||u?.email?.split('@')[0]||'Team Member').trim();

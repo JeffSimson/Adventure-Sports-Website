@@ -1,0 +1,27 @@
+ADVENTURE SPORTS V7.3.1 — TOURNAMENT MATRIX MANAGER
+
+WHAT IS NEW
+- Correct July 28–August 3 tournament field matrix is included as the initial live schedule.
+- Owners and Managers now see Tournament Matrix Manager inside Games.
+- Paste the standard matrix text or upload TXT, CSV, XLSX, or XLS.
+- Preview detected days, time slots, and total games before publishing.
+- Publish saves the matrix in Netlify live storage.
+- Everyone sees the updated matrix after refreshing. No GitHub update or Netlify deploy is required.
+- Previous schedules are archived and can be restored.
+- Operations Center game totals now update from the published matrix.
+
+NETLIFY REQUIREMENTS
+The project already uses Netlify live storage. Keep these environment variables configured:
+- PROJECT_ID (or SITE_ID / NETLIFY_SITE_ID)
+- NETLIFY_AUTH_TOKEN
+
+PERMISSIONS
+- Owner: view and manage
+- Manager: view and manage
+- Other authorized roles: view only
+
+UPLOAD FORMAT
+The pasted text should use:
+TUESDAY • JULY 28
+8:00 AM   ✓ — ✓ ...
+The eight field marks must follow A1 A2 B1 B2 C1 C2 D1 D2.

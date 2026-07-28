@@ -15,142 +15,70 @@
 <button class="nav-item" data-view="settings"><span>☰</span>Settings</button>
 </nav><div class="sidebar-role-card"><span class="avatar">A</span><div><strong id="sidebarUserName">Administrator</strong><small id="sidebarRoleName">Loading role…</small></div></div><div class="sidebar-footer"><a href="/" target="_blank">View Public Website ↗</a><button id="logoutButton">Sign Out</button></div></aside>
 <main class="main-area"><header class="mobile-header"><button id="menuButton" class="icon-button">☰</button><div><strong>Adventure Sports</strong><span>Operations Hub</span></div><button class="avatar">A</button></header>
-<section class="view active" data-view-panel="dashboard">
-  <div class="dashboard-hero">
-    <div class="dashboard-hero-copy">
-      <p class="eyebrow dashboard-eyebrow">Adventure Sports Command Center</p>
-      <h1><span id="greeting">Good Afternoon</span>, <span id="userName">Administrator</span></h1>
-      <p>Live facility controls, Clover performance and operational alerts in one place.</p>
-      <div class="hero-actions">
-        <button class="primary-btn hero-primary" data-go="website">Update Facility</button>
-        <button class="hero-secondary" data-go="clover">Open Clover</button>
-        <a href="/" target="_blank" class="hero-link">View Public Website ↗</a>
-      </div>
-    </div>
-
-    <div class="hero-status-card">
-      <div class="hero-status-top">
-        <span id="dashboardLiveDot" class="live-dot"></span>
-        <span>Live Facility Status</span>
-      </div>
-      <strong id="facilityStatus">Loading…</strong>
-      <p id="dashboardAnnouncement">Loading current announcement…</p>
-      <button class="small-btn" data-go="website">Edit status and announcement</button>
-    </div>
+<section class="view active ops73" data-view-panel="dashboard">
+  <div class="ops73-topbar">
+    <div><p class="eyebrow">Adventure Sports Operations Center</p><h1><span id="greeting">Good Morning</span>, <span id="userName">Administrator</span></h1><p id="ops73DateLine">Loading today’s command overview…</p></div>
+    <div class="ops73-top-actions"><div class="ops73-clock"><strong id="ops73Clock">--:--</strong><span id="ops73Date">—</span></div><button class="ops73-emergency" id="ops73Emergency">⚠ Emergency Alert</button></div>
   </div>
 
-  <div class="dashboard-primary-grid">
-    <article class="command-metric command-metric-main">
-      <div class="command-metric-head">
-        <span class="command-icon">$</span>
-        <small>Net Sales Today</small>
+  <div class="ops73-status-strip">
+    <button class="ops73-status-main" data-go="website"><span id="dashboardLiveDot" class="live-dot"></span><div><small>Facility Status</small><strong id="facilityStatus">Loading…</strong></div><span>Manage →</span></button>
+    <div class="ops73-announcement"><small>Public Announcement</small><p id="dashboardAnnouncement">Loading current announcement…</p></div>
+    <div class="ops73-system"><i></i><div><small>Operations Hub</small><strong>All systems online</strong></div></div>
+  </div>
+
+  <div class="ops73-kpis">
+    <button class="ops73-kpi sales" data-go="clover"><span>$</span><div><small>Net Sales Today</small><strong id="dashboardSales">Connecting…</strong><em id="dashboardSalesNote">Loading Clover</em></div></button>
+    <button class="ops73-kpi weather" data-go="weather"><span id="ops73WeatherIcon">☁</span><div><small>Weather Now</small><strong id="ops73Temp">Loading…</strong><em id="ops73WeatherText">Jackson, NJ</em></div></button>
+    <button class="ops73-kpi games" data-go="games"><span>⚾</span><div><small>Games Today</small><strong id="ops73Games">—</strong><em id="ops73GamesNote">Checking schedule</em></div></button>
+    <button class="ops73-kpi staff" data-go="staff"><span>👥</span><div><small>Staff Working Now</small><strong id="ops73Staff">—</strong><em id="ops73StaffNote">Checking coverage</em></div></button>
+    <button class="ops73-kpi maintenance" data-go="maintenance"><span>🛠</span><div><small>Maintenance Alerts</small><strong id="ops73Maintenance">—</strong><em id="ops73MaintenanceNote">Checking fields</em></div></button>
+  </div>
+
+  <div class="ops73-main-grid">
+    <article class="panel ops73-today">
+      <div class="panel-head"><div><p class="eyebrow">Live operations</p><h2>Today at Adventure</h2></div><span id="ops73LiveBadge" class="connection-badge ready">LIVE</span></div>
+      <div class="ops73-timeline" id="ops73Timeline">
+        <div class="ops73-timeline-empty">Loading today’s operational timeline…</div>
       </div>
-      <strong id="dashboardSales">Connecting…</strong>
-      <em id="dashboardSalesNote">Loading Clover</em>
-      <div class="metric-progress"><span id="dashboardSalesProgress"></span></div>
+      <div class="ops73-mini-grid">
+        <div><small>First Game</small><strong id="ops73FirstGame">—</strong></div><div><small>Last Start</small><strong id="ops73LastGame">—</strong></div><div><small>Active Fields</small><strong id="ops73Fields">—</strong></div><div><small>Closing Coverage</small><strong id="ops73Closing">—</strong></div>
+      </div>
     </article>
 
-    <article class="command-metric">
-      <div class="command-metric-head">
-        <span class="command-icon gate">🎟</span>
-        <small>Front Gate</small>
-      </div>
-      <strong id="dashboardFrontGate">$0.00</strong>
-      <em id="dashboardFrontGateShare">0% of net sales</em>
-    </article>
-
-    <article class="command-metric">
-      <div class="command-metric-head">
-        <span class="command-icon kitchen">🍔</span>
-        <small>Kitchen</small>
-      </div>
-      <strong id="dashboardKitchen">$0.00</strong>
-      <em id="dashboardKitchenShare">0% of net sales</em>
-    </article>
-
-    <article class="command-metric">
-      <div class="command-metric-head">
-        <span class="command-icon">#</span>
-        <small>Transactions</small>
-      </div>
-      <strong id="dashboardTransactions">—</strong>
-      <em id="dashboardTicket">Average ticket —</em>
+    <article class="panel ops73-checklist-card">
+      <div class="panel-head"><div><p class="eyebrow">Manager workflow</p><h2>Daily Operations Checklist</h2></div><strong id="ops73ChecklistProgress">0%</strong></div>
+      <div class="ops73-progress"><span id="ops73ChecklistBar"></span></div>
+      <div id="ops73Checklist" class="ops73-checklist"></div>
+      <button id="ops73ResetChecklist" class="secondary-btn compact-btn">Reset Today</button>
     </article>
   </div>
 
-  <div class="dashboard-secondary-grid">
-    <article class="panel dashboard-chart-card">
-      <div class="panel-head">
-        <div>
-          <p class="eyebrow">Today at a glance</p>
-          <h2>Hourly Sales Pace</h2>
-        </div>
-        <span id="dashboardUpdated" class="data-time">Waiting for Clover</span>
-      </div>
-      <div id="dashboardMiniChart" class="dashboard-mini-chart">
-        <div class="chart-empty">Connecting to Clover…</div>
+  <div class="ops73-secondary-grid">
+    <article class="panel">
+      <div class="panel-head"><div><p class="eyebrow">Fast response</p><h2>Quick Actions</h2></div></div>
+      <div class="ops73-actions">
+        <button data-go="notifications"><span>🔔</span><b>Notify Staff</b><small>Send role-based alert</small></button>
+        <button data-go="website"><span>◈</span><b>Update Facility</b><small>Status & announcement</small></button>
+        <button data-go="games"><span>⚾</span><b>Games Center</b><small>Schedule and setups</small></button>
+        <button data-go="maintenance"><span>🛠</span><b>Report Issue</b><small>Fields or equipment</small></button>
+        <button data-go="staff"><span>👥</span><b>Staff Coverage</b><small>Today’s shifts</small></button>
+        <button data-go="weather"><span>🌦</span><b>Weather Center</b><small>Radar and safety</small></button>
       </div>
     </article>
-
-    <article class="panel dashboard-health-card">
-      <div class="panel-head">
-        <div>
-          <p class="eyebrow">System health</p>
-          <h2>Operations Status</h2>
-        </div>
-        <span class="health-pulse"></span>
-      </div>
-
+    <article class="panel ops73-health-card">
+      <div class="panel-head"><div><p class="eyebrow">Connected services</p><h2>System Health</h2></div><span class="health-pulse"></span></div>
       <div class="health-list">
-        <button class="health-row" data-go="website">
-          <span class="health-icon ready">✓</span>
-          <div><b>Website Controls</b><small>Facility status and announcement</small></div>
-          <strong>Ready</strong>
-        </button>
-
-        <button class="health-row" data-go="clover">
-          <span id="dashboardCloverHealthIcon" class="health-icon loading">↻</span>
-          <div><b>Clover POS</b><small id="dashboardCloverHealthText">Connecting securely</small></div>
-          <strong id="dashboardCloverHealth">Loading</strong>
-        </button>
-
-        <button class="health-row" data-go="clover">
-          <span id="dashboardInventoryIcon" class="health-icon ready">✓</span>
-          <div><b>Inventory</b><small id="dashboardInventoryText">Checking tracked items</small></div>
-          <strong id="dashboardInventoryCount">—</strong>
-        </button>
+        <button class="health-row" data-go="website"><span class="health-icon ready">✓</span><div><b>Website Controls</b><small>Public status connected</small></div><strong>Ready</strong></button>
+        <button class="health-row" data-go="clover"><span id="dashboardCloverHealthIcon" class="health-icon loading">↻</span><div><b>Clover POS</b><small id="dashboardCloverHealthText">Connecting securely</small></div><strong id="dashboardCloverHealth">Loading</strong></button>
+        <button class="health-row" data-go="notifications"><span class="health-icon ready">✓</span><div><b>Push Notifications</b><small>iPhone delivery active</small></div><strong>Ready</strong></button>
+        <button class="health-row" data-go="maintenance"><span id="dashboardInventoryIcon" class="health-icon ready">✓</span><div><b>Inventory</b><small id="dashboardInventoryText">Checking tracked items</small></div><strong id="dashboardInventoryCount">—</strong></button>
       </div>
     </article>
   </div>
 
-  <div class="dashboard-bottom-grid">
-    <article class="panel">
-      <div class="panel-head">
-        <div>
-          <p class="eyebrow">Latest Clover activity</p>
-          <h2>Recent Orders</h2>
-        </div>
-        <button class="secondary-btn compact-btn" data-go="clover">View All</button>
-      </div>
-      <div id="dashboardRecentOrders" class="dashboard-order-list">
-        <div class="dashboard-empty">Waiting for Clover data…</div>
-      </div>
-    </article>
-
-    <article class="panel">
-      <div class="panel-head">
-        <div>
-          <p class="eyebrow">Fast access</p>
-          <h2>Quick Actions</h2>
-        </div>
-      </div>
-      <div class="dashboard-action-grid">
-        <button data-go="website"><span>◈</span><div><b>Website</b><small>Update public status</small></div></button>
-        <button data-go="clover"><span>$</span><div><b>Clover</b><small>Full sales center</small></div></button>
-        <button data-go="staff"><span>👥</span><div><b>Staff</b><small>Live daily schedule</small></div></button>
-        <button data-go="maintenance"><span>◇</span><div><b>Maintenance</b><small>Fields, issues & equipment</small></div></button><button data-go="notifications"><span>🔔</span><div><b>Notify Staff</b><small>Role-based alerts</small></div></button>
-      </div>
-    </article>
+  <div class="ops73-data-bridge" aria-hidden="true">
+    <span id="dashboardFrontGate">$0.00</span><span id="dashboardFrontGateShare"></span><span id="dashboardKitchen">$0.00</span><span id="dashboardKitchenShare"></span><span id="dashboardTransactions">0</span><span id="dashboardTicket"></span><span id="dashboardSalesProgress"></span><span id="dashboardUpdated"></span><div id="dashboardMiniChart"></div><div id="dashboardRecentOrders"></div>
   </div>
 </section>
 <section class="view" data-view-panel="website"><div class="page-head"><div><p class="eyebrow">Website Manager</p><h1>Website Control Center</h1><p>Control exactly what visitors see on the public website.</p></div><div class="head-actions"><a class="secondary-btn" href="/admin/">Website Editor</a><a class="secondary-btn" href="/" target="_blank">View Live Site ↗</a></div></div><div id="publishNotice" class="publish-notice" hidden></div><div class="editor-layout"><form id="quickControlsForm" class="panel control-panel"><div class="panel-head"><div><p class="eyebrow">Public website controls</p><h2>Facility Update</h2></div><span id="editorState" class="connection-badge loading">Loading</span></div><fieldset class="status-fieldset"><legend>Facility Status</legend><div class="status-options"><label class="status-option open"><input type="radio" name="fieldStatus" value="OPEN"><span><b>Open</b><small>Operating normally</small></span></label><label class="status-option delayed"><input type="radio" name="fieldStatus" value="DELAYED"><span><b>Delayed</b><small>Games or opening delayed</small></span></label><label class="status-option closed"><input type="radio" name="fieldStatus" value="CLOSED"><span><b>Closed</b><small>Facility is closed</small></span></label><label class="status-option check"><input type="radio" name="fieldStatus" value="CHECK SCHEDULE"><span><b>Check Schedule</b><small>Review schedule</small></span></label></div></fieldset><div class="form-field"><div class="label-row"><label>Homepage Announcement</label><span id="announcementCount">0 / 240</span></div><textarea id="announcementInput" maxlength="240" rows="5"></textarea></div><div class="change-summary"><span>Current live status</span><strong id="currentLiveStatus">Loading…</strong><span>Unsaved changes</span><strong id="changeState">None</strong></div><div class="form-actions"><button id="resetControlsButton" class="secondary-btn" type="button">Reset Changes</button><button id="publishControlsButton" class="primary-btn">Publish Changes</button></div></form><aside class="preview-column"><article class="panel"><div class="panel-head"><div><p class="eyebrow">Live preview</p><h2>What visitors will see</h2></div></div><div id="sitePreview" class="site-preview"><div class="preview-status-row"><span id="previewDot" class="preview-dot"></span><strong id="previewStatus">OPEN</strong></div><p id="previewAnnouncement">Loading announcement…</p></div></article><article class="panel activity-panel"><p class="eyebrow">Publishing information</p><h2>Current Website File</h2><dl><div><dt>File</dt><dd>content/site.json</dd></div><div><dt>Signed in as</dt><dd id="publisherEmail">Loading…</dd></div><div><dt>Last loaded</dt><dd id="lastLoadedTime">—</dd></div></dl></article></aside></div></section>
@@ -221,6 +149,35 @@
   <div class="panel games-week-panel">
     <div class="panel-head"><div><p class="eyebrow">Tournament matrix</p><h2>Weekly Game Schedule</h2></div><div id="gamesDayTabs" class="games-day-tabs"></div></div>
     <div id="gamesMatrix" class="games-matrix-wrap"></div>
+  </div>
+  <div id="gamesMatrixManager" class="panel games-manager-panel" hidden>
+    <div class="panel-head">
+      <div><p class="eyebrow">Owner & Manager tools</p><h2>Tournament Matrix Manager</h2><p>Paste or upload the standard field matrix, preview it, then publish it live without a new deploy.</p></div>
+      <span id="gamesMatrixLiveState" class="connection-badge ready">Live</span>
+    </div>
+    <div class="games-manager-grid">
+      <div>
+        <label class="games-manager-label" for="gamesMatrixText">Matrix schedule</label>
+        <textarea id="gamesMatrixText" rows="14" spellcheck="false" placeholder="Paste the TOURNAMENT FIELD MATRIX here in the same format you normally use."></textarea>
+        <div class="games-upload-row">
+          <label class="secondary-btn games-file-btn">Upload File<input id="gamesMatrixFile" type="file" accept=".txt,.csv,.xlsx,.xls" hidden></label>
+          <span id="gamesMatrixFileName">TXT, CSV, or XLSX</span>
+        </div>
+        <div id="gamesMatrixNotice" class="publish-notice" hidden></div>
+        <div class="form-actions">
+          <button id="gamesMatrixPreviewButton" class="secondary-btn" type="button">Preview Matrix</button>
+          <button id="gamesMatrixPublishButton" class="primary-btn" type="button" disabled>Publish Live</button>
+        </div>
+      </div>
+      <aside>
+        <div class="games-manager-meta">
+          <small>Current matrix</small><strong id="gamesMatrixName">Tournament Field Matrix</strong>
+          <dl><div><dt>Date range</dt><dd id="gamesMatrixRange">—</dd></div><div><dt>Version</dt><dd id="gamesMatrixVersion">—</dd></div><div><dt>Last updated</dt><dd id="gamesMatrixUpdated">—</dd></div><div><dt>Published by</dt><dd id="gamesMatrixBy">—</dd></div></dl>
+        </div>
+        <div class="games-preview-card"><small>Upload preview</small><div id="gamesMatrixPreview"><p>Paste or upload a matrix, then click Preview Matrix.</p></div></div>
+        <div class="games-archive-card"><div class="panel-head"><div><p class="eyebrow">Version history</p><h3>Schedule Archive</h3></div></div><div id="gamesMatrixArchive"><p class="empty-list">No archived schedules yet.</p></div></div>
+      </aside>
+    </div>
   </div>
   <div class="panel games-field-panel">
     <div class="panel-head"><div><p class="eyebrow">Grounds setup</p><h2>Field Configuration</h2><p>Pitching distance, base distance, division, and required changes.</p></div></div>
@@ -755,4 +712,4 @@
   </div>
 </section>
 
-<section class="view" data-view-panel="settings"><div class="page-head"><div><p class="eyebrow">Settings</p><h1>Operations Hub Settings</h1></div></div><div class="settings-grid"><article class="panel"><h2>Signed-in account</h2><p id="accountEmail">Loading…</p><span id="settingsRoleBadge" class="role-badge">Loading role</span><button id="settingsLogout" class="secondary-btn">Sign Out</button></article><article class="panel"><h2>Install on phone</h2><p>Use Add to Home Screen in Safari.</p><button id="settingsInstall" class="primary-btn">Install App</button></article></div></section></main></div><div id="toast" class="toast"></div><script src="/ops/dashboard-v2.js?v=40"></script><script src="/ops/clover-v2.js?v=30"></script><script src="/ops/staff.js?v=70"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"><script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script><script src="/ops/maintenance.js?v=20"></script><script src="/ops/weather.js?v=10"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script><script src="/ops/app.js?v=700"></script><script src="/ops/notifications-v7.js?v=718"></script><script src="/ops/games-v71.js?v=715"></script><script src="/ops/phase-one-v71.js?v=710"></script></body></html>
+<section class="view" data-view-panel="settings"><div class="page-head"><div><p class="eyebrow">Settings</p><h1>Operations Hub Settings</h1></div></div><div class="settings-grid"><article class="panel"><h2>Signed-in account</h2><p id="accountEmail">Loading…</p><span id="settingsRoleBadge" class="role-badge">Loading role</span><button id="settingsLogout" class="secondary-btn">Sign Out</button></article><article class="panel"><h2>Install on phone</h2><p>Use Add to Home Screen in Safari.</p><button id="settingsInstall" class="primary-btn">Install App</button></article></div></section></main></div><div id="toast" class="toast"></div><script src="/ops/dashboard-v2.js?v=40"></script><script src="/ops/dashboard-v73.js?v=731"></script><script src="/ops/clover-v2.js?v=30"></script><script src="/ops/staff.js?v=70"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"><script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script><script src="/ops/maintenance.js?v=20"></script><script src="/ops/weather.js?v=10"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script><script src="/ops/app.js?v=731"></script><script src="/ops/notifications-v7.js?v=718"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="/ops/games-v71.js?v=731"></script><script src="/ops/phase-one-v71.js?v=710"></script></body></html>
