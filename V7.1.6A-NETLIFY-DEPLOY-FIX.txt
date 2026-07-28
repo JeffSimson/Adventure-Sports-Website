@@ -1,0 +1,9 @@
+Adventure Sports Operations Hub V7.1.6A
+
+FIXED:
+- Netlify exposed-secret build failure for the public Firebase Web API key.
+- Replaced the value-specific omit setting with Netlify smart-detection disablement.
+- Notification delivery and enrollment code from V7.1.6 remain unchanged.
+
+UPLOAD:
+Replace the repository files with this package, commit, and push.

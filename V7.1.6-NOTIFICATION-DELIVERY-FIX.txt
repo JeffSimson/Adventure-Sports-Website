@@ -1,0 +1,10 @@
+V7.1.6 Notification Delivery Fix
+
+- Uses a native Web Push service worker for stronger iPhone Home Screen delivery.
+- Prevents duplicate enrolled-device records using a persistent device ID.
+- Cleans existing duplicate registrations automatically.
+- Removes invalid Firebase tokens after failed sends.
+- Adds detailed Firebase failure information to send records.
+- Uses an absolute HTTPS notification link when available.
+
+After deployment, each phone should open the installed Home Screen app once and press Re-enroll This Device one time.

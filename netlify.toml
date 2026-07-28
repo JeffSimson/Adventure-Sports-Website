@@ -2,6 +2,38 @@
   publish = "."
   command = ""
 
+
+[build.environment]
+  # Firebase Web API keys are public client identifiers.
+  # Disable heuristic smart detection so Netlify does not block the public Firebase config.
+  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
+
 [functions]
   directory = "netlify/functions"
-  node_bundler = "esbuild"
+
+
+[[headers]]
+  for = "/.netlify/functions/live-content"
+  [headers.values]
+    Cache-Control = "no-store, no-cache, must-revalidate, max-age=0"
+    CDN-Cache-Control = "no-store"
+    Netlify-CDN-Cache-Control = "no-store"
+
+[[headers]]
+  for = "/firebase-messaging-sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Service-Worker-Allowed = "/"
+
+[[headers]]
+  for = "/ops/manifest.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json"
+
+[[headers]]
+  for = "/ops/firebase-messaging-sw.js"
+  [headers.values]
+    Content-Type = "application/javascript; charset=utf-8"
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Service-Worker-Allowed = "/ops/"
+    Access-Control-Allow-Origin = "*"
