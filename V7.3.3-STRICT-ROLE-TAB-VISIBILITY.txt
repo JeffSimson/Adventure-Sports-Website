@@ -1,0 +1,9 @@
+V7.3.3 STRICT ROLE TAB VISIBILITY
+
+FIXED:
+- Grounds, Kitchen, and Cashier accounts never see Tournament Management.
+- Grounds, Kitchen, and Cashier accounts never see Notification Management.
+- Managers see Tournament Management only.
+- Notification Management remains Owner-only.
+- Logging out now reloads the app so management sections from a previous Owner/Manager session cannot remain in the page for the next user.
+- Added strict CSS role gates as a second layer of protection.

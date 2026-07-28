@@ -1429,3 +1429,15 @@ input,textarea,select{background:#fff!important;color:var(--ase-text)!important;
   .games-week-panel,.games-field-panel,.games-manager-panel{margin-bottom:16px}
   #gamesMatrixText{min-height:260px}
 }
+
+/* V7.3.3 strict role visibility */
+body:not([data-role="owner"]):not([data-role="manager"]) [data-internal-access="management"],
+body:not([data-role="owner"]) [data-internal-access="owner"]{display:none!important}
+body[data-role="grounds"] #gamesMatrixManager,
+body[data-role="kitchen"] #gamesMatrixManager,
+body[data-role="cashier"] #gamesMatrixManager,
+body[data-role="grounds"] #sendNotificationPanel,
+body[data-role="kitchen"] #sendNotificationPanel,
+body[data-role="cashier"] #sendNotificationPanel,
+body:not([data-role="owner"]) #notificationAccessPanel,
+body:not([data-role="owner"]) #notificationDevicesPanel{display:none!important}
