@@ -15,20 +15,22 @@ const messaging = firebase.messaging();
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
 
+// Notification messages sent by the backend include webpush.notification,
+// so supported browsers (including iPhone Home Screen apps) display them
+// directly. This handler is only a fallback for older/data-only messages.
 messaging.onBackgroundMessage(payload => {
-  const n = payload.notification || {};
-  const d = payload.data || {};
-  const title = n.title || d.title || 'Adventure Sports';
-  const options = {
-    body: n.body || d.body || 'Open the Operations Hub for details.',
+  if (payload && payload.notification) return;
+  const d = (payload && payload.data) || {};
+  const title = d.title || 'Adventure Sports';
+  return self.registration.showNotification(title, {
+    body: d.body || 'Open the Operations Hub for details.',
     icon: 'https://adventurenj.com/uploads/branding/adventure-logo.png',
     badge: 'https://adventurenj.com/uploads/branding/adventure-logo.png',
     tag: d.notificationId || 'ase-notification',
     renotify: true,
     requireInteraction: d.priority === 'emergency',
     data: { url: d.url || '/ops/' }
-  };
-  return self.registration.showNotification(title, options);
+  });
 });
 
 self.addEventListener('notificationclick', event => {

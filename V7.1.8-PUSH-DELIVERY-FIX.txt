@@ -1,0 +1,14 @@
+Adventure Sports Operations Hub V7.1.8
+
+Push delivery fix:
+- Backend now sends a visible webpush.notification payload instead of data-only messages.
+- This allows iPhone Home Screen apps to display alerts while suspended or closed.
+- Service worker keeps a fallback for older data-only messages without creating duplicates.
+- Re-enrollment reuses the current valid token and replaces the saved device row by stable device ID.
+- Existing Team Management and Games Command Center UI are unchanged.
+
+After deployment:
+1. Open the Home Screen app once on each phone.
+2. Press Re-enroll This Device once.
+3. Fully close the app.
+4. Send a new test alert.

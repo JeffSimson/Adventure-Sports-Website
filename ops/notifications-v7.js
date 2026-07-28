@@ -62,7 +62,7 @@ async function initFirebase(){
       await existing.unregister().catch(()=>false);
     }
   }
-  const reg=await navigator.serviceWorker.register('/ops/firebase-messaging-sw.js?v=717',{scope:'/ops/',updateViaCache:'none'});
+  const reg=await navigator.serviceWorker.register('/ops/firebase-messaging-sw.js?v=718',{scope:'/ops/',updateViaCache:'none'});
   await reg.update().catch(()=>{});
   await new Promise((resolve,reject)=>{
     const worker=reg.installing||reg.waiting||reg.active;
@@ -84,10 +84,8 @@ async function enableNotifications(){
     let permission=Notification.permission;
     if(permission==='default')permission=await Notification.requestPermission();
     if(permission!=='granted')throw Error(permission==='denied'?'Notifications are blocked. Allow them in your browser/site settings, then try again.':'Notification permission was not granted.');
-    // Force a fresh FCM/APNs token. iPhone can keep an accepted-but-undeliverable token
-    // after a service-worker update, so re-enrollment must replace it instead of reusing it.
-    try{await messaging.deleteToken()}catch(_e){}
-    await new Promise(resolve=>setTimeout(resolve,450));
+    // Reuse the browser's current valid token. The server replaces the existing
+    // registration for this stable device ID, preventing duplicate records.
     const fcmToken=await messaging.getToken({vapidKey:VAPID,serviceWorkerRegistration:reg});
     if(!fcmToken)throw Error('Firebase did not return a device token. Confirm the Firebase Cloud Messaging Registration API is enabled and this domain is allowed.');
     await api(ENDPOINTS.register,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({

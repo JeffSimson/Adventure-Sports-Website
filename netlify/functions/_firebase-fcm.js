@@ -26,16 +26,38 @@ async function sendFCM(registration,payload,origin=''){
   const auth=await accessToken();
   const rawUrl=String(payload.url||'/ops/');
   const link=/^https:\/\//i.test(rawUrl)?rawUrl:`${String(origin||'').replace(/\/$/,'')}${rawUrl.startsWith('/')?rawUrl:'/'+rawUrl}`;
-  const message={token:registration.token,data:{
-    title:String(payload.title||'Adventure Sports'),body:String(payload.body||''),url:rawUrl,
+  const title=String(payload.title||'Adventure Sports');
+  const body=String(payload.body||'');
+  const data={
+    title,body,url:rawUrl,
     notificationId:String(payload.notificationId||''),priority:String(payload.priority||'normal')
-  },webpush:{headers:{Urgency:payload.priority==='emergency'?'high':'normal',TTL:'86400'}}};
+  };
+  // Send a real Web Push notification payload, not data-only. Safari/iPhone
+  // Home Screen apps are much more reliable when the visible notification is
+  // included in webpush.notification and can be displayed by the push service
+  // even while the app and service worker are suspended.
+  const message={
+    token:registration.token,
+    data,
+    webpush:{
+      headers:{Urgency:payload.priority==='emergency'?'high':'normal',TTL:'86400'},
+      notification:{
+        title,body,
+        icon:'https://adventurenj.com/uploads/branding/adventure-logo.png',
+        badge:'https://adventurenj.com/uploads/branding/adventure-logo.png',
+        tag:String(payload.notificationId||'ase-notification'),
+        renotify:true,
+        requireInteraction:payload.priority==='emergency',
+        data:{url:rawUrl,notificationId:String(payload.notificationId||'')}
+      }
+    }
+  };
   if(/^https:\/\//i.test(link))message.webpush.fcm_options={link};
   const response=await fetch(`https://fcm.googleapis.com/v1/projects/${encodeURIComponent(auth.projectId)}/messages:send`,{
     method:'POST',headers:{Authorization:`Bearer ${auth.token}`,'Content-Type':'application/json'},body:JSON.stringify({message})
   });
-  const data=await response.json().catch(()=>({}));
-  if(!response.ok){const err=new Error(data?.error?.message||`Firebase send failed (${response.status}).`);err.code=data?.error?.status||'';err.details=data?.error?.details||[];throw err}
-  return data;
+  const responseData=await response.json().catch(()=>({}));
+  if(!response.ok){const err=new Error(responseData?.error?.message||`Firebase send failed (${response.status}).`);err.code=responseData?.error?.status||'';err.details=responseData?.error?.details||[];throw err}
+  return responseData;
 }
 module.exports={sendFCM,serviceAccount};
