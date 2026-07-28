@@ -1,0 +1,14 @@
+V7.3.4 — CLOVER TIPS + NOTIFICATION REPAIR
+
+CLOVER
+- Added an Owner-only Employee Tips section inside the Clover tab.
+- Tips come directly from Clover payment records for the selected date range.
+- Shows total tips and tips grouped by Clover employee.
+- Managers and all other roles do not see the Employee Tips tab or panel.
+- If Clover does not associate a payment with an employee, it appears as Unassigned.
+
+NOTIFICATIONS
+- Fixed a service-worker registration bug that could unregister the active /ops notification worker.
+- Added automatic enrollment health repair whenever notification permission is already granted.
+- Device tokens are refreshed back into live storage automatically.
+- Updated the notification worker version to force iPhone/Home Screen apps to receive the corrected worker.

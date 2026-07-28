@@ -52,6 +52,13 @@ function render(d){
   $('#cloverKitchenLegend').textContent=usd.format(kitchen)+' • '+kp.toFixed(1)+'%';
   $('#cloverSplitRing').style.setProperty('--gate-percent',gp+'%');
   drawChart(d);
+  if(d.tips&&$('#cloverTipsPanel')){
+    const rows=Array.isArray(d.tips.byEmployee)?d.tips.byEmployee:[];
+    $('#cloverTipsTotal').textContent=usd.format(Number(d.tips.total)||0);
+    $('#cloverTipsEmployees').textContent=String(rows.length);
+    $('#cloverTipsRange').textContent=d.range?.label||'Selected range';
+    $('#cloverTipsBody').innerHTML=rows.length?rows.map(x=>'<tr><td><strong>'+escapeHtml(x.name||'Unassigned')+'</strong></td><td>'+Number(x.transactions||0)+'</td><td class="money-cell">'+usd.format(Number(x.tips)||0)+'</td></tr>').join(''):'<tr><td colspan="3" class="empty-row">No Clover tips were recorded in this date range.</td></tr>';
+  }
   if(Array.isArray(d.topItems)&&$('#topItemsList'))$('#topItemsList').innerHTML=d.topItems.length?d.topItems.map((i,n)=>'<li><span class="rank-number">'+(n+1)+'</span><div><b>'+escapeHtml(i.name)+'</b><small>'+Number(i.quantity||0).toFixed(Number.isInteger(i.quantity)?0:1)+' sold</small></div><strong>'+usd.format(i.net||0)+'</strong></li>').join(''):'<li class="empty-list">No item-level sales data posted.</li>'
 }
 function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}

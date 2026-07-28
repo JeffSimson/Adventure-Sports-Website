@@ -1441,3 +1441,13 @@ body[data-role="kitchen"] #sendNotificationPanel,
 body[data-role="cashier"] #sendNotificationPanel,
 body:not([data-role="owner"]) #notificationAccessPanel,
 body:not([data-role="owner"]) #notificationDevicesPanel{display:none!important}
+
+/* V7.3.4 Clover owner-only tips */
+.clover-tip-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:18px}
+.clover-tip-summary>div{border:1px solid var(--line);border-radius:14px;padding:18px;background:#f9fbfe}
+.clover-tip-summary small,.clover-tip-summary strong,.clover-tip-summary em{display:block}
+.clover-tip-summary small{color:var(--muted);font-weight:750}
+.clover-tip-summary strong{font-size:30px;color:var(--navy);margin:5px 0}
+.clover-tip-summary em{font-style:normal;color:var(--muted);font-size:12px}
+.clover-tips-note{color:var(--muted);font-size:12px;margin:14px 0 0}
+@media(max-width:700px){.clover-tip-summary{grid-template-columns:1fr}}

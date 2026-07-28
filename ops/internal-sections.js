@@ -86,6 +86,19 @@ function users(){
  }
  makeTabs(view,[{key:'directory',label:'Employee Directory'},...(owner?[{key:'administration',label:'Roles & Permissions',access:'owner'}]:[])]);
 }
+
+function clover(){
+ const view=$('[data-view-panel="clover"]');if(!view)return;
+ const owner=role()==='owner';
+ const tips=$('#cloverTipsPanel');
+ const head=view.querySelector('.page-head');
+ const general=[...view.children].filter(n=>n!==head&&n!==tips);
+ const overview=panel(view,'sales',general);overview.classList.add('active');
+ if(owner&&tips){tips.hidden=false;const tp=panel(view,'tips',[tips]);tp.dataset.internalAccess='owner'}
+ else if(tips){tips.remove()}
+ makeTabs(view,[{key:'sales',label:'Sales Dashboard'},...(owner?[{key:'tips',label:'Employee Tips',access:'owner'}]:[])]);
+}
+
 function website(){
  const view=$('[data-view-panel="website"]');if(!view)return;
  // This tab is already owner-only; group publishing controls clearly.
@@ -106,7 +119,7 @@ function dashboard(){
 function init(event){
  currentRole=event?.detail?.role||window.ASE_OPS?.role?.()||document.body.dataset.role||'unassigned';
  document.body.dataset.role=currentRole;
- dashboard();games();notifications();users();website();weather();
+ dashboard();games();notifications();users();clover();website();weather();
  document.body.classList.add('role-sections-ready');
 }
 window.addEventListener('ase:profile-ready',init);

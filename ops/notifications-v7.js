@@ -87,11 +87,11 @@ async function initFirebase(){
   // Remove the broken V7.1 root worker before installing the corrected /ops worker.
   const registrations=await navigator.serviceWorker.getRegistrations();
   for(const existing of registrations){
-    if(existing.scope===location.origin+'/' || existing.active?.scriptURL?.includes('/firebase-messaging-sw.js')){
+    if(existing.scope===location.origin+'/'){
       await existing.unregister().catch(()=>false);
     }
   }
-  const reg=await navigator.serviceWorker.register('/ops/firebase-messaging-sw.js?v=720',{scope:'/ops/',updateViaCache:'none'});
+  const reg=await navigator.serviceWorker.register('/ops/firebase-messaging-sw.js?v=734',{scope:'/ops/',updateViaCache:'none'});
   await reg.update().catch(()=>{});
   await new Promise((resolve,reject)=>{
     const worker=reg.installing||reg.waiting||reg.active;
@@ -137,6 +137,24 @@ async function enableNotifications(){
   }catch(e){console.error('Notification enrollment failed',e);let message=e&&e.message?e.message:String(e);if(/cors|cross-origin|network/i.test(message)){message='Firebase blocked the device registration request. The corrected service worker is installed, but Firebase must allow adventurenj.com and the Cloud Messaging Registration API must be enabled.';}notice(`Could not enable notifications: ${message}`,'error',true);updateDeviceStatus(false,message)}
   finally{setEnableButton(Notification.permission==='granted'?'Re-enroll This Device':'Enable on This Device',false)}
 }
+
+async function healEnrollment(){
+  if(!('Notification' in window)||Notification.permission!=='granted')return;
+  try{
+    const reg=await initFirebase();
+    const fcmToken=await messaging.getToken({vapidKey:VAPID,serviceWorkerRegistration:reg});
+    if(!fcmToken)return;
+    await api(ENDPOINTS.register,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      token:fcmToken,deviceId:stableDeviceId(),endpoint:reg.scope,device:navigator.userAgent.slice(0,220),platform:navigator.platform||''
+    })});
+    localStorage.setItem('asePushRegistered','1');
+    updateDeviceStatus(true);
+  }catch(error){
+    console.warn('Automatic notification repair failed',error);
+    updateDeviceStatus(false,error?.message||String(error));
+  }
+}
+
 function updateDeviceStatus(registered,errorMessage=''){
   const text=$('#deviceStatusText'),dot=$('#deviceStatusDot'),help=$('#deviceStatusHelp');if(!text)return;
   if(!window.isSecureContext){text.textContent='HTTPS required';dot.dataset.state='off';help.textContent='Open the deployed HTTPS website.';return}
@@ -238,8 +256,8 @@ function wire(){
 }
 async function boot(){
   wire();updateDeviceStatus();
-  try{await initFirebase();if(Notification.permission==='granted'){const mine=await api(ENDPOINTS.register);if(mine.registrations?.length){localStorage.setItem('asePushRegistered','1');updateDeviceStatus(true)}}}catch(e){console.warn(e)}
-  const wait=setInterval(()=>{if(token()){clearInterval(wait);loadData()}},300);
+  try{await initFirebase();if(Notification.permission==='granted')await healEnrollment()}catch(e){console.warn(e)}
+  const wait=setInterval(()=>{if(token()){clearInterval(wait);loadData();if(Notification.permission==='granted')healEnrollment()}},300);
   setTimeout(()=>clearInterval(wait),15000);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
