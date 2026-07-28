@@ -1,27 +1,46 @@
-/* Adventure Sports Operations Hub push service worker — native Web Push handler */
-self.addEventListener('install',function(){self.skipWaiting()});
-self.addEventListener('activate',function(event){event.waitUntil(self.clients.claim())});
-self.addEventListener('push',function(event){
-  let payload={};
-  try{payload=event.data?event.data.json():{}}catch(e){payload={data:{body:event.data?event.data.text():''}}}
-  const n=payload.notification||payload.webpush?.notification||{};
-  const d=payload.data||{};
-  const title=n.title||d.title||'Adventure Sports';
-  const options={
-    body:n.body||d.body||'Open the Operations Hub for details.',
-    icon:n.icon||'/uploads/branding/adventure-logo.png',
-    badge:n.badge||'/uploads/branding/adventure-logo.png',
-    tag:n.tag||d.notificationId||'ase-notification',
-    requireInteraction:n.requireInteraction===true||d.priority==='emergency',
-    data:{url:n.data?.url||d.url||'/ops/'}
-  };
-  event.waitUntil(self.registration.showNotification(title,options));
+/* Adventure Sports Operations Hub — Firebase Messaging service worker */
+importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js');
+
+firebase.initializeApp({
+  apiKey: 'AIzaSyCJ2bzP2XdpSvbqdr4eg5ALHcQUBAFXQ1E',
+  authDomain: 'adventure-sports-operations.firebaseapp.com',
+  projectId: 'adventure-sports-operations',
+  storageBucket: 'adventure-sports-operations.firebasestorage.app',
+  messagingSenderId: '366845908808',
+  appId: '1:366845908808:web:bc9cbeeb1fafd67a64857d'
 });
-self.addEventListener('notificationclick',function(event){
+
+const messaging = firebase.messaging();
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
+
+messaging.onBackgroundMessage(payload => {
+  const n = payload.notification || {};
+  const d = payload.data || {};
+  const title = n.title || d.title || 'Adventure Sports';
+  const options = {
+    body: n.body || d.body || 'Open the Operations Hub for details.',
+    icon: 'https://adventurenj.com/uploads/branding/adventure-logo.png',
+    badge: 'https://adventurenj.com/uploads/branding/adventure-logo.png',
+    tag: d.notificationId || 'ase-notification',
+    renotify: true,
+    requireInteraction: d.priority === 'emergency',
+    data: { url: d.url || '/ops/' }
+  };
+  return self.registration.showNotification(title, options);
+});
+
+self.addEventListener('notificationclick', event => {
   event.notification.close();
-  const targetUrl=event.notification?.data?.url||'/ops/';
-  event.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(function(list){
-    for(const client of list){if('focus' in client){if('navigate' in client)client.navigate(targetUrl);return client.focus()}}
-    return self.clients.openWindow?self.clients.openWindow(targetUrl):null;
+  const target = new URL(event.notification?.data?.url || '/ops/', self.location.origin).href;
+  event.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clients => {
+    for (const client of clients) {
+      if (client.url.startsWith(self.location.origin) && 'focus' in client) {
+        if ('navigate' in client) client.navigate(target);
+        return client.focus();
+      }
+    }
+    return self.clients.openWindow ? self.clients.openWindow(target) : null;
   }));
 });

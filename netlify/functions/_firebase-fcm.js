@@ -29,12 +29,7 @@ async function sendFCM(registration,payload,origin=''){
   const message={token:registration.token,data:{
     title:String(payload.title||'Adventure Sports'),body:String(payload.body||''),url:rawUrl,
     notificationId:String(payload.notificationId||''),priority:String(payload.priority||'normal')
-  },webpush:{headers:{Urgency:payload.priority==='emergency'?'high':'normal',TTL:'86400'},notification:{
-    title:String(payload.title||'Adventure Sports'),body:String(payload.body||''),
-    icon:'/uploads/branding/adventure-logo.png',badge:'/uploads/branding/adventure-logo.png',
-    requireInteraction:payload.priority==='emergency',tag:String(payload.notificationId||'ase-alert'),
-    data:{url:rawUrl}
-  }}};
+  },webpush:{headers:{Urgency:payload.priority==='emergency'?'high':'normal',TTL:'86400'}}};
   if(/^https:\/\//i.test(link))message.webpush.fcm_options={link};
   const response=await fetch(`https://fcm.googleapis.com/v1/projects/${encodeURIComponent(auth.projectId)}/messages:send`,{
     method:'POST',headers:{Authorization:`Bearer ${auth.token}`,'Content-Type':'application/json'},body:JSON.stringify({message})
