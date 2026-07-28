@@ -1,0 +1,17 @@
+Adventure Sports Operations Hub V7.1.5
+
+This update only changes the Games Command Center.
+
+Included:
+- Complete July 28 through August 3 weekly matrix
+- Automatic day selection
+- Games, active fields, first pitch, and last start summaries
+- Live/upcoming/completed row states for the current day
+- Field cards for A1 through D2
+- Pitching and base distances
+- Division and championship labels
+- C2 and A2 setup-change alerts
+- Clickable field detail windows with game times and setup notes
+- Mobile layout improvements
+
+Notifications and Team Management were left unchanged.
