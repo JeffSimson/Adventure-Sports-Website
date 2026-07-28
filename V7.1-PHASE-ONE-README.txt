@@ -1,0 +1,24 @@
+ADVENTURE SPORTS OPERATIONS HUB — V7.1 PHASE ONE
+
+WHAT CHANGED
+- Dashboard renamed and polished as the Operations Center.
+- Added a live command strip with date and fast actions.
+- Added operational status ribbon for facility, weather, maintenance, and notifications.
+- Added Owner-only “View As” role preview in Team Management.
+- Improved team cards, permission matrix presentation, navigation, and mobile styling.
+- Added Cashier to the permission matrix and permission-saving logic.
+- Preserved existing Website, Clover, Staff, Games, Maintenance, Weather, Reports, Kitchen, Notifications, and Settings features.
+
+SECURITY
+- No Firebase private key or service-account JSON is included.
+- Firebase server credentials must remain in Netlify environment variables.
+- Do not commit private keys to GitHub.
+
+DEPLOYMENT
+1. Replace the files in your GitHub repository with this ZIP’s contents.
+2. Commit and push to origin.
+3. Netlify will redeploy from the repository.
+4. Hard refresh /ops/ after deployment.
+
+VERSION
+V7.1 Phase One — 2026-07-27

@@ -152,12 +152,12 @@ async function toggleDisabled(){if(!selectedProfileUser)return;const action=sele
 async function terminateSelected(){if(!selectedProfileUser)return;if(prompt(`Type TERMINATE to permanently remove ${selectedProfileUser.email}.`)!=='TERMINATE')return;await userAction({action:'terminate',userId:selectedProfileUser.id},'Account terminated.');closeModal('#profileModal')}
 async function sendRecovery(){if(!selectedProfileUser)return;try{await api(USERS,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'send-recovery',userId:selectedProfileUser.id})});noticeUsers('Password reset email sent.')}catch(e){noticeUsers(e.message,'error')}}
 function renderPermissions(){
-  const roles=['owner','manager','grounds','kitchen'];
+  const roles=['owner','manager','grounds','kitchen','cashier'];
   $('#permissionMatrix').innerHTML=`<table class="permission-table"><thead><tr><th>Module</th>${roles.map(r=>`<th>${ROLE_LABELS[r]}</th>`).join('')}</tr></thead><tbody>${MODULES.map(([key,label])=>`<tr><td><b>${label}</b><small>${key}</small></td>${roles.map(r=>`<td><input type="checkbox" data-perm-role="${r}" data-perm-module="${key}" ${(permissions[r]||[]).includes(key)?'checked':''} ${r==='owner'?'disabled':''}></td>`).join('')}</tr>`).join('')}</tbody></table>`;
 }
 async function savePermissions(){
   const next=structuredClone(permissions);
-  ['manager','grounds','kitchen'].forEach(r=>{next[r]=$$(`[data-perm-role="${r}"]:checked`).map(x=>x.dataset.permModule)});
+  ['manager','grounds','kitchen','cashier'].forEach(r=>{next[r]=$$(`[data-perm-role="${r}"]:checked`).map(x=>x.dataset.permModule)});
   next.owner=DEFAULT_PERMISSIONS.owner;
   try{const d=await api(PERMS,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({permissions:next})});permissions=d.permissions;applyPermissions();noticeUsers('Permissions saved.');toast('Permissions updated')}catch(e){noticeUsers(e.message,'error')}
 }
