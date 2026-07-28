@@ -1396,3 +1396,36 @@ input,textarea,select{background:#fff!important;color:var(--ase-text)!important;
 .games-archive-item b,.games-archive-item small{display:block}
 .games-archive-item small{color:var(--muted);font-size:11px;margin-top:3px}
 @media(max-width:900px){.games-manager-grid{grid-template-columns:1fr}.games-manager-grid aside{grid-template-columns:1fr}}
+
+/* V7.3.2 role-based internal sections and mobile polish */
+.internal-section-tabs{
+  display:flex;gap:8px;flex-wrap:wrap;margin:0 0 20px;padding:7px;
+  background:#eaf0f8;border:1px solid #d7e1ee;border-radius:14px
+}
+.internal-section-tab{
+  border:0;background:transparent;color:#5f6f86;padding:11px 15px;border-radius:10px;font-weight:800
+}
+.internal-section-tab.active{background:#fff;color:var(--navy);box-shadow:0 5px 15px rgba(7,28,59,.09)}
+.internal-section-panel{display:none}
+.internal-section-panel.active{display:block}
+.owner-admin-wrap{display:grid;gap:16px}
+[data-view-panel="notifications"]>.internal-section-panel,
+[data-view-panel="games"]>.internal-section-panel,
+[data-view-panel="users"]>.internal-section-panel,
+[data-view-panel="website"]>.internal-section-panel{animation:internalFade .16s ease}
+@keyframes internalFade{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media(max-width:700px){
+  .main-area{padding:18px 14px 28px}
+  .page-head,.users-hero,.staff-hero,.weather-hero,.maintenance-hero{margin-bottom:18px}
+  .metrics-grid,.clover-metrics,.games-summary-grid,.staff-kpi-grid,.maintenance-kpi-grid,.weather-current-grid{gap:14px}
+  .metric-card,.panel,.games-summary-card,.staff-kpi,.maintenance-kpi,.weather-metric-card{border-radius:17px}
+  .panel{padding:20px}
+  .content-grid,.editor-layout,.clover-grid,.settings-grid,.games-manager-grid{gap:16px}
+  .internal-section-tabs{position:sticky;top:108px;z-index:18;margin-bottom:16px;overflow-x:auto;flex-wrap:nowrap}
+  .internal-section-tab{white-space:nowrap;flex:0 0 auto}
+  .notification-command-grid,.notification-lower-grid{grid-template-columns:1fr}
+  .ops73-primary-grid,.ops73-secondary-grid{gap:16px}
+  .ops73-timeline-row{padding:14px}
+  .games-week-panel,.games-field-panel,.games-manager-panel{margin-bottom:16px}
+  #gamesMatrixText{min-height:260px}
+}

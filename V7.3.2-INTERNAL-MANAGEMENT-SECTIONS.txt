@@ -1,0 +1,12 @@
+ADVENTURE SPORTS V7.3.2
+
+- Removed the Dashboard Daily Operations Checklist.
+- Improved phone spacing, card gaps, and internal navigation.
+- Games now has Games & Fields plus a hidden Tournament Management section.
+- Tournament Management is visible only to Owners and Managers.
+- Notifications opens to Notification History for normal users and Managers.
+- Notification sending, devices, visibility, and access controls are visible only to Owners.
+- People & Permissions separates Employee Directory from owner-only Roles & Permissions.
+- Website publishing is grouped into its own management section.
+- Weather field-status controls are hidden from non-management roles.
+- Hidden sections are not shown as disabled options; unauthorized roles do not see them.

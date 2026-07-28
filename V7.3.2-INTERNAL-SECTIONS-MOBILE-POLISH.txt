@@ -1,0 +1,33 @@
+ADVENTURE SPORTS V7.3.2 — INTERNAL MANAGEMENT SECTIONS + MOBILE POLISH
+
+WHAT CHANGED
+- Removed the Daily Operations Checklist from the Operations Center dashboard.
+- Added cleaner, more even spacing and card sizing on phones.
+- Added role-based internal sections inside the tabs that contain management controls.
+
+GAMES
+- Regular users with Games access see Games & Fields only.
+- Owners and Managers also see Tournament Management.
+- Tournament Matrix Manager is completely absent for Grounds, Kitchen, Cashier, and other non-management roles.
+
+NOTIFICATIONS
+- Regular users see Notification History and their device enable/refresh controls.
+- Send Notification, recipient targeting, device administration, visibility rules, and sending permissions are moved into Notification Management.
+- Notification Management is visible to Owners only.
+- Managers and regular staff do not see notification permission or sending controls.
+
+PEOPLE & PERMISSIONS
+- Employee Directory remains the simple daily section.
+- Roles, permissions, owners, notification access, and audit information are moved into a separate Roles & Permissions section visible to Owners only.
+- Managers can access allowed employee operations without seeing role/permission administration.
+
+WEBSITE
+- Website publishing controls are grouped under Website Management inside the Website tab.
+
+WEATHER
+- Field-status management is hidden from non-management roles.
+- Owners and Managers retain the management section inside Weather.
+
+SECURITY / VISIBILITY
+- Restricted sections are removed from the visible interface instead of showing disabled controls or permission explanations.
+- Existing backend role checks remain in place.

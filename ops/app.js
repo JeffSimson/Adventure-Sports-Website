@@ -81,7 +81,7 @@ async function show(u){
   try{
     await loadProfile();
     if(!ROLE_LABELS[role()])return unauthorized('Your account is active, but no app role has been assigned.');
-    gate.hidden=true;app.hidden=false;renderUser(u);applyPermissions();
+    gate.hidden=true;app.hidden=false;renderUser(u);applyPermissions();window.dispatchEvent(new CustomEvent('ase:profile-ready',{detail:{role:role()}}));
     const requested=location.hash.replace('#','');go(allowed(requested)?requested:defaultView());
     if(allowed('website'))loadSite();
     if(allowed('clover')){loadClover();timer=setInterval(loadClover,60000)}
