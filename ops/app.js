@@ -3,6 +3,24 @@
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const app=$('#app'), gate=$('#loginGate'), sidebar=$('#sidebar');
 const AUTH_KEY='ase_ops_identity_session_v2';
+const APP_BUILD='737';
+async function ensureFreshBuild(){
+  try{
+    const key='ase_ops_build';
+    const previous=localStorage.getItem(key);
+    if(previous!==APP_BUILD){
+      localStorage.setItem(key,APP_BUILD);
+      if(previous){
+        const url=new URL(location.href);
+        url.searchParams.set('build',APP_BUILD);
+        location.replace(url.pathname+url.search+url.hash);
+        return false;
+      }
+    }
+  }catch{}
+  return true;
+}
+
 const IDENTITY='/.netlify/identity';
 const PROFILE='/.netlify/functions/auth-profile';
 const USERS='/.netlify/functions/user-management-v2';
@@ -91,7 +109,9 @@ async function show(u){
 async function restore(){showGate();const s=read();if(!s?.token)return;try{const u=await identityUser(s.token.access_token);save(s.token,u);await show(u)}catch{const f=await refresh(s).catch(()=>null);if(f)await show(f.user);else clear()}}
 async function login(e){e.preventDefault();const b=$('#loginButton');b.disabled=true;b.textContent='Signing In…';try{const r=await fetch(IDENTITY+'/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'password',username:$('#loginEmail').value.trim(),password:$('#loginPassword').value})});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Error(d.error_description||'The email or password is incorrect.');const u=await identityUser(d.access_token);save(d,u);$('#loginStatus').className='login-status';await show(u)}catch(err){$('#loginStatus').textContent=err.message;$('#loginStatus').className='login-status error'}finally{b.disabled=false;b.textContent='Sign In'}}
 function logout(){clear();location.hash='';location.reload()}
-function go(v){if(!v||!allowed(v))v=defaultView();if(!v)return unauthorized();$$('.view').forEach(x=>x.classList.toggle('active',x.dataset.viewPanel===v));$$('.nav-item').forEach(x=>x.classList.toggle('active',x.dataset.view===v));sidebar.classList.remove('open');history.replaceState(null,'','#'+v);if(v==='clover')loadClover();if(v==='users')loadUsers()}
+function closeMenu(){sidebar.classList.remove('open');document.body.classList.remove('menu-open')}
+function openMenu(){sidebar.classList.add('open');document.body.classList.add('menu-open');sidebar.scrollTop=0}
+function go(v){if(!v||!allowed(v))v=defaultView();if(!v)return unauthorized();$$('.view').forEach(x=>x.classList.toggle('active',x.dataset.viewPanel===v));$$('.nav-item').forEach(x=>x.classList.toggle('active',x.dataset.view===v));closeMenu();history.replaceState(null,'','#'+v);requestAnimationFrame(()=>window.scrollTo({top:0,left:0,behavior:'auto'}));if(v==='clover')loadClover();if(v==='users')loadUsers()}
 
 async function loadSite(){if(!allowed('website'))return;$('#editorState').textContent='Loading';$('#editorState').className='connection-badge loading';try{const r=await fetch(LIVE+'&v='+Date.now(),{cache:'no-store'});const raw=await r.text();if(!r.ok)throw Error((()=>{try{return JSON.parse(raw).error}catch{return 'Website status service unavailable.'}})());siteData=JSON.parse(raw)}catch(firstError){try{const r=await fetch('/content/site.json?ops='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('Local fallback not found.');siteData=await r.json()}catch{siteData={fieldStatus:'OPEN',announcement:''};toast(firstError.message||'Safe default loaded.')}}originalStatus=String(siteData.fieldStatus||'OPEN').toUpperCase();originalAnnouncement=siteData.announcement||'';const radio=$(`input[name="fieldStatus"][value="${CSS.escape(originalStatus)}"]`)||$('input[value="OPEN"]');if(radio)radio.checked=true;$('#announcementInput').value=originalAnnouncement;$('#currentLiveStatus').textContent=originalStatus;$('#lastLoadedTime').textContent=new Date().toLocaleString();updatePreview();$('#facilityStatus').textContent=originalStatus;$('#dashboardLiveDot').dataset.status=originalStatus.toLowerCase().replace(/\s+/g,'-');$('#editorState').textContent='Live';$('#editorState').className='connection-badge ready';const notice=$('#publishNotice');if(notice&&notice.textContent.trim()==='Not Found')notice.hidden=true}
 function current(){return $('input[name="fieldStatus"]:checked')?.value||'OPEN'}
@@ -167,7 +187,14 @@ function renderAudit(){$('#auditList').innerHTML=auditEntries.length?auditEntrie
 
 $$('.nav-item').forEach(b=>b.onclick=()=>go(b.dataset.view));$$('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
 $$('.admin-tab').forEach(b=>b.onclick=()=>adminTab(b.dataset.adminTab));
-$('#menuButton').onclick=()=>sidebar.classList.toggle('open');$('#loginForm').onsubmit=login;$('#logoutButton').onclick=logout;$('#settingsLogout').onclick=logout;
+const menuBackdrop=document.createElement('button');menuBackdrop.type='button';menuBackdrop.className='menu-backdrop';menuBackdrop.setAttribute('aria-label','Close menu');document.body.appendChild(menuBackdrop);
+$('#menuButton').onclick=()=>sidebar.classList.contains('open')?closeMenu():openMenu();menuBackdrop.onclick=closeMenu;
+document.querySelector('.main-area')?.addEventListener('click',e=>{if(sidebar.classList.contains('open')&&!e.target.closest('#menuButton'))closeMenu()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
+document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
+document.addEventListener('gesturechange',e=>e.preventDefault(),{passive:false});
+document.addEventListener('gestureend',e=>e.preventDefault(),{passive:false});
+$('#loginForm').onsubmit=login;$('#logoutButton').onclick=logout;$('#settingsLogout').onclick=logout;
 $('#quickControlsForm').onsubmit=publish;$('#resetControlsButton').onclick=loadSite;$('#refreshClover').onclick=loadClover;
 $$('input[name="fieldStatus"]').forEach(x=>x.onchange=updatePreview);$('#announcementInput').oninput=updatePreview;
 $('#usersRefresh').onclick=loadUsers;$('#usersSearch').oninput=renderUsers;$('#openInviteModal').onclick=()=>openModal('#inviteModal');$('#closeInviteModal').onclick=()=>closeModal('#inviteModal');
@@ -175,5 +202,5 @@ $('#closeProfileModal').onclick=()=>closeModal('#profileModal');$('#inviteUserFo
 $('#profileForm').onsubmit=saveProfile;$('#toggleDisabledButton').onclick=toggleDisabled;$('#terminateFromProfile').onclick=terminateSelected;$('#sendRecoveryButton').onclick=sendRecovery;
 $('#savePermissions').onclick=savePermissions;$('#refreshAudit').onclick=loadAudit;
 $$('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModal('#'+m.id)}));
-restore();
+ensureFreshBuild().then(ok=>{if(ok)restore()});
 })();

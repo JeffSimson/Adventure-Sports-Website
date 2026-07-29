@@ -1451,3 +1451,52 @@ body:not([data-role="owner"]) #notificationDevicesPanel{display:none!important}
 .clover-tip-summary em{font-style:normal;color:var(--muted);font-size:12px}
 .clover-tips-note{color:var(--muted);font-size:12px;margin:14px 0 0}
 @media(max-width:700px){.clover-tip-summary{grid-template-columns:1fr}}
+
+/* V7.3.5 desktop top-flow polish */
+.v71-command-strip{
+  margin:20px 0 30px;
+  min-height:64px;
+  padding:12px 16px;
+}
+[data-view-panel="dashboard"] .ops73-topbar{
+  margin-top:0;
+  margin-bottom:24px;
+}
+[data-view-panel="dashboard"] .ops73-status-strip{
+  margin-bottom:22px;
+}
+[data-view-panel="dashboard"] .ops73-kpis{
+  margin-bottom:24px;
+}
+@media (min-width:901px){
+  .main-area{padding-top:30px}
+  .v71-command-strip + .view.active{padding-top:0}
+  [data-view-panel="dashboard"] .ops73-topbar{
+    align-items:flex-start;
+    padding-top:2px;
+  }
+  [data-view-panel="dashboard"] .ops73-top-actions{
+    padding-top:2px;
+  }
+}
+@media (max-width:900px){
+  .v71-command-strip{margin:14px 0 22px}
+}
+
+/* V7.3.6 native app flow and mobile navigation */
+html,body{width:100%;max-width:100%;overflow-x:hidden;overscroll-behavior-x:none;-webkit-text-size-adjust:100%}
+body{touch-action:pan-y;background:var(--page)}
+.app-shell,.main-area,.view{max-width:100%;min-width:0}
+img,video,canvas,svg{max-width:100%}
+.menu-backdrop{display:none}
+@media(max-width:850px){
+  body.menu-open{overflow:hidden}
+  .sidebar{z-index:100;width:min(82vw,300px);max-width:300px;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+  .sidebar.open{box-shadow:18px 0 55px rgba(2,12,28,.34)}
+  .menu-backdrop{position:fixed;inset:0;z-index:90;display:block;border:0;padding:0;background:rgba(3,15,34,.38);opacity:0;pointer-events:none;transition:opacity .2s ease;-webkit-tap-highlight-color:transparent}
+  body.menu-open .menu-backdrop{opacity:1;pointer-events:auto}
+  .main-area{width:100%;overflow-x:clip}
+  .mobile-header{z-index:80;padding-top:max(10px,env(safe-area-inset-top));}
+  .view.active{scroll-margin-top:88px}
+  .table-wrap,.games-matrix-wrap,.internal-section-tabs,.range-tabs,.chart-bars{max-width:100%;-webkit-overflow-scrolling:touch}
+}

@@ -1,0 +1,9 @@
+V7.3.6 — NATIVE APP FLOW
+
+- Prevents horizontal page sliding.
+- Locks browser pinch/double-tap zoom for a more native app feel.
+- Every tab opens at the top of the page.
+- Mobile menu closes after selecting a tab.
+- Mobile menu also closes by tapping anywhere outside it or pressing Escape.
+- Adds a proper dimmed backdrop and prevents background scrolling while the menu is open.
+- Keeps tables and matrices independently scrollable without moving the whole app sideways.

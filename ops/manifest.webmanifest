@@ -1,7 +1,7 @@
 {
   "name": "Adventure Sports Operations Hub",
   "short_name": "Adventure Sports",
-  "start_url": "/ops/",
+  "start_url": "/ops/?build=737",
   "scope": "/ops/",
   "display": "standalone",
   "background_color": "#071c3b",

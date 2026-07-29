@@ -14,7 +14,7 @@ function createTopbar(){
  const main=$('.main-area'); if(!main||$('.v71-command-strip'))return;
  const strip=document.createElement('div');strip.className='v71-command-strip';
  strip.innerHTML=`<div><span class="v71-live-pulse"></span><strong>Operations Center</strong><small id="v71Date"></small></div><div class="v71-strip-actions"><button type="button" data-go="notifications">Send Alert</button><button type="button" data-go="maintenance">New Work Order</button><button type="button" data-go="website">Update Facility</button></div>`;
- main.insertBefore(strip,main.firstChild.nextSibling);
+ main.insertBefore(strip,main.firstChild);
  const d=$('#v71Date'); if(d)d.textContent=new Intl.DateTimeFormat('en-US',{weekday:'long',month:'long',day:'numeric'}).format(new Date());
  strip.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>document.querySelector(`.nav-item[data-view="${b.dataset.go}"]`)?.click());
 }

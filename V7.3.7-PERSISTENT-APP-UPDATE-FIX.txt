@@ -1,0 +1,9 @@
+V7.3.7 — PERSISTENT APP UPDATE FIX
+
+- Prevents Safari and the iPhone Home Screen app from returning to an older cached interface.
+- Adds no-cache headers for the Operations Hub HTML, JavaScript, CSS, manifest, and service worker.
+- Adds a build check that performs one clean reload after a new deployment.
+- Versions every app asset and the Home Screen start URL.
+- Keeps login data and live schedules intact.
+
+After deploying this version, fully close the Home Screen app once and reopen it. The app should then keep the current layout without needing to remove and add it again.

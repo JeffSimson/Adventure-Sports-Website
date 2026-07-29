@@ -1,0 +1,7 @@
+V7.3.5 — DESKTOP TOP SPACING FIX
+
+- Added clean spacing below the Operations Center command strip.
+- Increased separation before the greeting/header.
+- Balanced spacing between status, KPI, and content sections.
+- Improved desktop flow without changing phone layouts.
+- Moved the command strip to a stable first position in the main content area.

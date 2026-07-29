@@ -57,7 +57,9 @@ function render(d){
     $('#cloverTipsTotal').textContent=usd.format(Number(d.tips.total)||0);
     $('#cloverTipsEmployees').textContent=String(rows.length);
     $('#cloverTipsRange').textContent=d.range?.label||'Selected range';
-    $('#cloverTipsBody').innerHTML=rows.length?rows.map(x=>'<tr><td><strong>'+escapeHtml(x.name||'Unassigned')+'</strong></td><td>'+Number(x.transactions||0)+'</td><td class="money-cell">'+usd.format(Number(x.tips)||0)+'</td></tr>').join(''):'<tr><td colspan="3" class="empty-row">No Clover tips were recorded in this date range.</td></tr>';
+    $('#cloverTipsBody').innerHTML=rows.length?rows.map(x=>'<tr><td><strong>'+escapeHtml(x.name||'Unassigned')+'</strong></td><td>'+Number(x.transactions||0)+'</td><td class="money-cell">'+usd.format(Number(x.tips)||0)+'</td></tr>').join(''):'<tr><td colspan="3" class="empty-row">No employee-linked Clover tips were found in this date range.</td></tr>';
+    const note=$('#cloverTipsNote');
+    if(note)note.textContent=d.tips.warning?'Clover returned the total, but employee detail could not be fully loaded: '+d.tips.warning:(rows.some(x=>x.name==='Unassigned')?'Some Clover payments were not linked to an employee and are listed as Unassigned.':'Showing '+Number(d.tips.tipPayments||0)+' tipped Clover payment'+(Number(d.tips.tipPayments||0)===1?'':'s')+' for this date range.');
   }
   if(Array.isArray(d.topItems)&&$('#topItemsList'))$('#topItemsList').innerHTML=d.topItems.length?d.topItems.map((i,n)=>'<li><span class="rank-number">'+(n+1)+'</span><div><b>'+escapeHtml(i.name)+'</b><small>'+Number(i.quantity||0).toFixed(Number.isInteger(i.quantity)?0:1)+' sold</small></div><strong>'+usd.format(i.net||0)+'</strong></li>').join(''):'<li class="empty-list">No item-level sales data posted.</li>'
 }
