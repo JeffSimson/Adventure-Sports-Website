@@ -3,7 +3,7 @@
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const app=$('#app'), gate=$('#loginGate'), sidebar=$('#sidebar');
 const AUTH_KEY='ase_ops_identity_session_v2';
-const APP_BUILD='737';
+const APP_BUILD='740';
 async function ensureFreshBuild(){
   try{
     const key='ase_ops_build';
@@ -109,8 +109,9 @@ async function show(u){
 async function restore(){showGate();const s=read();if(!s?.token)return;try{const u=await identityUser(s.token.access_token);save(s.token,u);await show(u)}catch{const f=await refresh(s).catch(()=>null);if(f)await show(f.user);else clear()}}
 async function login(e){e.preventDefault();const b=$('#loginButton');b.disabled=true;b.textContent='Signing In…';try{const r=await fetch(IDENTITY+'/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'password',username:$('#loginEmail').value.trim(),password:$('#loginPassword').value})});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Error(d.error_description||'The email or password is incorrect.');const u=await identityUser(d.access_token);save(d,u);$('#loginStatus').className='login-status';await show(u)}catch(err){$('#loginStatus').textContent=err.message;$('#loginStatus').className='login-status error'}finally{b.disabled=false;b.textContent='Sign In'}}
 function logout(){clear();location.hash='';location.reload()}
-function closeMenu(){sidebar.classList.remove('open');document.body.classList.remove('menu-open')}
-function openMenu(){sidebar.classList.add('open');document.body.classList.add('menu-open');sidebar.scrollTop=0}
+function resetMenuDrag(){sidebar.style.removeProperty('--drawer-x');sidebar.classList.remove('dragging');document.body.style.removeProperty('--menu-progress')}
+function closeMenu(){resetMenuDrag();sidebar.classList.remove('open');document.body.classList.remove('menu-open')}
+function openMenu(){resetMenuDrag();sidebar.classList.add('open');document.body.classList.add('menu-open');sidebar.scrollTop=0}
 function go(v){if(!v||!allowed(v))v=defaultView();if(!v)return unauthorized();$$('.view').forEach(x=>x.classList.toggle('active',x.dataset.viewPanel===v));$$('.nav-item').forEach(x=>x.classList.toggle('active',x.dataset.view===v));closeMenu();history.replaceState(null,'','#'+v);requestAnimationFrame(()=>window.scrollTo({top:0,left:0,behavior:'auto'}));if(v==='clover')loadClover();if(v==='users')loadUsers()}
 
 async function loadSite(){if(!allowed('website'))return;$('#editorState').textContent='Loading';$('#editorState').className='connection-badge loading';try{const r=await fetch(LIVE+'&v='+Date.now(),{cache:'no-store'});const raw=await r.text();if(!r.ok)throw Error((()=>{try{return JSON.parse(raw).error}catch{return 'Website status service unavailable.'}})());siteData=JSON.parse(raw)}catch(firstError){try{const r=await fetch('/content/site.json?ops='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('Local fallback not found.');siteData=await r.json()}catch{siteData={fieldStatus:'OPEN',announcement:''};toast(firstError.message||'Safe default loaded.')}}originalStatus=String(siteData.fieldStatus||'OPEN').toUpperCase();originalAnnouncement=siteData.announcement||'';const radio=$(`input[name="fieldStatus"][value="${CSS.escape(originalStatus)}"]`)||$('input[value="OPEN"]');if(radio)radio.checked=true;$('#announcementInput').value=originalAnnouncement;$('#currentLiveStatus').textContent=originalStatus;$('#lastLoadedTime').textContent=new Date().toLocaleString();updatePreview();$('#facilityStatus').textContent=originalStatus;$('#dashboardLiveDot').dataset.status=originalStatus.toLowerCase().replace(/\s+/g,'-');$('#editorState').textContent='Live';$('#editorState').className='connection-badge ready';const notice=$('#publishNotice');if(notice&&notice.textContent.trim()==='Not Found')notice.hidden=true}
@@ -194,6 +195,49 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
 document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
 document.addEventListener('gesturechange',e=>e.preventDefault(),{passive:false});
 document.addEventListener('gestureend',e=>e.preventDefault(),{passive:false});
+
+// V7.4 mobile edge-swipe drawer. It waits for a clearly horizontal gesture so
+// field tables, vertical scrolling, text inputs, maps, and drag controls keep working.
+(function installMobileDrawerGestures(){
+  const coarse=()=>window.matchMedia('(max-width: 860px)').matches;
+  const width=()=>Math.min(318,Math.max(260,sidebar.getBoundingClientRect().width||300));
+  let tracking=false,dragging=false,startX=0,startY=0,lastX=0,startedOpen=false,pointerId=null;
+  const blocked=t=>!!t.closest('input,textarea,select,[contenteditable="true"],.leaflet-container,[data-no-drawer-swipe]');
+  function begin(e){
+    if(!coarse()||blocked(e.target)||e.pointerType==='mouse'&&e.button!==0)return;
+    startedOpen=sidebar.classList.contains('open');
+    if(!startedOpen&&e.clientX>28)return;
+    tracking=true;dragging=false;startX=lastX=e.clientX;startY=e.clientY;pointerId=e.pointerId;
+  }
+  function move(e){
+    if(!tracking||e.pointerId!==pointerId)return;
+    const dx=e.clientX-startX,dy=e.clientY-startY;lastX=e.clientX;
+    if(!dragging){
+      if(Math.abs(dx)<9&&Math.abs(dy)<9)return;
+      if(Math.abs(dy)>Math.abs(dx)*1.15){tracking=false;return;}
+      dragging=true;sidebar.classList.add('dragging');document.body.classList.add('menu-dragging');
+      try{document.body.setPointerCapture?.(e.pointerId)}catch{}
+    }
+    e.preventDefault();
+    const w=width();
+    const translated=startedOpen?Math.min(0,Math.max(-w,dx)):Math.min(0,Math.max(-w,-w+dx));
+    const progress=Math.max(0,Math.min(1,(translated+w)/w));
+    sidebar.style.setProperty('--drawer-x',translated+'px');
+    document.body.style.setProperty('--menu-progress',String(progress));
+  }
+  function finish(e){
+    if(!tracking&& !dragging)return;
+    const dx=lastX-startX,w=width();
+    const shouldOpen=dragging?(startedOpen?dx>-w*.32:dx>w*.32):startedOpen;
+    tracking=false;dragging=false;pointerId=null;document.body.classList.remove('menu-dragging');
+    resetMenuDrag();shouldOpen?openMenu():closeMenu();
+  }
+  document.addEventListener('pointerdown',begin,{passive:true});
+  document.addEventListener('pointermove',move,{passive:false});
+  document.addEventListener('pointerup',finish,{passive:true});
+  document.addEventListener('pointercancel',finish,{passive:true});
+  window.addEventListener('resize',()=>{if(!coarse())closeMenu()});
+})();
 $('#loginForm').onsubmit=login;$('#logoutButton').onclick=logout;$('#settingsLogout').onclick=logout;
 $('#quickControlsForm').onsubmit=publish;$('#resetControlsButton').onclick=loadSite;$('#refreshClover').onclick=loadClover;
 $$('input[name="fieldStatus"]').forEach(x=>x.onchange=updatePreview);$('#announcementInput').oninput=updatePreview;

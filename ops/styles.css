@@ -1500,3 +1500,14 @@ img,video,canvas,svg{max-width:100%}
   .view.active{scroll-margin-top:88px}
   .table-wrap,.games-matrix-wrap,.internal-section-tabs,.range-tabs,.chart-bars{max-width:100%;-webkit-overflow-scrolling:touch}
 }
+
+
+/* V7.4 native-feeling mobile drawer gestures */
+@media (max-width:860px){
+  .sidebar{transform:translateX(var(--drawer-x,-105%));will-change:transform;touch-action:pan-y;}
+  .sidebar.open{transform:translateX(var(--drawer-x,0));}
+  .sidebar.dragging{transition:none!important;box-shadow:18px 0 55px rgba(2,12,28,.34)}
+  body.menu-dragging{overflow:hidden;overscroll-behavior:none}
+  body.menu-dragging .menu-backdrop{display:block;opacity:calc(var(--menu-progress,0) * .95);pointer-events:none;transition:none}
+  .main-nav .nav-item{-webkit-tap-highlight-color:transparent}
+}
