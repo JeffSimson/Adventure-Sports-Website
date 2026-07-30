@@ -1550,3 +1550,25 @@ img,video,canvas,svg{max-width:100%}
   .database-form-grid{grid-template-columns:1fr}
   .database-form-grid label:has(textarea){grid-column:auto}
 }
+
+/* V7.4.3 Database editor visual and guidance improvements */
+.database-modal-card{padding:24px!important;border-radius:20px!important;box-shadow:0 28px 80px rgba(3,18,38,.32)!important}
+.database-modal-card .panel-head{align-items:flex-start;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.database-modal-card .panel-head h2{font-size:24px;margin-top:3px}
+.database-modal-subtitle{margin:5px 0 0;color:var(--muted);font-size:14px;line-height:1.45}
+.database-form-grid{gap:18px 16px}
+.database-field{display:grid;gap:7px;padding:14px;border:1px solid #dfe7f2;border-radius:14px;background:linear-gradient(180deg,#fff,#fbfdff)}
+.database-field:focus-within{border-color:#7baeff;box-shadow:0 0 0 3px rgba(31,111,235,.10)}
+.database-field-wide{grid-column:1/-1}
+.field-label{font-size:13px!important;font-weight:900!important;color:var(--navy)!important}
+.field-help{display:block;color:#607089;font-size:12px;line-height:1.35;margin-top:-3px}
+.field-example{display:block;color:#73839a;font-size:11px;line-height:1.35}
+.database-form input,.database-form textarea,.database-form select{width:100%;border:1px solid #cbd8e8;border-radius:10px;padding:12px 13px;background:#fff;color:var(--navy);font:inherit;transition:border-color .15s,box-shadow .15s}
+.database-form input:focus,.database-form textarea:focus,.database-form select:focus{outline:none;border-color:#1f6feb;box-shadow:0 0 0 3px rgba(31,111,235,.12)}
+.database-form textarea{resize:vertical;min-height:96px;line-height:1.45}
+.database-form input::placeholder,.database-form textarea::placeholder{color:#9aa8b9}
+.database-form-actions{position:sticky;bottom:-24px;margin:22px -24px -24px;padding:16px 24px;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:3}
+.database-action-group{display:flex;gap:10px;margin-left:auto}
+.danger-outline-btn{border:1px solid #f1b6b6;background:#fff5f5;color:#b42318;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer}
+.danger-outline-btn:hover{background:#feecec}
+@media(max-width:700px){.database-modal-card{padding:18px!important}.database-form-actions{bottom:-18px;margin:18px -18px -18px;padding:14px 18px;flex-direction:column-reverse;align-items:stretch}.database-action-group{width:100%;margin:0}.database-action-group button,.danger-outline-btn{flex:1}.database-field-wide{grid-column:auto}}
