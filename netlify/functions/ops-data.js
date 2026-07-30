@@ -1,10 +1,10 @@
 const {json,verifiedUser,requireRole,error}=require('./_role-auth');
 const {supabase,health}=require('./_supabase');
-const READ_TABLES=new Set(['employees','employee_availability','time_off_requests','shifts','fields','field_status_history','inspection_templates','field_inspections','inspection_responses','maintenance_requests','work_orders','work_order_tasks','equipment','equipment_assignments','inventory_items','inventory_transactions','vendors','purchase_orders','tournaments','games','game_assignments','notifications','notification_receipts','weather_observations','rentals','incident_reports','reports','website_announcements','activity_feed']);
+const READ_TABLES=new Set(['employees','employee_availability','time_off_requests','shifts','fields','field_status_history','inspection_templates','field_inspections','inspection_responses','maintenance_requests','work_orders','work_order_tasks','equipment','equipment_assignments','inventory_items','inventory_transactions','vendors','purchase_orders','tournaments','games','game_assignments','notifications','notification_receipts','weather_observations','rentals','incident_reports','reports','website_announcements','activity_feed','clover_employee_mappings']);
 const WRITE_ROLES={owner:true,manager:true,grounds:true,kitchen:true,cashier:false};
 const MANAGER_TABLES=new Set([...READ_TABLES]);
-const GROUNDS_TABLES=new Set(['fields','field_status_history','field_inspections','inspection_responses','maintenance_requests','work_orders','work_order_tasks','equipment','equipment_assignments','inventory_items','inventory_transactions','incident_reports','activity_feed']);
-const KITCHEN_TABLES=new Set(['inventory_items','inventory_transactions','maintenance_requests','work_orders','incident_reports','activity_feed']);
+const GROUNDS_TABLES=new Set(['fields','field_status_history','field_inspections','inspection_responses','maintenance_requests','work_orders','work_order_tasks','equipment','equipment_assignments','inventory_items','inventory_transactions','incident_reports','activity_feed','clover_employee_mappings']);
+const KITCHEN_TABLES=new Set(['inventory_items','inventory_transactions','maintenance_requests','work_orders','incident_reports','activity_feed','clover_employee_mappings']);
 const ID=/^[0-9a-f-]{36}$/i;
 const safeTable=t=>{if(!READ_TABLES.has(t))throw error('That data module is not available.',400);return t};
 const canWrite=(role,table)=>role==='owner'||(role==='manager'&&MANAGER_TABLES.has(table))||(role==='grounds'&&GROUNDS_TABLES.has(table))||(role==='kitchen'&&KITCHEN_TABLES.has(table));

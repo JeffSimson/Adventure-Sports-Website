@@ -16,35 +16,41 @@ const lineDiscount=l=>els(l?.discounts).reduce((a,d)=>a+Math.abs(num(d.amount)),
 const hour=t=>parseInt(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour:'numeric',hour12:false}).format(new Date(t)),10)||0;
 const localDate=t=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(t));
 const employeeName=e=>e?.name||e?.nickname||[e?.firstName,e?.lastName].filter(Boolean).join(' ')||'Unassigned';
-async function ownerTips(actor,rg){
+async function ownerTips(actor,rg,orders){
   if(actor.role!=='owner')return null;
-  const q=new URLSearchParams();
-  q.append('filter',`createdTime>=${rg.start}`);
-  q.append('filter',`createdTime<=${rg.end}`);
-  q.set('limit','1000');
-  const [pd,ed]=await Promise.all([
-    clover(`/payments?${q}`),
-    clover('/employees?limit=1000').catch(()=>({elements:[]}))
+  const [ed,md]=await Promise.all([
+    clover('/employees?limit=1000').catch(()=>({elements:[]})),
+    (async()=>{try{const {supabase}=require('./_supabase');const {data}=await supabase('clover_employee_mappings?select=*&active=eq.true');return data||[]}catch{return[]}})()
   ]);
   const employees=new Map(els(ed).map(e=>[e.id,employeeName(e)]));
-  const byEmployee=new Map();let total=0,tipPayments=0;
+  const mappings=new Map((md||[]).map(m=>[m.clover_employee_id,m.display_name||m.clover_employee_name]));
+  const orderById=new Map((orders||[]).map(o=>[o.id,o]));
+  const q=new URLSearchParams();q.append('filter',`createdTime>=${rg.start}`);q.append('filter',`createdTime<=${rg.end}`);q.set('expand','order');q.set('limit','1000');
+  const pd=await clover(`/payments?${q}`).catch(()=>({elements:[]}));
+  const missing=[];
+  for(const pay of els(pd)){const oid=pay.order?.id||pay.orderId;if(oid&&!orderById.has(oid))missing.push(oid)}
+  await Promise.all([...new Set(missing)].slice(0,100).map(async id=>{try{orderById.set(id,await clover(`/orders/${encodeURIComponent(id)}?expand=employee`))}catch{}}));
+  const byEmployee=new Map();let total=0,tipPayments=0,unmatched=0;
   for(const pay of els(pd)){
     if(pay.result!=='SUCCESS'||pay.voided)continue;
-    const tip=Math.max(0,num(pay.tipAmount??pay.tip??0));
-    if(!tip)continue;
+    const tip=Math.max(0,num(pay.tipAmount??pay.tip??0));if(!tip)continue;
     total+=tip;tipPayments++;
-    const id=pay.employee?.id||pay.employeeId||pay.order?.employee?.id||'unassigned';
-    const name=employeeName(pay.employee)||employees.get(id)||employeeName(pay.order?.employee)||'Unassigned';
-    const row=byEmployee.get(id)||{id,name,tips:0,transactions:0};
-    row.name=name||row.name;row.tips+=tip/100;row.transactions++;
-    byEmployee.set(id,row);
+    const order=orderById.get(pay.order?.id||pay.orderId)||pay.order||{};
+    const emp=pay.employee||order.employee||{};
+    const id=emp.id||pay.employeeId||order.employeeId||'unassigned';
+    const resolved=mappings.get(id)||employees.get(id)||employeeName(emp);
+    const name=(resolved&&resolved!=='Unassigned')?resolved:'Needs Mapping';
+    if(id==='unassigned'||name==='Needs Mapping')unmatched++;
+    const key=id==='unassigned'?`unassigned-${pay.id}`:id;
+    const row=byEmployee.get(key)||{id,name,tips:0,transactions:0,cloverEmployeeId:id==='unassigned'?null:id,needsMapping:name==='Needs Mapping'};
+    row.tips+=tip/100;row.transactions++;byEmployee.set(key,row);
   }
-  return {total:total/100,tipPayments,byEmployee:[...byEmployee.values()].sort((a,b)=>b.tips-a.tips),source:'Clover payments'};
+  return {total:total/100,tipPayments,unmatched,employees:els(ed).map(e=>({id:e.id,name:employeeName(e)})),byEmployee:[...byEmployee.values()].sort((a,b)=>b.tips-a.tips),source:'Clover payments matched through orders'};
 }
 exports.handler=async e=>{if(e.httpMethod!=='GET')return json(405,{error:'Method not allowed.'});try{const actor=await verify(e);const rg=range(e),q=new URLSearchParams();q.append('filter',`createdTime>=${rg.start}`);q.append('filter',`createdTime<=${rg.end}`);q.set('expand','payments,payments.refunds,lineItems,lineItems.discounts,employee');q.set('limit','1000');const[m,od]=await Promise.all([clover(''),clover(`/orders?${q}`)]),orders=els(od),items=new Map(),tipEmployees=new Map(),hours=Array.from({length:24},(_,h)=>({hour:h,label:new Intl.DateTimeFormat('en-US',{hour:'numeric'}).format(new Date(2024,0,1,h)),sales:0,orders:0})),days=new Map();let gross=0,refunds=0,tx=0,front=0,totalTips=0;
 for(const o of orders){let op=0,orf=0,paid=false;for(const p of els(o.payments))if(p.result==='SUCCESS'&&!p.voided){gross+=num(p.amount);op+=num(p.amount);tx++;paid=true;const tip=Math.max(0,num(p.tipAmount??p.tip??0));totalTips+=tip;const emp=p.employee||o.employee||{};const empName=emp.name||[emp.firstName,emp.lastName].filter(Boolean).join(' ')||'Unassigned';const empId=emp.id||empName;const te=tipEmployees.get(empId)||{id:empId,name:empName,tips:0,transactions:0};te.tips+=tip/100;if(tip>0)te.transactions++;tipEmployees.set(empId,te);const r=els(p.refunds).reduce((a,x)=>a+Math.abs(num(x.amount)),0);refunds+=r;orf+=r}if(paid){const net=Math.max(0,op-orf),h=hour(o.createdTime);hours[h].sales+=net/100;hours[h].orders++;const d=localDate(o.createdTime),x=days.get(d)||{date:d,sales:0,orders:0};x.sales+=net/100;x.orders++;days.set(d,x)}for(const l of els(o.lineItems)){if(l.refunded||l.isRevenue===false)continue;const n=lineName(l),qty=Math.max(1,num(l.unitQty||1000)/1000),g=lineGross(l),disc=lineDiscount(l),net=Math.max(0,g-disc),x=items.get(n)||{name:n,quantity:0,net:0,frontGate:gate(n)};x.quantity+=qty;x.net+=net/100;items.set(n,x);if(gate(n))front+=net}}
 const net=Math.max(0,gross-refunds);front=Math.min(front,net);const kitchen=Math.max(0,net-front),recent=orders.slice().sort((a,b)=>num(b.createdTime)-num(a.createdTime)).slice(0,18).map(o=>({id:o.id,time:o.createdTime,total:num(o.total)/100,employee:o.employee?.name||[o.employee?.firstName,o.employee?.lastName].filter(Boolean).join(' ')})),top=[...items.values()].sort((a,b)=>b.net-a.net).slice(0,12);let inv=[],inventoryAvailable=true,inventoryMessage='';try{const d=await clover('/items?expand=itemStock&limit=1000');inv=els(d).map(i=>({id:i.id,name:i.name||'Unnamed item',quantity:Number(i.itemStock?.quantity)})).filter(i=>Number.isFinite(i.quantity)&&i.quantity<=20).sort((a,b)=>a.quantity-b.quantity).slice(0,24)}catch(err){inventoryAvailable=false;inventoryMessage='Sales are connected, but Clover inventory quantities are unavailable for this token.'}
-const tipData=await ownerTips(actor,rg).catch(err=>({total:totalTips/100,tipPayments:0,byEmployee:[...tipEmployees.values()].filter(x=>x.tips>0).sort((a,b)=>b.tips-a.tips),source:'Clover order payments',warning:err.message}));
+const tipData=await ownerTips(actor,rg,orders).catch(err=>({total:totalTips/100,tipPayments:0,byEmployee:[...tipEmployees.values()].filter(x=>x.tips>0).sort((a,b)=>b.tips-a.tips),source:'Clover order payments',warning:err.message}));
 return json(200,{ok:true,merchant:{id:m.id,name:m.name||'Adventure Sports'},range:rg,grossSales:gross/100,refunds:refunds/100,netSales:net/100,frontGateSales:front/100,kitchenSales:kitchen/100,transactions:tx,averageTicket:tx?gross/100/tx:0,orderCount:orders.length,recentOrders:recent,topItems:top,hourlySales:hours,salesTrend:[...days.values()].sort((a,b)=>a.date.localeCompare(b.date)),inventoryAlerts:inv,inventoryAvailable,inventoryMessage,
 ...(actor.role==='owner'?{tips:tipData}:{}),
 updatedAt:new Date().toISOString()})}catch(err){console.error(err);return json(err.statusCode||500,{error:err.message||'Clover could not be loaded.'})}};
