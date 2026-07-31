@@ -3,7 +3,7 @@
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const app=$('#app'), gate=$('#loginGate'), sidebar=$('#sidebar');
 const AUTH_KEY='ase_ops_identity_session_v2';
-const APP_BUILD='740';
+const APP_BUILD='800';
 async function ensureFreshBuild(){
   try{
     const key='ase_ops_build';
@@ -45,13 +45,14 @@ const MODULES=[
 ];
 
 let session=null,profile=null,permissions=structuredClone(DEFAULT_PERMISSIONS);
+let stepupToken=sessionStorage.getItem('ase_stepup_token')||'',securityChannel='email',securityResolve=null;
 let siteData=null,originalStatus='',originalAnnouncement='',publishing=false,cloverLoading=false,timer=null;
 let teamUsers=[],auditEntries=[],selectedProfileUser=null;
 
 const usd=new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'});
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const token=()=>session?.token?.access_token||'';
-const authHeaders=(extra={})=>({Authorization:'Bearer '+token(),...extra});
+const authHeaders=(extra={})=>({Authorization:'Bearer '+token(),...(stepupToken?{'X-ASE-Stepup':stepupToken}:{}),...extra});
 const role=()=>profile?.role||'unassigned';
 window.ASE_OPS={api,role,toast,getProfile:()=>profile,getSession:()=>session};
 const allowed=view=>(permissions[role()]||[]).includes(view);
@@ -60,7 +61,7 @@ const fullName=u=>(u?.user_metadata?.full_name||u?.user_metadata?.name||u?.name|
 const firstName=u=>fullName(u).split(/\s+/)[0];
 const greet=()=>{const h=new Date().getHours();return h<12?'Good Morning':h<17?'Good Afternoon':'Good Evening'};
 function save(t,u){session={token:t,user:u};localStorage.setItem(AUTH_KEY,JSON.stringify(session))}
-function clear(){session=null;profile=null;localStorage.removeItem(AUTH_KEY)}
+function clear(){session=null;profile=null;stepupToken='';localStorage.removeItem(AUTH_KEY);sessionStorage.removeItem('ase_stepup_token')}
 function read(){try{return JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch{return null}}
 function toast(message){const el=$('#toast');if(!el)return;el.textContent=message;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2600)}
 function noticeUsers(message,type='success'){const el=$('#usersNotice');if(!el)return;el.textContent=message;el.className='publish-notice '+type;el.hidden=false}
@@ -89,9 +90,33 @@ function applyPermissions(){
   $$('.owner-only').forEach(el=>el.hidden=role()!=='owner');
   document.body.dataset.role=role();
 }
+async function securityRequest(url,options={}){
+  const s=await ensure();if(!s)throw Error('You are not signed in.');
+  const r=await fetch(url,{cache:'no-store',...options,headers:authHeaders(options.headers||{})});
+  const raw=await r.text();let d={};if(raw){try{d=JSON.parse(raw)}catch{d={error:raw.slice(0,300)}}}
+  if(!r.ok)throw Error(d.error||d.message||`Request failed (${r.status}).`);return d;
+}
+function openSecurityModal(info){
+  const modal=$('#securityModal');modal.hidden=false;$('#securityEmailDestination').textContent=info?.user?.email||session?.user?.email||'Your account email';$('#securityChannelChoices').hidden=false;$('#securityCodeForm').hidden=true;$('#securityModalText').textContent='Send a 6-digit code to your Owner email address.';$('#securityCode').value='';$('#securityCodeNotice').textContent='';
+}
+function closeSecurityModal(){const m=$('#securityModal');if(m)m.hidden=true}
+async function sendSecurityCode(){
+  securityChannel='email';const btn=$('#sendEmailCode');btn.disabled=true;try{const d=await securityRequest('/.netlify/functions/security-challenge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({channel:'email'})});$('#securityChannelChoices').hidden=true;$('#securityCodeForm').hidden=false;$('#securityModalText').textContent=`A 6-digit code was sent to ${d.destination}. It expires in 10 minutes.`;$('#securityCode').focus()}catch(e){$('#securityModalText').textContent=e.message}finally{btn.disabled=false}
+}
+async function verifySecurityCode(e){
+  e.preventDefault();const b=$('#verifySecurityCode');b.disabled=true;b.textContent='Verifying…';$('#securityCodeNotice').textContent='';
+  try{const d=await securityRequest('/.netlify/functions/security-verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({channel:securityChannel,code:$('#securityCode').value})});
+    stepupToken=d.stepup;sessionStorage.setItem('ase_stepup_token',stepupToken);closeSecurityModal();securityResolve?.();securityResolve=null;
+  }catch(err){$('#securityCodeNotice').textContent=err.message;$('#securityCodeNotice').className='login-status error'}finally{b.disabled=false;b.textContent='Verify and Continue'}
+}
+function requireOwnerVerification(info){
+  if(!info?.mfaRequired||info?.mfaVerified)return Promise.resolve();
+  openSecurityModal(info);return new Promise(resolve=>{securityResolve=resolve});
+}
 async function loadProfile(){
-  const d=await api(PROFILE);
-  profile=d;
+  let d=await api(PROFILE);profile=d;
+  await requireOwnerVerification(d);
+  if(d.mfaRequired&&!d.mfaVerified){d=await api(PROFILE);profile=d}
   try{const p=await api(PERMS);permissions=p.permissions||permissions}catch{}
   return d;
 }
@@ -112,7 +137,7 @@ function logout(){clear();location.hash='';location.reload()}
 function resetMenuDrag(){sidebar.style.removeProperty('--drawer-x');sidebar.classList.remove('dragging');document.body.style.removeProperty('--menu-progress')}
 function closeMenu(){resetMenuDrag();sidebar.classList.remove('open');document.body.classList.remove('menu-open')}
 function openMenu(){resetMenuDrag();sidebar.classList.add('open');document.body.classList.add('menu-open');sidebar.scrollTop=0}
-function go(v){if(!v||!allowed(v))v=defaultView();if(!v)return unauthorized();$$('.view').forEach(x=>x.classList.toggle('active',x.dataset.viewPanel===v));$$('.nav-item').forEach(x=>x.classList.toggle('active',x.dataset.view===v));closeMenu();history.replaceState(null,'','#'+v);requestAnimationFrame(()=>window.scrollTo({top:0,left:0,behavior:'auto'}));if(v==='clover')loadClover();if(v==='users')loadUsers()}
+function go(v){if(!v||!allowed(v))v=defaultView();if(!v)return unauthorized();$$('.view').forEach(x=>x.classList.toggle('active',x.dataset.viewPanel===v));$$('.nav-item').forEach(x=>x.classList.toggle('active',x.dataset.view===v));closeMenu();history.replaceState(null,'','#'+v);requestAnimationFrame(()=>window.scrollTo({top:0,left:0,behavior:'auto'}));if(v==='clover')loadClover();if(v==='users')loadUsers();if(v==='settings')loadSecurityProfile()}
 
 async function loadSite(){if(!allowed('website'))return;$('#editorState').textContent='Loading';$('#editorState').className='connection-badge loading';try{const r=await fetch(LIVE+'&v='+Date.now(),{cache:'no-store'});const raw=await r.text();if(!r.ok)throw Error((()=>{try{return JSON.parse(raw).error}catch{return 'Website status service unavailable.'}})());siteData=JSON.parse(raw)}catch(firstError){try{const r=await fetch('/content/site.json?ops='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('Local fallback not found.');siteData=await r.json()}catch{siteData={fieldStatus:'OPEN',announcement:''};toast(firstError.message||'Safe default loaded.')}}originalStatus=String(siteData.fieldStatus||'OPEN').toUpperCase();originalAnnouncement=siteData.announcement||'';const radio=$(`input[name="fieldStatus"][value="${CSS.escape(originalStatus)}"]`)||$('input[value="OPEN"]');if(radio)radio.checked=true;$('#announcementInput').value=originalAnnouncement;$('#currentLiveStatus').textContent=originalStatus;$('#lastLoadedTime').textContent=new Date().toLocaleString();updatePreview();$('#facilityStatus').textContent=originalStatus;$('#dashboardLiveDot').dataset.status=originalStatus.toLowerCase().replace(/\s+/g,'-');$('#editorState').textContent='Live';$('#editorState').className='connection-badge ready';const notice=$('#publishNotice');if(notice&&notice.textContent.trim()==='Not Found')notice.hidden=true}
 function current(){return $('input[name="fieldStatus"]:checked')?.value||'OPEN'}
@@ -186,6 +211,16 @@ async function savePermissions(){
 async function loadAudit(){if(role()!=='owner')return;try{const d=await api(AUDIT);auditEntries=d.entries||[];renderAudit()}catch(e){$('#auditList').innerHTML=`<div class="dashboard-empty error-text">${esc(e.message)}</div>`}}
 function renderAudit(){$('#auditList').innerHTML=auditEntries.length?auditEntries.map(x=>`<article class="audit-entry"><div class="audit-icon">${esc(x.icon||'•')}</div><div><b>${esc(x.actionLabel||x.action)}</b><p>${esc(x.summary||'')}</p><small>${esc(x.actorName||x.actorEmail||'System')} • ${esc(new Date(x.createdAt).toLocaleString())}</small></div></article>`).join(''):'<div class="dashboard-empty">No recorded account changes yet.</div>'}
 
+
+async function loadSecurityProfile(){
+  if(role()!=='owner')return;const note=$('#securityProfileNotice');try{const d=await api('/.netlify/functions/security-control');const st=d.settings||{},cfg=d.configuration||{};$('#securityMfaState').textContent='Email required';$('#securityDbState').textContent=d.database?.ok?'Connected':'Check setup';$('#securityMaintenanceState').textContent=st.maintenance_mode?'ON':'Off';$('#securityBackupState').textContent=d.backups?.[0]?new Date(d.backups[0].created_at).toLocaleString():'None';$('#securityStatusBadge').textContent=Object.values(cfg).every(Boolean)&&d.database?.ok?'Protected':'Needs setup';$('#securityStatusBadge').className='connection-badge '+(Object.values(cfg).every(Boolean)&&d.database?.ok?'connected':'error');$('#securityMaintenance').textContent=st.maintenance_mode?'Turn Off Maintenance Mode':'Turn On Maintenance Mode';$('#securityMaintenance').dataset.enabled=st.maintenance_mode?'true':'false';$('#securityConfigList').innerHTML=Object.entries(cfg).map(([k,v])=>`<div class="security-event-row"><b>${esc(k)}</b><span>${v?'✅ Configured':'❌ Missing'}</span></div>`).join('');$('#securityEventsList').innerHTML=(d.events||[]).map(x=>`<div class="security-event-row"><div><b>${esc(x.event_type)}</b><small>${esc(x.email||'System')} • ${new Date(x.created_at).toLocaleString()}</small></div><span>${x.outcome==='success'?'✅':'⚠️'}</span></div>`).join('')||'<p>No security events yet.</p>';$('#securityBackupsList').innerHTML=(d.backups||[]).map(x=>`<div class="security-event-row"><div><b>${esc(x.label||'Security backup')}</b><small>${x.row_count} rows • ${new Date(x.created_at).toLocaleString()}</small></div><button class="secondary-btn compact-btn" data-download-backup="${x.id}">Download</button></div>`).join('')||'<p>No backups yet.</p>';$$('[data-download-backup]').forEach(b=>b.onclick=()=>downloadSecurityBackup(b.dataset.downloadBackup))}catch(e){$('#securityStatusBadge').textContent='Check setup';$('#securityStatusBadge').className='connection-badge error';note.hidden=false;note.className='publish-notice error';note.textContent=e.message}
+}
+async function securityAction(action,payload={}){return api('/.netlify/functions/security-control',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...payload})})}
+async function createSecurityBackup(){const note=$('#securityProfileNotice');note.hidden=false;note.className='publish-notice';note.textContent='Creating database backup…';try{const d=await securityAction('backup',{label:'Manual V8 security backup'});note.textContent=`Backup created: ${d.backup?.row_count||0} rows protected.`;await loadSecurityProfile()}catch(e){note.className='publish-notice error';note.textContent=e.message}}
+async function toggleMaintenance(){const enabled=$('#securityMaintenance').dataset.enabled!=='true';if(!confirm(`${enabled?'Turn on':'Turn off'} maintenance mode?`))return;await securityAction('maintenance',{enabled,message:'Adventure Sports Operations Hub is temporarily read-only for maintenance.'});toast(`Maintenance mode ${enabled?'enabled':'disabled'}`);await loadSecurityProfile()}
+async function panicLock(){if(prompt('This revokes every active Owner security session. Type PANIC LOCK to continue.')!=='PANIC LOCK')return;await securityAction('panic-lock',{confirmation:'PANIC LOCK'});sessionStorage.removeItem('ase_stepup_token');stepupToken='';toast('All Owner security sessions revoked');location.reload()}
+async function downloadSecurityBackup(id){const d=await securityAction('download-backup',{id});const blob=new Blob([JSON.stringify(d.backup,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`adventure-security-backup-${id}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+
 $$('.nav-item').forEach(b=>b.onclick=()=>go(b.dataset.view));$$('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
 $$('.admin-tab').forEach(b=>b.onclick=()=>adminTab(b.dataset.adminTab));
 const menuBackdrop=document.createElement('button');menuBackdrop.type='button';menuBackdrop.className='menu-backdrop';menuBackdrop.setAttribute('aria-label','Close menu');document.body.appendChild(menuBackdrop);
@@ -239,6 +274,7 @@ document.addEventListener('gestureend',e=>e.preventDefault(),{passive:false});
   window.addEventListener('resize',()=>{if(!coarse())closeMenu()});
 })();
 $('#loginForm').onsubmit=login;$('#logoutButton').onclick=logout;$('#settingsLogout').onclick=logout;
+$('#sendEmailCode').onclick=()=>sendSecurityCode();$('#securityCodeForm').onsubmit=verifySecurityCode;$('#securityResend').onclick=()=>sendSecurityCode();$('#securityRefresh').onclick=loadSecurityProfile;$('#securityBackup').onclick=createSecurityBackup;$('#securityMaintenance').onclick=toggleMaintenance;$('#securityPanic').onclick=panicLock;
 $('#quickControlsForm').onsubmit=publish;$('#resetControlsButton').onclick=loadSite;$('#refreshClover').onclick=loadClover;
 $$('input[name="fieldStatus"]').forEach(x=>x.onchange=updatePreview);$('#announcementInput').oninput=updatePreview;
 $('#usersRefresh').onclick=loadUsers;$('#usersSearch').oninput=renderUsers;$('#openInviteModal').onclick=()=>openModal('#inviteModal');$('#closeInviteModal').onclick=()=>closeModal('#inviteModal');

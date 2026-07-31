@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Adventure Sports Operations Hub</title><meta name="theme-color" content="#071c3b"><link rel="manifest" href="/ops/manifest.webmanifest?v=742"><link rel="icon" href="/uploads/branding/favicon.ico"><link rel="stylesheet" href="/ops/styles.css?v=742"></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Adventure Sports Operations Hub</title><meta name="theme-color" content="#071c3b"><link rel="manifest" href="/ops/manifest.webmanifest?v=800"><link rel="icon" href="/uploads/branding/favicon.ico"><link rel="stylesheet" href="/ops/styles.css?v=800"></head><body>
 <div id="loginGate" class="login-gate" hidden><div class="login-card"><img src="/uploads/branding/adventure-logo.png" alt="Adventure Sports"><p class="eyebrow">Secure Management Portal</p><h1>Adventure Sports Operations Hub</h1><p>Sign in to manage the website and daily facility operations.</p><form id="loginForm" class="login-form"><label>Email address</label><input id="loginEmail" type="email" autocomplete="username" required><label>Password</label><input id="loginPassword" type="password" autocomplete="current-password" required><button id="loginButton" class="primary-btn">Sign In</button></form><p id="loginStatus" class="login-status">Enter the email and password used for the website admin.</p><a href="/admin/" class="secondary-btn login-fallback">Use Full Website Editor</a><a href="/" class="text-link">Return to public website</a></div></div>
 <div id="app" class="app-shell" hidden><aside class="sidebar" id="sidebar"><div class="brand-block"><img src="/uploads/branding/adventure-logo.png"><div><strong>Adventure Sports</strong><span>Operations Hub <b class="v71-badge">V7.4.1</b></span></div></div><nav class="main-nav">
 <button class="nav-item active" data-view="dashboard"><span>⌂</span>Operations Center</button>
@@ -722,6 +722,25 @@
 </section>
 
 <section class="view" data-view-panel="settings"><div class="page-head"><div><p class="eyebrow">Settings</p><h1>Operations Hub Settings</h1></div></div><div class="settings-grid"><article class="panel"><h2>Signed-in account</h2><p id="accountEmail">Loading…</p><span id="settingsRoleBadge" class="role-badge">Loading role</span><button id="settingsLogout" class="secondary-btn">Sign Out</button></article><article class="panel"><h2>Install on phone</h2><p>Use Add to Home Screen in Safari.</p><button id="settingsInstall" class="primary-btn">Install App</button></article></div>
+
+<article id="securityCenter" class="panel security-center owner-only">
+ <div class="panel-head"><div><p class="eyebrow">Owner Security</p><h2>Enterprise Security Center</h2><p>Email verification, system controls, audit activity, configuration checks, and encrypted-session revocation.</p></div><span id="securityStatusBadge" class="connection-badge loading">Checking</span></div>
+ <div class="security-grid">
+  <div class="security-stat"><span>🔐</span><div><small>Owner verification</small><strong id="securityMfaState">Email required</strong></div></div>
+  <div class="security-stat"><span>🗄️</span><div><small>Database health</small><strong id="securityDbState">Checking</strong></div></div>
+  <div class="security-stat"><span>🧰</span><div><small>Maintenance mode</small><strong id="securityMaintenanceState">Off</strong></div></div>
+  <div class="security-stat"><span>💾</span><div><small>Latest backup</small><strong id="securityBackupState">None</strong></div></div>
+ </div>
+ <div class="enterprise-security-actions">
+  <button id="securityRefresh" class="secondary-btn" type="button">Refresh Security Status</button>
+  <button id="securityBackup" class="primary-btn" type="button">Create Backup</button>
+  <button id="securityMaintenance" class="warning-btn" type="button">Turn On Maintenance Mode</button>
+  <button id="securityPanic" class="user-terminate-btn" type="button">Panic Lock All Owner Sessions</button>
+ </div>
+ <p id="securityProfileNotice" class="publish-notice" hidden></p>
+ <div class="security-dashboard-columns"><div><h3>Configuration</h3><div id="securityConfigList" class="security-event-list"></div></div><div><h3>Recent Security Events</h3><div id="securityEventsList" class="security-event-list"></div></div></div>
+ <div><h3>Backup History</h3><div id="securityBackupsList" class="security-event-list"></div></div>
+</article>
 <article id="databaseCenter" class="panel database-center" data-internal-access="owner">
  <div class="panel-head"><div><p class="eyebrow">Owner Controls</p><h2>Database Center</h2><p>Safely view and manage Operations Hub records without opening Supabase.</p></div><span id="databaseHealth" class="connection-badge loading">Connecting</span></div>
  <div id="databaseCards" class="database-cards"></div>
@@ -731,4 +750,23 @@
  <div class="database-pagination"><span id="databaseCount">0 records</span><div><button id="databasePrev" class="secondary-btn compact-btn" type="button">Previous</button><button id="databaseNext" class="secondary-btn compact-btn" type="button">Next</button></div></div>
 </article>
 <div id="databaseModal" class="modal-shell" hidden><div class="modal-backdrop" data-db-close></div><div class="modal-card database-modal-card"><div class="panel-head"><div><p class="eyebrow">Database Center</p><h2 id="databaseModalTitle">Edit Record</h2></div><button class="icon-button" data-db-close>×</button></div><form id="databaseForm" class="database-form"></form></div></div>
-</section></main></div><div id="toast" class="toast"></div><script src="/ops/dashboard-v2.js?v=742"></script><script src="/ops/dashboard-v73.js?v=742"></script><script src="/ops/clover-v2.js?v=742"></script><script src="/ops/staff.js?v=742"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"><script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script><script src="/ops/maintenance.js?v=742"></script><script src="/ops/weather.js?v=742"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script><script src="/ops/app.js?v=742"></script><script src="/ops/supabase-data.js?v=742"></script><script src="/ops/internal-sections.js?v=742"></script><script src="/ops/database-center.js?v=742"></script><script src="/ops/notifications-v7.js?v=742"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="/ops/games-v71.js?v=742"></script><script src="/ops/phase-one-v71.js?v=742"></script></body></html>
+</section></main></div>
+<div id="securityModal" class="modal-shell security-modal" hidden>
+ <div class="modal-backdrop"></div>
+ <div class="modal-card security-modal-card" role="dialog" aria-modal="true" aria-labelledby="securityModalTitle">
+  <div class="security-shield">🔐</div>
+  <p class="eyebrow">Owner Verification</p>
+  <h2 id="securityModalTitle">Confirm it’s really you</h2>
+  <p id="securityModalText">Send a 6-digit code to your Owner email address.</p>
+  <div id="securityChannelChoices" class="security-channel-choices">
+   <button id="sendEmailCode" class="security-channel" type="button"><span>✉️</span><b>Send Email Code</b><small id="securityEmailDestination">Your account email</small></button>
+  </div>
+  <form id="securityCodeForm" hidden>
+   <label class="security-code-label"><span>Enter the 6-digit code</span><input id="securityCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000" required></label>
+   <p id="securityCodeNotice" class="login-status"></p>
+   <button id="verifySecurityCode" class="primary-btn" type="submit">Verify and Continue</button>
+   <button id="securityResend" class="secondary-btn" type="button">Send a New Code</button>
+  </form>
+ </div>
+</div>
+<div id="toast" class="toast"></div><script src="/ops/dashboard-v2.js?v=800"></script><script src="/ops/dashboard-v73.js?v=800"></script><script src="/ops/clover-v2.js?v=800"></script><script src="/ops/staff.js?v=800"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"><script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script><script src="/ops/maintenance.js?v=800"></script><script src="/ops/weather.js?v=800"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script><script src="/ops/app.js?v=800"></script><script src="/ops/supabase-data.js?v=800"></script><script src="/ops/internal-sections.js?v=800"></script><script src="/ops/database-center.js?v=800"></script><script src="/ops/notifications-v7.js?v=800"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="/ops/games-v71.js?v=800"></script><script src="/ops/phase-one-v71.js?v=800"></script></body></html>
