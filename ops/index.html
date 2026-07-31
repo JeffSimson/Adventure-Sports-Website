@@ -1,6 +1,6 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Adventure Sports Operations Hub</title><meta name="theme-color" content="#071c3b"><link rel="manifest" href="/ops/manifest.webmanifest?v=801"><link rel="icon" href="/uploads/branding/favicon.ico"><link rel="stylesheet" href="/ops/styles.css?v=801"></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Adventure Sports Operations Hub</title><meta name="theme-color" content="#071c3b"><link rel="manifest" href="/ops/manifest.webmanifest?v=810"><link rel="icon" href="/uploads/branding/favicon.ico"><link rel="stylesheet" href="/ops/styles.css?v=810"></head><body>
 <div id="loginGate" class="login-gate" hidden><div class="login-card"><img src="/uploads/branding/adventure-logo.png" alt="Adventure Sports"><p class="eyebrow">Secure Management Portal</p><h1>Adventure Sports Operations Hub</h1><p>Sign in to manage the website and daily facility operations.</p><form id="loginForm" class="login-form"><label>Email address</label><input id="loginEmail" type="email" autocomplete="username" required><label>Password</label><input id="loginPassword" type="password" autocomplete="current-password" required><button id="loginButton" class="primary-btn">Sign In</button></form><p id="loginStatus" class="login-status">Enter the email and password used for the website admin.</p><a href="/admin/" class="secondary-btn login-fallback">Use Full Website Editor</a><a href="/" class="text-link">Return to public website</a></div></div>
-<div id="app" class="app-shell" hidden><aside class="sidebar" id="sidebar"><div class="brand-block"><img src="/uploads/branding/adventure-logo.png"><div><strong>Adventure Sports</strong><span>Operations Hub <b class="v71-badge">V7.4.1</b></span></div></div><nav class="main-nav">
+<div id="app" class="app-shell" hidden><aside class="sidebar" id="sidebar"><div class="brand-block"><img src="/uploads/branding/adventure-logo.png"><div><strong>Adventure Sports</strong><span>Operations Hub <b class="v71-badge">V8.1</b></span></div></div><nav class="main-nav">
 <button class="nav-item active" data-view="dashboard"><span>⌂</span>Operations Center</button>
 <button class="nav-item" data-view="website"><span>◈</span>Website</button>
 <button class="nav-item" data-view="clover"><span>$</span>Clover</button>
@@ -741,16 +741,44 @@
  <div class="security-dashboard-columns"><div><h3>Configuration</h3><div id="securityConfigList" class="security-event-list"></div></div><div><h3>Recent Security Events</h3><div id="securityEventsList" class="security-event-list"></div></div></div>
  <div><h3>Backup History</h3><div id="securityBackupsList" class="security-event-list"></div></div>
 </article>
-<article id="databaseCenter" class="panel database-center" data-internal-access="owner">
- <div class="panel-head"><div><p class="eyebrow">Owner Controls</p><h2>Database Center</h2><p>Safely view and manage Operations Hub records without opening Supabase.</p></div><span id="databaseHealth" class="connection-badge loading">Connecting</span></div>
- <div id="databaseCards" class="database-cards"></div>
- <div class="database-toolbar"><label><span>Data module</span><select id="databaseTableSelect"></select></label><label><span>Search records</span><input id="databaseSearch" type="search" placeholder="Search visible records"></label><button id="databaseRefresh" class="secondary-btn" type="button">Refresh</button><button id="databaseAdd" class="primary-btn" type="button">Add Record</button></div>
- <div id="databaseNotice" class="publish-notice" hidden></div>
- <div class="table-wrap"><table class="data-table database-table"><thead id="databaseHead"></thead><tbody id="databaseBody"><tr><td class="empty-row">Choose a module to load records.</td></tr></tbody></table></div>
- <div class="database-pagination"><span id="databaseCount">0 records</span><div><button id="databasePrev" class="secondary-btn compact-btn" type="button">Previous</button><button id="databaseNext" class="secondary-btn compact-btn" type="button">Next</button></div></div>
+<article id="databaseCenter" class="panel database-center database-center-v81" data-internal-access="owner">
+ <div class="database-center-heading"><div><p class="eyebrow">Owner Controls</p><h2>Database Center</h2><p>Manage approved operational records in a clean, protected workspace.</p></div><span id="databaseHealth" class="connection-badge loading">Connecting</span></div>
+ <div class="database-workspace">
+  <aside class="database-module-rail"><div class="database-rail-title"><span>Data Modules</span><small>Select a section</small></div><div id="databaseModuleNav" class="database-module-nav"></div></aside>
+  <section class="database-records-pane">
+   <div class="database-records-head"><div><small id="databaseModuleEyebrow">Database module</small><h3 id="databaseModuleTitle">Incident Reports</h3><p id="databaseModuleDescription">Protected operational records.</p></div><div class="database-head-actions"><button id="databaseExport" class="secondary-btn" type="button">Export CSV</button><button id="databaseAdd" class="primary-btn" type="button">+ Add Record</button></div></div>
+   <div class="database-toolbar-v81"><label class="database-mobile-module"><span>Module</span><select id="databaseTableSelect"></select></label><label class="database-search-control"><span>Search</span><input id="databaseSearch" type="search" placeholder="Search this module"></label><label><span>Filter</span><select id="databaseFilter"><option value="">All records</option><option value="open">Open</option><option value="in_progress">In progress</option><option value="closed">Closed</option><option value="active">Active</option></select></label><button id="databaseRefresh" class="secondary-btn" type="button">Refresh</button></div>
+   <div id="databaseNotice" class="database-inline-notice" hidden></div>
+   <div class="table-wrap database-table-wrap"><table class="data-table database-table"><thead id="databaseHead"></thead><tbody id="databaseBody"><tr><td class="empty-row">Select a module to load records.</td></tr></tbody></table></div>
+   <div class="database-pagination"><span id="databaseCount">0 records</span><div><button id="databasePrev" class="secondary-btn compact-btn" type="button">Previous</button><button id="databaseNext" class="secondary-btn compact-btn" type="button">Next</button></div></div>
+  </section>
+ </div>
 </article>
 <div id="databaseModal" class="modal-shell" hidden><div class="modal-backdrop" data-db-close></div><div class="modal-card database-modal-card"><div class="panel-head"><div><p class="eyebrow">Database Center</p><h2 id="databaseModalTitle">Edit Record</h2></div><button class="icon-button" data-db-close>×</button></div><form id="databaseForm" class="database-form"></form></div></div>
 </section></main></div>
+
+<div id="maintenanceSetupModal" class="modal-shell maintenance-setup-modal" hidden>
+ <div class="modal-backdrop" data-maintenance-setup-close></div>
+ <div class="modal-card maintenance-setup-card" role="dialog" aria-modal="true">
+  <div class="panel-head"><div><p class="eyebrow">Owner Control</p><h2>Start Maintenance Mode</h2><p>Tell staff why the system is paused and when you expect it back.</p></div><button class="icon-button" data-maintenance-setup-close>×</button></div>
+  <form id="maintenanceSetupForm" class="maintenance-setup-form">
+   <label><span>Reason</span><select id="maintenanceReason"><option>Database update</option><option>Security update</option><option>Scheduled maintenance</option><option>Emergency maintenance</option><option>Other</option></select><small>Shown to everyone while the Hub is locked.</small></label>
+   <label><span>Expected finish</span><input id="maintenanceExpectedEnd" type="datetime-local" required><small>Used for the countdown and progress bar.</small></label>
+   <label class="maintenance-message-field"><span>Message</span><textarea id="maintenanceMessage" rows="3">Adventure Sports Operations Hub is temporarily unavailable while maintenance is completed.</textarea></label>
+   <div class="form-actions"><button class="secondary-btn" type="button" data-maintenance-setup-close>Cancel</button><button class="warning-btn" type="submit">Start Maintenance Mode</button></div>
+  </form>
+ </div>
+</div>
+<div id="maintenanceLockScreen" class="maintenance-lock-screen" hidden>
+ <div class="maintenance-lock-backdrop"></div>
+ <section class="maintenance-lock-card" role="dialog" aria-modal="true">
+  <div class="maintenance-lock-icon">🛠</div><p class="eyebrow">Adventure Sports Operations Hub</p><h1>Maintenance Mode Enabled</h1>
+  <p id="maintenanceLockMessage">The system is temporarily unavailable while maintenance is completed.</p>
+  <div class="maintenance-lock-details"><div><small>Status</small><strong>Maintenance Active</strong></div><div><small>Reason</small><strong id="maintenanceLockReason">System maintenance</strong></div><div><small>Started</small><strong id="maintenanceLockStarted">—</strong></div><div><small>Expected finish</small><strong id="maintenanceLockEnd">—</strong></div></div>
+  <div class="maintenance-countdown"><span id="maintenanceCountdown">Estimating completion…</span><div class="maintenance-progress-track"><i id="maintenanceProgressBar"></i></div><small id="maintenanceProgressText">Only Owners can resume operations.</small></div>
+  <div class="maintenance-lock-actions"><button id="maintenanceResume" class="primary-btn owner-only" type="button">Resume Operations</button><button id="maintenanceLockLogout" class="secondary-btn" type="button">Sign Out</button></div>
+ </section>
+</div>
 <div id="securityModal" class="modal-shell security-modal" hidden>
  <div class="modal-backdrop"></div>
  <div class="modal-card security-modal-card" role="dialog" aria-modal="true" aria-labelledby="securityModalTitle">
@@ -769,4 +797,4 @@
   </form>
  </div>
 </div>
-<div id="toast" class="toast"></div><script src="/ops/dashboard-v2.js?v=801"></script><script src="/ops/dashboard-v73.js?v=801"></script><script src="/ops/clover-v2.js?v=801"></script><script src="/ops/staff.js?v=801"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"><script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script><script src="/ops/maintenance.js?v=801"></script><script src="/ops/weather.js?v=801"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script><script src="/ops/app.js?v=801"></script><script src="/ops/supabase-data.js?v=801"></script><script src="/ops/internal-sections.js?v=801"></script><script src="/ops/database-center.js?v=801"></script><script src="/ops/notifications-v7.js?v=801"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="/ops/games-v71.js?v=801"></script><script src="/ops/phase-one-v71.js?v=801"></script></body></html>
+<div id="toast" class="toast"></div><script src="/ops/dashboard-v2.js?v=810"></script><script src="/ops/dashboard-v73.js?v=810"></script><script src="/ops/clover-v2.js?v=810"></script><script src="/ops/staff.js?v=810"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"><script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script><script src="/ops/maintenance.js?v=810"></script><script src="/ops/weather.js?v=810"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script><script src="/ops/app.js?v=810"></script><script src="/ops/supabase-data.js?v=810"></script><script src="/ops/internal-sections.js?v=810"></script><script src="/ops/database-center.js?v=810"></script><script src="/ops/notifications-v7.js?v=810"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="/ops/games-v71.js?v=810"></script><script src="/ops/phase-one-v71.js?v=810"></script></body></html>
