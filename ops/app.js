@@ -3,7 +3,8 @@
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const app=$('#app'), gate=$('#loginGate'), sidebar=$('#sidebar');
 const AUTH_KEY='ase_ops_identity_session_v2';
-const APP_BUILD='810';
+const TRUSTED_DEVICE_KEY='ase_trusted_device_v1';
+const APP_BUILD='811';
 async function ensureFreshBuild(){
   try{
     const key='ase_ops_build';
@@ -45,14 +46,14 @@ const MODULES=[
 ];
 
 let session=null,profile=null,permissions=structuredClone(DEFAULT_PERMISSIONS);
-let stepupToken=sessionStorage.getItem('ase_stepup_token')||'',securityChannel='email',securityResolve=null;
+let stepupToken=sessionStorage.getItem('ase_stepup_token')||'',trustedDeviceToken=localStorage.getItem(TRUSTED_DEVICE_KEY)||'',securityChannel='email',securityResolve=null;
 let siteData=null,originalStatus='',originalAnnouncement='',publishing=false,cloverLoading=false,timer=null;
 let teamUsers=[],auditEntries=[],selectedProfileUser=null;
 
 const usd=new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'});
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const token=()=>session?.token?.access_token||'';
-const authHeaders=(extra={})=>({Authorization:'Bearer '+token(),...(stepupToken?{'X-ASE-Stepup':stepupToken}:{}),...extra});
+const authHeaders=(extra={})=>({Authorization:'Bearer '+token(),...(stepupToken?{'X-ASE-Stepup':stepupToken}:{}),...(trustedDeviceToken?{'X-ASE-Trusted-Device':trustedDeviceToken}:{}),...extra});
 const role=()=>profile?.role||'unassigned';
 window.ASE_OPS={api,role,toast,getProfile:()=>profile,getSession:()=>session,getStepupToken:()=>stepupToken,requireSecurity:requireSensitiveSecurity};
 const allowed=view=>(permissions[role()]||[]).includes(view);
@@ -97,7 +98,7 @@ async function securityRequest(url,options={}){
   if(!r.ok)throw Error(d.error||d.message||`Request failed (${r.status}).`);return d;
 }
 function openSecurityModal(info){
-  const modal=$('#securityModal');modal.hidden=false;$('#securityEmailDestination').textContent=info?.user?.email||session?.user?.email||'Your account email';$('#securityChannelChoices').hidden=false;$('#securityCodeForm').hidden=true;$('#securityModalText').textContent='Send a 6-digit code to your Owner email address.';$('#securityCode').value='';$('#securityCodeNotice').textContent='';
+  const modal=$('#securityModal');modal.hidden=false;$('#securityEmailDestination').textContent=info?.user?.email||session?.user?.email||'Your account email';$('#securityChannelChoices').hidden=false;$('#securityCodeForm').hidden=true;$('#securityModalText').textContent='Send a 6-digit code to your Owner email address.';$('#securityCode').value='';$('#securityCodeNotice').textContent='';const remember=$('#rememberTrustedDevice');if(remember)remember.checked=false;
 }
 function closeSecurityModal(){const m=$('#securityModal');if(m)m.hidden=true}
 async function sendSecurityCode(){
@@ -105,8 +106,10 @@ async function sendSecurityCode(){
 }
 async function verifySecurityCode(e){
   e.preventDefault();const b=$('#verifySecurityCode');b.disabled=true;b.textContent='Verifying…';$('#securityCodeNotice').textContent='';
-  try{const d=await securityRequest('/.netlify/functions/security-verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({channel:securityChannel,code:$('#securityCode').value})});
-    stepupToken=d.stepup;sessionStorage.setItem('ase_stepup_token',stepupToken);closeSecurityModal();securityResolve?.();securityResolve=null;
+  try{const rememberDevice=!!$('#rememberTrustedDevice')?.checked;const d=await securityRequest('/.netlify/functions/security-verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({channel:securityChannel,code:$('#securityCode').value,trustDevice:rememberDevice})});
+    stepupToken=d.stepup;sessionStorage.setItem('ase_stepup_token',stepupToken);
+    if(d.trustedDevice){trustedDeviceToken=d.trustedDevice;localStorage.setItem(TRUSTED_DEVICE_KEY,trustedDeviceToken);toast('This device is trusted for 30 days.')}
+    closeSecurityModal();securityResolve?.();securityResolve=null;
   }catch(err){$('#securityCodeNotice').textContent=err.message;$('#securityCodeNotice').className='login-status error'}finally{b.disabled=false;b.textContent='Verify and Continue'}
 }
 function requireOwnerVerification(info){
