@@ -23,8 +23,9 @@ function verifyPurpose(token,userId,purpose){
     return p.sub===userId&&Number(p.exp)>Date.now()&&p.purpose===purpose;
   }catch{return false}
 }
-const verify=(token,userId)=>verifyPurpose(token,userId,'ase-stepup');
+const verifyStepUp=(token,userId)=>verifyPurpose(token,userId,'ase-stepup');
 const verifyTrustedDevice=(token,userId)=>verifyPurpose(token,userId,'ase-trusted-device');
+const verify=(token,userId)=>verifyStepUp(token,userId)||verifyTrustedDevice(token,userId);
 function tokenPayload(token){try{return JSON.parse(ub64(String(token||'').split('.')[0]))}catch{return null}}
 function isSecurityVerified(event,actor){
   const stepup=event.headers['x-ase-stepup']||event.headers['X-ASE-Stepup'];
@@ -83,4 +84,4 @@ function requireStepUp(event,actor){
   if(actor.role!=='owner')return;
   if(!isSecurityVerified(event,actor))throw error('A fresh email security code is required.',428);
 }
-module.exports={sign,verify,verifyTrustedDevice,isSecurityVerified,hashCode,randomCode,clientIp,logEvent,rateLimit,profile,requireStepUp};
+module.exports={sign,verify,verifyStepUp,verifyTrustedDevice,isSecurityVerified,hashCode,randomCode,clientIp,logEvent,rateLimit,profile,requireStepUp};

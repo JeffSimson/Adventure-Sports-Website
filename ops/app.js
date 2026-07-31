@@ -4,7 +4,7 @@ const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelect
 const app=$('#app'), gate=$('#loginGate'), sidebar=$('#sidebar');
 const AUTH_KEY='ase_ops_identity_session_v2';
 const TRUSTED_DEVICE_KEY='ase_trusted_device_v1';
-const APP_BUILD='811';
+const APP_BUILD='812';
 async function ensureFreshBuild(){
   try{
     const key='ase_ops_build';
@@ -53,7 +53,15 @@ let teamUsers=[],auditEntries=[],selectedProfileUser=null;
 const usd=new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'});
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const token=()=>session?.token?.access_token||'';
-const authHeaders=(extra={})=>({Authorization:'Bearer '+token(),...(stepupToken?{'X-ASE-Stepup':stepupToken}:{}),...(trustedDeviceToken?{'X-ASE-Trusted-Device':trustedDeviceToken}:{}),...extra});
+const authHeaders=(extra={})=>{
+  const securityToken=stepupToken||trustedDeviceToken;
+  return {
+    Authorization:'Bearer '+token(),
+    ...(securityToken?{'X-ASE-Stepup':securityToken}:{}),
+    ...(trustedDeviceToken?{'X-ASE-Trusted-Device':trustedDeviceToken}:{}),
+    ...extra
+  };
+};
 const role=()=>profile?.role||'unassigned';
 window.ASE_OPS={api,role,toast,getProfile:()=>profile,getSession:()=>session,getStepupToken:()=>stepupToken,requireSecurity:requireSensitiveSecurity};
 const allowed=view=>(permissions[role()]||[]).includes(view);
