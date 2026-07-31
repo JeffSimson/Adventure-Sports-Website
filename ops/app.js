@@ -4,7 +4,7 @@ const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelect
 const app=$('#app'), gate=$('#loginGate'), sidebar=$('#sidebar');
 const AUTH_KEY='ase_ops_identity_session_v2';
 const TRUSTED_DEVICE_KEY='ase_trusted_device_v1';
-const APP_BUILD='812';
+const APP_BUILD='813';
 async function ensureFreshBuild(){
   try{
     const key='ase_ops_build';
@@ -63,7 +63,7 @@ const authHeaders=(extra={})=>{
   };
 };
 const role=()=>profile?.role||'unassigned';
-window.ASE_OPS={api,role,toast,getProfile:()=>profile,getSession:()=>session,getStepupToken:()=>stepupToken,requireSecurity:requireSensitiveSecurity};
+window.ASE_OPS={api,role,toast,getProfile:()=>profile,getSession:()=>session,getStepupToken:()=>stepupToken||trustedDeviceToken,requireSecurity:requireSensitiveSecurity};
 const allowed=view=>(permissions[role()]||[]).includes(view);
 const defaultView=()=>(permissions[role()]||[])[0]||null;
 const fullName=u=>(u?.user_metadata?.full_name||u?.user_metadata?.name||u?.name||u?.email?.split('@')[0]||'Team Member').trim();
@@ -126,7 +126,12 @@ function requireOwnerVerification(info){
 }
 async function requireSensitiveSecurity(){
   if(role()!=='owner')return;
-  if(stepupToken){try{const d=await api(PROFILE);if(d.mfaVerified)return}catch{}}
+  if(stepupToken||trustedDeviceToken){
+    try{
+      const d=await api(PROFILE);
+      if(d.mfaVerified)return;
+    }catch{}
+  }
   openSecurityModal({user:session?.user});
   return new Promise(resolve=>{securityResolve=resolve});
 }
