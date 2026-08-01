@@ -4,7 +4,7 @@
 const LAT = 40.0919;
 const LON = -74.3587;
 const LOCATION_NAME = 'Adventure Sports — Jackson, NJ';
-const WEATHER_URL = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m&hourly=temperature_2m,relative_humidity_2m,dew_point_2m,apparent_temperature,precipitation_probability,precipitation,rain,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,uv_index&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,precipitation_sum,precipitation_probability_max,sunrise,sunset,uv_index_max,wind_speed_10m_max,wind_gusts_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FNew_York&forecast_days=7`;
+const WEATHER_URL='/.netlify/functions/weather-center';
 
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -84,12 +84,24 @@ async function loadWeather(){
     renderHourly();
     renderDaily();
     renderSafety();
-    setLive('ready',`Live • Updated ${new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}`);
+    renderAlerts();
+    const source=weatherData.source||'Weather service';
+    setLive('ready',`${source} • Updated ${new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}`);
   }catch(error){
     console.error(error);
     setLive('error','Weather connection unavailable');
     showError('Live weather could not be loaded. Check the internet connection and press Refresh Weather.');
   }
+}
+
+
+function renderAlerts(){
+  const box=$('#weatherAlerts');
+  if(!box)return;
+  const alerts=Array.isArray(weatherData?.alerts)?weatherData.alerts:[];
+  if(!alerts.length){box.hidden=true;box.innerHTML='';return}
+  box.hidden=false;
+  box.innerHTML=alerts.map(a=>`<article class="weather-alert-card"><div><span>OFFICIAL NWS ALERT</span><h3>${String(a.event||'Weather Alert')}</h3><p>${String(a.headline||a.description||'Official weather alert is active.')}</p></div><strong>${String(a.severity||'Alert')}</strong></article>`).join('');
 }
 
 function renderCurrent(){

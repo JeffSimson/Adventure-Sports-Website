@@ -17,7 +17,14 @@ function render(){
  const filtered=rows.filter(r=>JSON.stringify(r).toLowerCase().includes(q));
  const body=$('#incidentHubBody');
  if(!body)return;
- body.innerHTML=filtered.length?filtered.map(r=>`<tr><td><b>${esc(number(r))}</b></td><td>${esc(new Date(r.occurred_at).toLocaleString())}</td><td>${esc(r.location||'—')}</td><td>${esc(r.incident_type||'—')}</td><td><span class="incident-mini-status ${esc(r.status||'open')}">${esc(String(r.status||'open').replaceAll('_',' '))}</span></td><td><div class="table-action-group"><button class="secondary-btn compact-btn" data-hub-view="${esc(r.id)}">View</button><button class="secondary-btn compact-btn" data-hub-edit="${esc(r.id)}">Edit</button></div></td></tr>`).join(''):`<tr><td colspan="6" class="empty-row">No incident reports match your search.</td></tr>`;
+ body.innerHTML=filtered.length?filtered.map(r=>`<article class="incident-list-card">
+   <div class="incident-list-cell"><small>Report</small><b>${esc(number(r))}</b></div>
+   <div class="incident-list-cell"><small>Date & Time</small><span>${esc(new Date(r.occurred_at).toLocaleString())}</span></div>
+   <div class="incident-list-cell"><small>Location</small><b>${esc(r.location||'—')}</b></div>
+   <div class="incident-list-cell type"><small>Incident Type</small><b>${esc(r.incident_type||'—')}</b></div>
+   <div class="incident-list-cell"><small>Status</small><span class="incident-mini-status ${esc(r.status||'open')}">${esc(String(r.status||'open').replaceAll('_',' '))}</span></div>
+   <div class="incident-list-actions"><button class="secondary-btn compact-btn" data-hub-view="${esc(r.id)}">View</button><button class="secondary-btn compact-btn" data-hub-edit="${esc(r.id)}">Edit</button></div>
+ </article>`).join(''):`<div class="incident-list-empty">No incident reports match your search.</div>`;
  $('#incidentHubCount').textContent=`${filtered.length} report${filtered.length===1?'':'s'}`;
  $$('[data-hub-view]').forEach(b=>b.onclick=()=>window.ASE_INCIDENTS.view(rows.find(r=>r.id===b.dataset.hubView)));
  $$('[data-hub-edit]').forEach(b=>b.onclick=()=>window.ASE_INCIDENTS.open(rows.find(r=>r.id===b.dataset.hubEdit)));
