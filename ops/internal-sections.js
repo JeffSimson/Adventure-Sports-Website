@@ -122,10 +122,12 @@ function settings(){
  const prefs=$('#v9DashboardSettings');
  const security=$('#securityCenter');
  const database=$('#databaseCenter');
+ const autoOps=$('#autoOpsSettings');
  const account=panel(view,'account',[base]);account.classList.add('active');account.hidden=false;
  const items=[{key:'account',label:'Account & App'}];
  if(owner&&prefs){const p=panel(view,'visibility',[prefs]);p.hidden=true;items.push({key:'visibility',label:'Dashboard Access',access:'owner'})}
  if(owner&&security){security.hidden=false;const p=panel(view,'security',[security]);p.hidden=true;items.push({key:'security',label:'Security',access:'owner'})}else security?.remove();
+ if(owner&&autoOps){autoOps.hidden=false;const p=panel(view,'autoops',[autoOps]);p.hidden=true;items.push({key:'autoops',label:'Auto Ops Alerts',access:'owner'})}else autoOps?.remove();
  if(owner&&database){database.hidden=false;const p=panel(view,'database',[database]);p.hidden=true;items.push({key:'database',label:'Database',access:'owner'})}else database?.remove();
  makeTabs(view,items);
 }
@@ -142,3 +144,4 @@ function init(event){
 window.addEventListener('ase:profile-ready',init);
 document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{if(window.ASE_OPS?.getProfile?.())init({detail:{role:window.ASE_OPS.role()}})},500));
 })();
+document.addEventListener('ase:auto-alerts-ready',()=>setTimeout(settings,0));

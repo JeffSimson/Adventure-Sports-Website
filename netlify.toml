@@ -100,3 +100,7 @@
     X-Content-Type-Options = "nosniff"
     X-Frame-Options = "DENY"
     Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Automatic operations checks run every five minutes.
+[functions."auto-operations-alerts"]
+  schedule = "*/5 * * * *"
