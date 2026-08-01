@@ -4,7 +4,7 @@ const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelect
 const app=$('#app'), gate=$('#loginGate'), sidebar=$('#sidebar');
 const AUTH_KEY='ase_ops_identity_session_v2';
 const TRUSTED_DEVICE_KEY='ase_trusted_device_v1';
-const APP_BUILD='900';
+const APP_BUILD='905';
 async function ensureFreshBuild(){
   try{
     const key='ase_ops_build';
@@ -84,13 +84,22 @@ async function api(url,options={}){
   if(!r.ok)throw Error(d.error||d.message||`Request failed (${r.status}).`);
   return d;
 }
-function showGate(message='Enter the email and password from your invitation.'){app.hidden=true;gate.hidden=false;if(timer)clearInterval(timer);$('#loginStatus').textContent=message}
-function unauthorized(message){clear();showGate(message||'Your account does not have an assigned Adventure Sports role.');$('#loginStatus').className='login-status error'}
+function showGate(message='Enter the email and password from your invitation.'){if(app)app.hidden=true;if(gate)gate.hidden=false;if(timer)clearInterval(timer);const status=$('#loginStatus');if(status)status.textContent=message}
+function unauthorized(message){clear();showGate(message||'Your account does not have an assigned Adventure Sports role.');const status=$('#loginStatus');if(status)status.className='login-status error'}
 function renderUser(u){
   const n=firstName(u),r=ROLE_LABELS[role()]||'Access Not Assigned';
-  $('#greeting').textContent=greet();$('#userName').textContent=n;$('#sidebarUserName').textContent=fullName(u);
-  $('#sidebarRoleName').textContent=r;$('#accountEmail').textContent=u?.email||'';$('#publisherEmail').textContent=u?.email||'';
-  $('#settingsRoleBadge').textContent=r;$('#settingsRoleBadge').dataset.role=role();$$('.avatar').forEach(x=>x.textContent=n[0].toUpperCase());
+  const values={
+    '#greeting':greet(),
+    '#userName':n,
+    '#sidebarUserName':fullName(u),
+    '#sidebarRoleName':r,
+    '#accountEmail':u?.email||'',
+    '#publisherEmail':u?.email||'',
+    '#settingsRoleBadge':r
+  };
+  Object.entries(values).forEach(([selector,value])=>{const el=$(selector);if(el)el.textContent=value});
+  const roleBadge=$('#settingsRoleBadge');if(roleBadge)roleBadge.dataset.role=role();
+  $$('.avatar').forEach(x=>x.textContent=(n[0]||'A').toUpperCase());
 }
 function applyPermissions(){
   $$('.nav-item').forEach(b=>b.hidden=!allowed(b.dataset.view));
