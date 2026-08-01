@@ -114,11 +114,25 @@ function weather(){
  else if(btn){btn.textContent='Management'}
 }
 
+function addAutoOpsTab(){
+ const view=$('[data-view-panel="settings"]');
+ const autoOps=$('#autoOpsSettings');
+ if(!view||!autoOps)return;
+ if(!ownerAllowed()){autoOps.remove();return}
+ if(view.querySelector(':scope > .internal-section-panel[data-internal-panel="autoops"]'))return;
+ autoOps.hidden=false;
+ const p=panel(view,'autoops',[autoOps]);p.hidden=true;
+ const tabs=view.querySelector(':scope > .internal-section-tabs');
+ if(!tabs){settings();return}
+ if(tabs.querySelector('[data-internal-target="autoops"]'))return;
+ const b=document.createElement('button');
+ b.type='button';b.className='internal-section-tab';b.dataset.internalTarget='autoops';b.dataset.internalAccess='owner';b.textContent='Auto Ops Alerts';
+ tabs.appendChild(b);
+}
 function settings(){
  const view=$('[data-view-panel="settings"]');if(!view)return;
- if(view.querySelector(':scope > .internal-section-tabs'))return;
+ if(view.querySelector(':scope > .internal-section-tabs')){addAutoOpsTab();return}
  const owner=role()==='owner';
- const head=view.querySelector('.page-head');
  const base=view.querySelector('.settings-grid');
  const prefs=$('#v9DashboardSettings');
  const security=$('#securityCenter');
@@ -128,8 +142,8 @@ function settings(){
  const items=[{key:'account',label:'Account & App'}];
  if(owner&&prefs){const p=panel(view,'visibility',[prefs]);p.hidden=true;items.push({key:'visibility',label:'Dashboard Access',access:'owner'})}
  if(owner&&security){security.hidden=false;const p=panel(view,'security',[security]);p.hidden=true;items.push({key:'security',label:'Security',access:'owner'})}else security?.remove();
- if(owner&&autoOps){autoOps.hidden=false;const p=panel(view,'autoops',[autoOps]);p.hidden=true;items.push({key:'autoops',label:'Auto Ops Alerts',access:'owner'})}else autoOps?.remove();
  if(owner&&database){database.hidden=false;const p=panel(view,'database',[database]);p.hidden=true;items.push({key:'database',label:'Database',access:'owner'})}else database?.remove();
+ if(owner&&autoOps){autoOps.hidden=false;const p=panel(view,'autoops',[autoOps]);p.hidden=true;items.push({key:'autoops',label:'Auto Ops Alerts',access:'owner'})}else if(autoOps&&!owner)autoOps.remove();
  makeTabs(view,items);
 }
 
@@ -143,17 +157,6 @@ function init(event){
  document.body.classList.add('role-sections-ready');
 }
 window.addEventListener('ase:profile-ready',init);
+document.addEventListener('ase:auto-alerts-ready',()=>setTimeout(addAutoOpsTab,0));
 document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{if(window.ASE_OPS?.getProfile?.())init({detail:{role:window.ASE_OPS.role()}})},500));
 })();
-document.addEventListener('ase:auto-alerts-ready',()=>setTimeout(()=>{
- const view=$('[data-view-panel="settings"]'),autoOps=$('#autoOpsSettings');
- if(!view||!autoOps||role()!=='owner')return;
- if(view.querySelector(':scope > .internal-section-panel[data-internal-panel="autoops"]'))return;
- autoOps.hidden=false;
- const p=panel(view,'autoops',[autoOps]);p.hidden=true;
- const tabs=view.querySelector(':scope > .internal-section-tabs');
- if(!tabs)return settings();
- const b=document.createElement('button');
- b.type='button';b.className='internal-section-tab';b.dataset.internalTarget='autoops';b.dataset.internalAccess='owner';b.textContent='Auto Ops Alerts';
- tabs.appendChild(b);
-},0));
