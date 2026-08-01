@@ -116,6 +116,7 @@ function weather(){
 
 function settings(){
  const view=$('[data-view-panel="settings"]');if(!view)return;
+ if(view.querySelector(':scope > .internal-section-tabs'))return;
  const owner=role()==='owner';
  const head=view.querySelector('.page-head');
  const base=view.querySelector('.settings-grid');
@@ -144,4 +145,15 @@ function init(event){
 window.addEventListener('ase:profile-ready',init);
 document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{if(window.ASE_OPS?.getProfile?.())init({detail:{role:window.ASE_OPS.role()}})},500));
 })();
-document.addEventListener('ase:auto-alerts-ready',()=>setTimeout(settings,0));
+document.addEventListener('ase:auto-alerts-ready',()=>setTimeout(()=>{
+ const view=$('[data-view-panel="settings"]'),autoOps=$('#autoOpsSettings');
+ if(!view||!autoOps||role()!=='owner')return;
+ if(view.querySelector(':scope > .internal-section-panel[data-internal-panel="autoops"]'))return;
+ autoOps.hidden=false;
+ const p=panel(view,'autoops',[autoOps]);p.hidden=true;
+ const tabs=view.querySelector(':scope > .internal-section-tabs');
+ if(!tabs)return settings();
+ const b=document.createElement('button');
+ b.type='button';b.className='internal-section-tab';b.dataset.internalTarget='autoops';b.dataset.internalAccess='owner';b.textContent='Auto Ops Alerts';
+ tabs.appendChild(b);
+},0));

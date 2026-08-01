@@ -1640,3 +1640,32 @@ img,video,canvas,svg{max-width:100%}
 /* V9.0.8 Automatic Operations Alerts */
 .auto-alert-section{margin-top:22px;padding-top:20px;border-top:1px solid var(--border,#d6e0ee)}
 .auto-alert-section-head{display:flex;justify-content:space-between;gap:18px;align-items:end;margin-bottom:14px}.auto-alert-section-head h3{margin:0 0 4px}.auto-alert-section-head p{margin:0;color:var(--muted,#63738b)}.auto-alert-section-head>label{display:grid;gap:6px;min-width:210px;font-weight:700}.auto-alert-section-head select{min-height:42px;border:1px solid #d6e0ee;border-radius:10px;padding:0 10px;background:#fff}.auto-alert-option{display:flex;gap:12px;padding:14px;border:1px solid var(--border,#d6e0ee);border-radius:14px;background:#f8fbff}.auto-alert-option input{margin-top:3px}.auto-alert-option span{display:grid;gap:4px}.auto-alert-option small{color:var(--muted,#63738b)}.auto-master{margin:14px 0}.auto-alert-input-grid label{font-weight:700}.auto-alert-input-grid small{font-weight:400}@media(max-width:760px){.auto-alert-section-head{align-items:stretch;flex-direction:column}.auto-alert-section-head>label{min-width:0}}
+
+/* V9.0.9 Auto Ops Alerts tab + UI polish */
+#autoOpsSettings{max-width:none;margin:0;padding:22px 24px}
+#autoOpsSettings .panel-head{margin-bottom:18px}
+#autoOpsSettings .panel-head p{max-width:680px}
+.auto-master{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:15px 17px;border:1px solid #d9e3ef;border-radius:14px;background:#f7faff;margin:0 0 18px}
+.auto-master>span:first-child{display:grid;gap:3px}.auto-master small{color:#68778c;font-weight:400}
+.auto-master-control{position:relative;display:inline-flex;align-items:center}.auto-master-control input,.auto-alert-option>input{position:absolute;opacity:0;pointer-events:none}
+.auto-alert-switch{position:relative;display:inline-block;width:42px;height:24px;flex:0 0 42px;border-radius:999px;background:#cbd5e1;box-shadow:inset 0 0 0 1px #b8c4d2;transition:.18s ease}
+.auto-alert-switch::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #20324b33;transition:.18s ease}
+.auto-master-control input:checked+.auto-alert-switch,.auto-alert-option>input:checked+.auto-alert-switch{background:#1476e8;box-shadow:none}
+.auto-master-control input:checked+.auto-alert-switch::after,.auto-alert-option>input:checked+.auto-alert-switch::after{transform:translateX(18px)}
+.auto-master-control input:focus-visible+.auto-alert-switch,.auto-alert-option>input:focus-visible+.auto-alert-switch{outline:3px solid #93c5fd;outline-offset:2px}
+.auto-alert-section{margin-top:16px;padding:18px;border:1px solid #dce5ef;border-radius:16px;background:#fff}
+.auto-alert-section+.auto-alert-section{margin-top:14px}
+.auto-alert-section-head{align-items:center;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #edf1f6}
+.auto-alert-section-head h3{font-size:18px}.auto-alert-section-head p{font-size:14px}
+.auto-alert-section-head>label{min-width:205px;font-size:13px;color:#43536a}
+.auto-alert-grid{gap:10px;margin:0 0 16px}
+.auto-alert-option{position:relative;display:grid;grid-template-columns:42px minmax(0,1fr);align-items:center;gap:12px;min-height:78px;padding:13px 14px;border:1px solid #dce5ef;border-radius:13px;background:#fbfcfe;cursor:pointer;transition:border-color .16s ease,background .16s ease,transform .16s ease}
+.auto-alert-option:hover{border-color:#aac4e7;background:#f7faff;transform:translateY(-1px)}
+.auto-alert-copy{display:grid;gap:3px}.auto-alert-copy b{font-size:14px;color:#102744}.auto-alert-copy small{font-size:12px;line-height:1.35;color:#68778c}
+.auto-alert-input-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0}
+.auto-alert-input-grid>label{font-size:12px;color:#43536a}
+.auto-alert-input-grid input,.auto-alert-input-grid select{min-height:42px;border-color:#d5dfeb;border-radius:10px;font-size:14px}
+#autoNotificationNotice{margin-top:16px}
+#autoOpsSettings .form-actions{position:sticky;bottom:0;z-index:2;margin:18px -24px -22px;padding:14px 24px;background:#fffffff2;border-top:1px solid #e1e8f0;backdrop-filter:blur(10px)}
+@media(max-width:1000px){.auto-alert-input-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){#autoOpsSettings{padding:16px}.auto-master{align-items:flex-start}.auto-alert-section{padding:14px}.auto-alert-section-head{align-items:stretch}.auto-alert-grid,.auto-alert-input-grid{grid-template-columns:1fr}#autoOpsSettings .form-actions{margin:16px -16px -16px;padding:12px 16px}}
