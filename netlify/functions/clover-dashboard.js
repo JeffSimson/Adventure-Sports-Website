@@ -4,6 +4,19 @@ const els=v=>Array.isArray(v?.elements)?v.elements:[];
 const num=v=>Number.isFinite(Number(v))?Number(v):0;
 async function verify(e){const a=e.headers.authorization||e.headers.Authorization;if(!a?.startsWith('Bearer '))throw fail('You are not signed in.',401);const b=process.env.URL||process.env.DEPLOY_PRIME_URL;if(!b)throw fail('Netlify site URL is unavailable.');const r=await fetch(`${b}/.netlify/identity/user`,{headers:{Authorization:a}});if(!r.ok)throw fail('Your login session could not be verified.',401);const u=await r.json();const owner=String(process.env.OWNER_EMAIL||'').trim().toLowerCase();let role=String(u.app_metadata?.role||'').toLowerCase();if(owner&&String(u.email||'').toLowerCase()===owner)role='owner';if(!['owner','manager'].includes(role))throw fail('Only Owners and Managers can access Clover.',403);return {user:u,role}}
 async function clover(path){const id=process.env.CLOVER_MERCHANT_ID,t=process.env.CLOVER_ACCESS_TOKEN;if(!id||!t)throw fail('CLOVER_MERCHANT_ID or CLOVER_ACCESS_TOKEN is missing in Netlify.');const r=await fetch(`https://api.clover.com/v3/merchants/${encodeURIComponent(id)}${path}`,{headers:{Authorization:`Bearer ${t}`,Accept:'application/json'}});let d={};try{d=await r.json()}catch{}if(!r.ok)throw fail(d.message||d.error||`Clover request failed (${r.status}).`,r.status);return d}
+async function cloverAll(path,limit=1000,maxPages=25){
+  const all=[];
+  for(let page=0;page<maxPages;page++){
+    const u=new URL(path,'https://clover.local');
+    u.searchParams.set('limit',String(limit));
+    u.searchParams.set('offset',String(page*limit));
+    const d=await clover(u.pathname+u.search);
+    const batch=els(d);
+    all.push(...batch);
+    if(batch.length<limit)break;
+  }
+  return all;
+}
 const dateET=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const add=(d,n)=>{const x=new Date(d+'T12:00:00Z');x.setUTCDate(x.getUTCDate()+n);return x.toISOString().slice(0,10)};
 const weekStart=d=>{const x=new Date(d+'T12:00:00Z'),k=x.getUTCDay()||7;x.setUTCDate(x.getUTCDate()-k+1);return x.toISOString().slice(0,10)};
@@ -26,7 +39,7 @@ async function ownerTips(actor,rg,orders){
   const mappings=new Map((md||[]).map(m=>[m.clover_employee_id,m.display_name||m.clover_employee_name]));
   const orderById=new Map((orders||[]).map(o=>[o.id,o]));
   const q=new URLSearchParams();q.append('filter',`createdTime>=${rg.start}`);q.append('filter',`createdTime<=${rg.end}`);q.set('expand','order');q.set('limit','1000');
-  const pd=await clover(`/payments?${q}`).catch(()=>({elements:[]}));
+  const pd={elements:await cloverAll(`/payments?${q}`).catch(()=>[])};
   const missing=[];
   for(const pay of els(pd)){const oid=pay.order?.id||pay.orderId;if(oid&&!orderById.has(oid))missing.push(oid)}
   await Promise.all([...new Set(missing)].slice(0,100).map(async id=>{try{orderById.set(id,await clover(`/orders/${encodeURIComponent(id)}?expand=employee`))}catch{}}));
@@ -47,7 +60,7 @@ async function ownerTips(actor,rg,orders){
   }
   return {total:total/100,tipPayments,unmatched,employees:els(ed).map(e=>({id:e.id,name:employeeName(e)})),byEmployee:[...byEmployee.values()].sort((a,b)=>b.tips-a.tips),source:'Clover payments matched through orders'};
 }
-exports.handler=async e=>{if(e.httpMethod!=='GET')return json(405,{error:'Method not allowed.'});try{const actor=await verify(e);const rg=range(e),q=new URLSearchParams();q.append('filter',`createdTime>=${rg.start}`);q.append('filter',`createdTime<=${rg.end}`);q.set('expand','payments,payments.refunds,lineItems,lineItems.discounts,employee');q.set('limit','1000');const[m,od]=await Promise.all([clover(''),clover(`/orders?${q}`)]),orders=els(od),items=new Map(),tipEmployees=new Map(),hours=Array.from({length:24},(_,h)=>({hour:h,label:new Intl.DateTimeFormat('en-US',{hour:'numeric'}).format(new Date(2024,0,1,h)),sales:0,orders:0})),days=new Map();let gross=0,refunds=0,tx=0,front=0,totalTips=0;
+exports.handler=async e=>{if(e.httpMethod!=='GET')return json(405,{error:'Method not allowed.'});try{const actor=await verify(e);const rg=range(e),q=new URLSearchParams();q.append('filter',`createdTime>=${rg.start}`);q.append('filter',`createdTime<=${rg.end}`);q.set('expand','payments,payments.refunds,lineItems,lineItems.discounts,employee');q.set('limit','1000');const[m,orders]=await Promise.all([clover(''),cloverAll(`/orders?${q}`)]),items=new Map(),tipEmployees=new Map(),hours=Array.from({length:24},(_,h)=>({hour:h,label:new Intl.DateTimeFormat('en-US',{hour:'numeric'}).format(new Date(2024,0,1,h)),sales:0,orders:0})),days=new Map();let gross=0,refunds=0,tx=0,front=0,totalTips=0;
 for(const o of orders){let op=0,orf=0,paid=false;for(const p of els(o.payments))if(p.result==='SUCCESS'&&!p.voided){gross+=num(p.amount);op+=num(p.amount);tx++;paid=true;const tip=Math.max(0,num(p.tipAmount??p.tip??0));totalTips+=tip;const emp=p.employee||o.employee||{};const empName=emp.name||[emp.firstName,emp.lastName].filter(Boolean).join(' ')||'Unassigned';const empId=emp.id||empName;const te=tipEmployees.get(empId)||{id:empId,name:empName,tips:0,transactions:0};te.tips+=tip/100;if(tip>0)te.transactions++;tipEmployees.set(empId,te);const r=els(p.refunds).reduce((a,x)=>a+Math.abs(num(x.amount)),0);refunds+=r;orf+=r}if(paid){const net=Math.max(0,op-orf),h=hour(o.createdTime);hours[h].sales+=net/100;hours[h].orders++;const d=localDate(o.createdTime),x=days.get(d)||{date:d,sales:0,orders:0};x.sales+=net/100;x.orders++;days.set(d,x)}for(const l of els(o.lineItems)){if(l.refunded||l.isRevenue===false)continue;const n=lineName(l),qty=Math.max(1,num(l.unitQty||1000)/1000),g=lineGross(l),disc=lineDiscount(l),net=Math.max(0,g-disc),x=items.get(n)||{name:n,quantity:0,net:0,frontGate:gate(n)};x.quantity+=qty;x.net+=net/100;items.set(n,x);if(gate(n))front+=net}}
 const net=Math.max(0,gross-refunds);front=Math.min(front,net);const kitchen=Math.max(0,net-front),recent=orders.slice().sort((a,b)=>num(b.createdTime)-num(a.createdTime)).slice(0,18).map(o=>({id:o.id,time:o.createdTime,total:num(o.total)/100,employee:o.employee?.name||[o.employee?.firstName,o.employee?.lastName].filter(Boolean).join(' ')})),top=[...items.values()].sort((a,b)=>b.net-a.net).slice(0,12);let inv=[],inventoryAvailable=true,inventoryMessage='';try{const d=await clover('/items?expand=itemStock&limit=1000');inv=els(d).map(i=>({id:i.id,name:i.name||'Unnamed item',quantity:Number(i.itemStock?.quantity)})).filter(i=>Number.isFinite(i.quantity)&&i.quantity<=20).sort((a,b)=>a.quantity-b.quantity).slice(0,24)}catch(err){inventoryAvailable=false;inventoryMessage='Sales are connected, but Clover inventory quantities are unavailable for this token.'}
 const tipData=await ownerTips(actor,rg,orders).catch(err=>({total:totalTips/100,tipPayments:0,byEmployee:[...tipEmployees.values()].filter(x=>x.tips>0).sort((a,b)=>b.tips-a.tips),source:'Clover order payments',warning:err.message}));
