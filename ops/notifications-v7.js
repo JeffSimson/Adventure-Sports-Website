@@ -59,12 +59,29 @@ function stableDeviceId(){
 
 function session(){try{return JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch{return null}}
 function token(){return session()?.token?.access_token||''}
-function headers(extra={}){return {Authorization:'Bearer '+token(),...extra}}
-async function api(url,options={}){
-  const r=await fetch(url,{cache:'no-store',...options,headers:headers(options.headers||{})});
-  const raw=await r.text();let d={};try{d=raw?JSON.parse(raw):{}}catch{d={error:raw}}
-  if(!r.ok)throw Error(d.error||`Request failed (${r.status}).`);
-  return d;
+
+/*
+ * All notification requests must use the Operations Hub's shared authenticated
+ * request helper. That helper attaches both the normal Owner verification token
+ * and the remembered-device token. If a real verification is required, open
+ * the existing security modal, then retry the request once.
+ */
+async function api(url,options={},retried=false){
+  const shared=window.ASE_OPS?.api;
+  if(typeof shared!=='function')throw Error('The Operations Hub security session is still loading. Please try again.');
+
+  try{
+    return await shared(url,options);
+  }catch(error){
+    const message=String(error?.message||error||'');
+    const needsVerification=/fresh email security code|required.*security code|request failed \(428\)/i.test(message);
+
+    if(needsVerification&&!retried&&typeof window.ASE_OPS?.requireSecurity==='function'){
+      await window.ASE_OPS.requireSecurity();
+      return api(url,options,true);
+    }
+    throw error;
+  }
 }
 function role(){return document.querySelector('#settingsRoleBadge')?.dataset?.role||''}
 function notice(msg,type='success',sticky=false){
@@ -256,9 +273,21 @@ function wire(){
 }
 async function boot(){
   wire();updateDeviceStatus();
-  try{await initFirebase();if(Notification.permission==='granted')await healEnrollment()}catch(e){console.warn(e)}
-  const wait=setInterval(()=>{if(token()){clearInterval(wait);loadData();if(Notification.permission==='granted')healEnrollment()}},300);
-  setTimeout(()=>clearInterval(wait),15000);
+
+  const startAuthenticatedNotifications=async()=>{
+    try{
+      await initFirebase();
+      if(Notification.permission==='granted')await healEnrollment();
+    }catch(e){console.warn(e)}
+    await loadData();
+  };
+
+  if(window.ASE_OPS?.getProfile?.()){
+    await startAuthenticatedNotifications();
+    return;
+  }
+
+  window.addEventListener('ase:profile-ready',startAuthenticatedNotifications,{once:true});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();

@@ -25,7 +25,7 @@ async function verifiedUser(event,options={}){
   const actor={user,role:VALID_ROLES.includes(role)?role:null,authorization};
   const control=await accountControl(user.id);if(control?.disabled)throw error('This Operations Hub account has been disabled.',403,'ACCOUNT_DISABLED');
   actor.system=await systemSettings();
-  if(!options.allowUnverified&&actor.role==='owner'){const {requireStepUp}=require('./_security');await requireStepUp(event,actor)}
+  if(!options.allowUnverified&&actor.role==='owner'){const {requireStepUp}=require('./_security');requireStepUp(event,actor)}
   return actor;
 }
 function requireRole(actor,allowed){if(!actor.role)throw error('Your account has no assigned app role.',403,'ROLE_REQUIRED');if(!allowed.includes(actor.role))throw error('You do not have permission to use this feature.',403,'FORBIDDEN')}

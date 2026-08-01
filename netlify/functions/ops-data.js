@@ -11,7 +11,7 @@ const canWrite=(role,table)=>role==='owner'||(role==='manager'&&MANAGER_TABLES.h
 const PROTECTED=new Set(['id','created_at','updated_at','created_by','updated_by','organization_id','role','permissions','owner_id','user_id']);
 const COLUMN_ALLOWLIST={
  fields:['name','code','status','surface_type','notes'],
- incident_reports:['occurred_at','location','incident_type','severity','people_involved','description','actions_taken','status','reported_by','reviewed_by','timeline_before','timeline_event','timeline_after','response_details','follow_up','responding_staff','internal_notes','manager_review_status'],
+ incident_reports:['occurred_at','location','incident_type','severity','people_involved','description','actions_taken','status','reported_by','reviewed_by'],
  maintenance_requests:['field_id','title','description','priority','status','assigned_to','due_at'],
  work_orders:['title','description','priority','status','field_id','equipment_id','assigned_to','due_at','completed_at'],
  equipment:['name','category','serial_number','status','location','notes','purchase_date','purchase_cost'],

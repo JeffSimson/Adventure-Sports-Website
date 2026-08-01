@@ -4,19 +4,84 @@ const {error}=require('./_role-auth');
 const secret=()=>process.env.SECURITY_SESSION_SECRET||process.env.SUPABASE_SERVICE_ROLE_KEY||'';
 const b64=v=>Buffer.from(v).toString('base64url');
 const ub64=v=>Buffer.from(v,'base64url').toString('utf8');
-function sign(payload){const key=secret();if(!key)throw error('Security session signing is not configured.',503);const body=b64(JSON.stringify(payload)),sig=crypto.createHmac('sha256',key).update(body).digest('base64url');return `${body}.${sig}`}
-function tokenPayload(token){try{return JSON.parse(ub64(String(token||'').split('.')[0]))}catch{return null}}
-function verifyPurpose(token,userId,purpose){try{const [body,sig]=String(token||'').split('.');if(!body||!sig)return false;const expected=crypto.createHmac('sha256',secret()).update(body).digest('base64url'),a=Buffer.from(sig),b=Buffer.from(expected);if(a.length!==b.length||!crypto.timingSafeEqual(a,b))return false;const p=JSON.parse(ub64(body));return p.sub===userId&&Number(p.exp)>Date.now()&&p.purpose===purpose}catch{return false}}
+
+function sign(payload){
+  const key=secret();
+  if(!key)throw error('Security session signing is not configured.',503);
+  const body=b64(JSON.stringify(payload));
+  const sig=crypto.createHmac('sha256',key).update(body).digest('base64url');
+  return `${body}.${sig}`;
+}
+function verifyPurpose(token,userId,purpose){
+  try{
+    const [body,sig]=String(token||'').split('.');
+    if(!body||!sig)return false;
+    const expected=crypto.createHmac('sha256',secret()).update(body).digest('base64url');
+    const a=Buffer.from(sig),b=Buffer.from(expected);
+    if(a.length!==b.length||!crypto.timingSafeEqual(a,b))return false;
+    const p=JSON.parse(ub64(body));
+    return p.sub===userId&&Number(p.exp)>Date.now()&&p.purpose===purpose;
+  }catch{return false}
+}
 const verifyStepUp=(token,userId)=>verifyPurpose(token,userId,'ase-stepup');
 const verifyTrustedDevice=(token,userId)=>verifyPurpose(token,userId,'ase-trusted-device');
 const verify=(token,userId)=>verifyStepUp(token,userId)||verifyTrustedDevice(token,userId);
-async function trustedDeviceIsActive(token,userId){if(!verifyTrustedDevice(token,userId))return false;const p=tokenPayload(token);if(!p?.jti)return false;const {data}=await supabase(`security_trusted_devices?user_id=eq.${encodeURIComponent(userId)}&token_id=eq.${encodeURIComponent(p.jti)}&revoked_at=is.null&expires_at=gt.${encodeURIComponent(new Date().toISOString())}&select=id`);if(!data?.[0])return false;await supabase(`security_trusted_devices?id=eq.${encodeURIComponent(data[0].id)}`,{method:'PATCH',body:{last_used_at:new Date().toISOString()},headers:{Prefer:'return=minimal'}}).catch(()=>{});return true}
-async function isSecurityVerified(event,actor){const stepup=event.headers['x-ase-stepup']||event.headers['X-ASE-Stepup']||'',trusted=event.headers['x-ase-trusted-device']||event.headers['X-ASE-Trusted-Device']||'';let token='';if(verifyStepUp(stepup,actor.user.id))token=stepup;else if(await trustedDeviceIsActive(stepup,actor.user.id))token=stepup;else if(await trustedDeviceIsActive(trusted,actor.user.id))token=trusted;if(!token)return false;const p=tokenPayload(token),epoch=new Date(actor.system?.session_epoch||0).getTime();return !!p&&Number(p.iat)>=epoch}
+function tokenPayload(token){try{return JSON.parse(ub64(String(token||'').split('.')[0]))}catch{return null}}
+function isSecurityVerified(event,actor){
+  const stepup=event.headers['x-ase-stepup']||event.headers['X-ASE-Stepup'];
+  const trusted=event.headers['x-ase-trusted-device']||event.headers['X-ASE-Trusted-Device'];
+  const token=verify(stepup,actor.user.id)?stepup:(verifyTrustedDevice(trusted,actor.user.id)?trusted:'');
+  if(!token)return false;
+  const body=tokenPayload(token);
+  const epoch=new Date(actor.system?.session_epoch||0).getTime();
+  return !!body&&Number(body.iat)>=epoch;
+}
 const hashCode=(userId,code)=>crypto.createHash('sha256').update(`${userId}:${code}:${secret()}`).digest('hex');
 const randomCode=()=>String(crypto.randomInt(0,1000000)).padStart(6,'0');
 const clientIp=e=>String(e.headers['x-nf-client-connection-ip']||e.headers['x-forwarded-for']||'').split(',')[0].trim().slice(0,64);
-async function logEvent(event,actor,eventType,outcome='success',metadata={}){try{await supabase('security_events',{method:'POST',body:{user_id:actor?.user?.id||null,email:actor?.user?.email||null,event_type:eventType,outcome,ip_address:clientIp(event)||null,user_agent:String(event.headers['user-agent']||'').slice(0,500)||null,metadata},headers:{Prefer:'return=minimal'}})}catch{}}
-async function rateLimit(key,max=5,windowSeconds=300){const now=Date.now(),{data}=await supabase(`security_rate_limits?bucket_key=eq.${encodeURIComponent(key)}&select=*`),row=data?.[0];if(!row||new Date(row.window_started_at).getTime()<now-windowSeconds*1000){await supabase('security_rate_limits',{method:'POST',body:{bucket_key:key,window_started_at:new Date().toISOString(),request_count:1,updated_at:new Date().toISOString()},headers:{Prefer:'resolution=merge-duplicates,return=minimal'}});return}if(Number(row.request_count)>=max)throw error('Too many attempts. Please wait and try again.',429);await supabase(`security_rate_limits?bucket_key=eq.${encodeURIComponent(key)}`,{method:'PATCH',body:{request_count:Number(row.request_count)+1,updated_at:new Date().toISOString()},headers:{Prefer:'return=minimal'}})}
-async function profile(user){const {data}=await supabase(`security_profiles?user_id=eq.${encodeURIComponent(user.id)}&select=*`);return data?.[0]||null}
-async function requireStepUp(event,actor){if(actor.role!=='owner')return;if(!(await isSecurityVerified(event,actor)))throw error('A fresh email security code is required.',428)}
-module.exports={sign,verify,verifyStepUp,verifyTrustedDevice,tokenPayload,trustedDeviceIsActive,isSecurityVerified,hashCode,randomCode,clientIp,logEvent,rateLimit,profile,requireStepUp};
+
+async function logEvent(event,actor,eventType,outcome='success',metadata={}){
+  try{
+    await supabase('security_events',{
+      method:'POST',
+      body:{
+        user_id:actor?.user?.id||null,
+        email:actor?.user?.email||null,
+        event_type:eventType,
+        outcome,
+        ip_address:clientIp(event)||null,
+        user_agent:String(event.headers['user-agent']||'').slice(0,500)||null,
+        metadata
+      },
+      headers:{Prefer:'return=minimal'}
+    });
+  }catch{}
+}
+async function rateLimit(key,max=5,windowSeconds=300){
+  const now=Date.now();
+  const {data}=await supabase(`security_rate_limits?bucket_key=eq.${encodeURIComponent(key)}&select=*`);
+  const row=data?.[0];
+  if(!row||new Date(row.window_started_at).getTime()<now-windowSeconds*1000){
+    await supabase('security_rate_limits',{
+      method:'POST',
+      body:{bucket_key:key,window_started_at:new Date().toISOString(),request_count:1,updated_at:new Date().toISOString()},
+      headers:{Prefer:'resolution=merge-duplicates,return=minimal'}
+    });
+    return;
+  }
+  if(Number(row.request_count)>=max)throw error('Too many attempts. Please wait and try again.',429);
+  await supabase(`security_rate_limits?bucket_key=eq.${encodeURIComponent(key)}`,{
+    method:'PATCH',
+    body:{request_count:Number(row.request_count)+1,updated_at:new Date().toISOString()},
+    headers:{Prefer:'return=minimal'}
+  });
+}
+async function profile(user){
+  const {data}=await supabase(`security_profiles?user_id=eq.${encodeURIComponent(user.id)}&select=*`);
+  return data?.[0]||null;
+}
+function requireStepUp(event,actor){
+  if(actor.role!=='owner')return;
+  if(!isSecurityVerified(event,actor))throw error('A fresh email security code is required.',428);
+}
+module.exports={sign,verify,verifyStepUp,verifyTrustedDevice,isSecurityVerified,hashCode,randomCode,clientIp,logEvent,rateLimit,profile,requireStepUp};

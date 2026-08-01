@@ -1,3 +1,26 @@
 const {json,verifiedUser}=require('./_role-auth');
 const {isSecurityVerified,profile}=require('./_security');
-exports.handler=async event=>{try{const actor=await verifiedUser(event,{allowUnverified:true}),p=await profile(actor.user),verified=actor.role!=='owner'||await isSecurityVerified(event,actor);return json(200,{ok:true,role:actor.role,system:actor.system,mfaRequired:actor.role==='owner',mfaVerified:verified,security:{emailEnabled:p?.email_mfa_enabled!==false,trustedDeviceAccepted:verified},user:{id:actor.user.id,email:actor.user.email,name:actor.user.user_metadata?.full_name||actor.user.user_metadata?.name||''}})}catch(e){return json(e.statusCode||500,{error:e.message})}};
+
+exports.handler=async event=>{try{
+  const actor=await verifiedUser(event,{allowUnverified:true});
+  const p=await profile(actor.user);
+  const verified=actor.role!=='owner'||isSecurityVerified(event,actor);
+  return json(200,{
+    ok:true,
+    role:actor.role,
+    system:actor.system,
+    mfaRequired:actor.role==='owner',
+    mfaVerified:verified,
+    security:{
+      emailEnabled:p?.email_mfa_enabled!==false,
+      trustedDeviceAccepted:verified
+    },
+    user:{
+      id:actor.user.id,
+      email:actor.user.email,
+      name:actor.user.user_metadata?.full_name||actor.user.user_metadata?.name||''
+    }
+  });
+}catch(e){
+  return json(e.statusCode||500,{error:e.message});
+}};
