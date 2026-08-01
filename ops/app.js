@@ -4,7 +4,7 @@ const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelect
 const app=$('#app'), gate=$('#loginGate'), sidebar=$('#sidebar');
 const AUTH_KEY='ase_ops_identity_session_v2';
 const TRUSTED_DEVICE_KEY='ase_trusted_device_v1';
-const APP_BUILD='822';
+const APP_BUILD='823';
 async function ensureFreshBuild(){
   try{
     const key='ase_ops_build';
@@ -33,16 +33,16 @@ const CLOVER='/.netlify/functions/clover-dashboard';
 
 const ROLE_LABELS={owner:'Owner',manager:'Manager',grounds:'Grounds Crew',kitchen:'Kitchen',cashier:'Cashier'};
 const DEFAULT_PERMISSIONS={
-  owner:['dashboard','website','clover','staff','games','maintenance','weather','reports','kitchen','notifications','users','settings'],
-  manager:['dashboard','clover','staff','games','maintenance','weather','reports','kitchen','notifications','users'],
-  grounds:['maintenance','weather','notifications'],
-  kitchen:['kitchen','weather','notifications'],
-  cashier:['dashboard','notifications']
+  owner:['dashboard','website','clover','staff','games','maintenance','weather','reports','incidents','kitchen','notifications','users','settings'],
+  manager:['dashboard','clover','staff','games','maintenance','weather','reports','incidents','kitchen','notifications','users'],
+  grounds:['maintenance','weather','incidents','notifications'],
+  kitchen:['kitchen','weather','incidents','notifications'],
+  cashier:['dashboard','incidents','notifications']
 };
 const MODULES=[
   ['dashboard','Dashboard'],['website','Website Control'],['clover','Clover'],['staff','Staffing'],
   ['games','Games'],['maintenance','Fields & Maintenance'],['weather','Weather Center'],
-  ['reports','Reports'],['kitchen','Kitchen'],['notifications','Notifications'],['users','People & Permissions'],['settings','Settings']
+  ['reports','Reports'],['incidents','Incident Reports'],['kitchen','Kitchen'],['notifications','Notifications'],['users','People & Permissions'],['settings','Settings']
 ];
 
 let session=null,profile=null,permissions=structuredClone(DEFAULT_PERMISSIONS);
@@ -139,7 +139,7 @@ async function loadProfile(){
   let d=await api(PROFILE);profile=d;renderMaintenanceState(d.system||{});
   await requireOwnerVerification(d);
   if(d.mfaRequired&&!d.mfaVerified){d=await api(PROFILE);profile=d;renderMaintenanceState(d.system||{})}
-  try{const p=await api(PERMS);permissions=p.permissions||permissions}catch{}
+  try{const p=await api(PERMS);permissions=p.permissions||permissions}catch{} Object.keys(DEFAULT_PERMISSIONS).forEach(r=>{permissions[r]=permissions[r]||[];if(!permissions[r].includes('incidents'))permissions[r].push('incidents')})
   return d;
 }
 async function show(u){

@@ -30,7 +30,7 @@ exports.handler=async event=>{try{
   const q=event.queryStringParameters||{};
   if(q.action==='health')return json(200,{...(await health()),configured:true});
   const table=safeTable(q.table);
-  if(event.httpMethod==='GET'){await requirePermission(actor,'ops.read');
+  if(event.httpMethod==='GET'){if(table==='incident_reports')requireRole(actor,['owner','manager']);await requirePermission(actor,'ops.read');
     const limit=Math.min(Math.max(Number(q.limit)||100,1),500),offset=Math.max(Number(q.offset)||0,0);
     const order=/^[a-z][a-z0-9_]*$/i.test(q.order||'')?q.order:'created_at';
     const ascending=q.ascending==='true';
@@ -39,11 +39,19 @@ exports.handler=async event=>{try{
     const {data,response}=await supabase(path,{headers:{Prefer:'count=exact'}});
     return json(200,{ok:true,rows:data||[],count:response.headers.get('content-range')||null});
   }
-  requireWritable(actor);await requirePermission(actor,'ops.write');if(!canWrite(actor.role,table))throw error('You do not have permission to change this data.',403);await rateLimit(`ops-write:${actor.user.id}:${clientIp(event)}`,120,60);
+  requireWritable(actor);
+  const employeeIncidentCreate=table==='incident_reports'&&event.httpMethod==='POST';
+  if(!employeeIncidentCreate){
+    await requirePermission(actor,'ops.write');
+    if(!canWrite(actor.role,table))throw error('You do not have permission to change this data.',403);
+    if(table==='incident_reports'&&!['owner','manager'].includes(actor.role))throw error('Only Owners and Managers can edit saved incident reports.',403);
+  }
+  await rateLimit(`ops-write:${actor.user.id}:${clientIp(event)}`,120,60);
   if(bodySize(event)>100000)throw error('Request body is too large.',413);
   let body={};try{body=event.body?JSON.parse(event.body):{}}catch{throw error('Invalid JSON request.',400)}
   if(event.httpMethod==='POST'){
-    const payload=cleanObject(table,body.data);if(!Object.keys(payload).length)throw error('No editable fields were provided.',400);payload.created_by=payload.created_by||actor.user.id;payload.updated_by=actor.user.id;
+    const payload=cleanObject(table,body.data);
+    if(table==='incident_reports'){if(!payload.occurred_at||!payload.location||!payload.incident_type||!(payload.incident_details||payload.description))throw error('Complete the required incident fields.',400);payload.reported_by=actor.user.id;}if(!Object.keys(payload).length)throw error('No editable fields were provided.',400);payload.created_by=payload.created_by||actor.user.id;payload.updated_by=actor.user.id;
     const {data}=await supabase(table,{method:'POST',body:payload,headers:{Prefer:'return=representation'}});await logEvent(event,actor,'record_created','success',{table,id:data?.[0]?.id||null});return json(201,{ok:true,row:data?.[0]||data});
   }
   if(!q.id||!ID.test(q.id))throw error('A valid record ID is required.',400);
