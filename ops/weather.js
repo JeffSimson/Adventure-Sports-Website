@@ -219,9 +219,19 @@ async function loadRadar(){
     showRadarFrame(radarIndex,data.host);
     radarMap._rainHost=data.host;
   }catch(error){
-    $('#weatherRadarTime').textContent='Radar temporarily unavailable';
+    showRadarFallback(error);
   }
 }
+
+function showRadarFallback(error){
+  const map=$('#weatherRadarMap'),label=$('#weatherRadarTime');
+  if(label)label.textContent='Live NWS radar loop · updated automatically';
+  if(!map)return;
+  if(radarMap){try{radarMap.remove()}catch{} radarMap=null}
+  map.innerHTML=`<div class="weather-radar-fallback"><img src="https://radar.weather.gov/ridge/standard/KDIX_loop.gif?${Date.now()}" alt="National Weather Service radar loop for central New Jersey"><div><strong>NWS KDIX Radar</strong><span>Live precipitation loop centered on the Philadelphia / Central New Jersey radar.</span><a href="https://radar.weather.gov/" target="_blank" rel="noopener">Open full NWS radar ↗</a></div></div>`;
+  console.warn('RainViewer radar unavailable; using NWS fallback.',error);
+}
+
 function showRadarFrame(index,host){
   if(!radarFrames.length||!radarMap)return;
   const frame=radarFrames[index];

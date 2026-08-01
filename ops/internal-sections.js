@@ -19,7 +19,7 @@ function makeTabs(view,items){
   tabs.addEventListener('click',e=>{
     const b=e.target.closest('[data-internal-target]');if(!b)return;
     $$('.internal-section-tab',tabs).forEach(x=>x.classList.toggle('active',x===b));
-    $$(':scope > .internal-section-panel',view).forEach(x=>x.classList.toggle('active',x.dataset.internalPanel===b.dataset.internalTarget));
+    $$(':scope > .internal-section-panel',view).forEach(x=>{const on=x.dataset.internalPanel===b.dataset.internalTarget;x.classList.toggle('active',on);x.hidden=!on});
   });
   return tabs;
 }
@@ -32,8 +32,8 @@ function games(){
  const manager=$('#gamesMatrixManager');const r=role();const canManage=['owner','manager'].includes(r);
  const head=view.querySelector('.page-head');
  const general=[...view.children].filter(n=>n!==head&&n!==manager);
- const overview=panel(view,'overview',general);overview.classList.add('active');
- if(canManage&&manager){manager.hidden=false;const mp=panel(view,'management',[manager]);mp.dataset.internalAccess='management'}
+ const overview=panel(view,'overview',general);overview.classList.add('active');overview.hidden=false;
+ if(canManage&&manager){manager.hidden=false;const mp=panel(view,'management',[manager]);mp.dataset.internalAccess='management';mp.hidden=true}
  else if(manager){manager.hidden=true}
  makeTabs(view,[{key:'overview',label:'Games & Fields'},...(canManage?[{key:'management',label:'Tournament Management',access:'management'}]:[])]);
 }
@@ -113,13 +113,30 @@ function weather(){
  if(!canManage){btn?.remove();pnl?.remove()}
  else if(btn){btn.textContent='Management'}
 }
+
+function settings(){
+ const view=$('[data-view-panel="settings"]');if(!view)return;
+ const owner=role()==='owner';
+ const head=view.querySelector('.page-head');
+ const base=view.querySelector('.settings-grid');
+ const prefs=$('#v9DashboardSettings');
+ const security=$('#securityCenter');
+ const database=$('#databaseCenter');
+ const account=panel(view,'account',[base]);account.classList.add('active');account.hidden=false;
+ const items=[{key:'account',label:'Account & App'}];
+ if(owner&&prefs){const p=panel(view,'visibility',[prefs]);p.hidden=true;items.push({key:'visibility',label:'Dashboard Access',access:'owner'})}
+ if(owner&&security){security.hidden=false;const p=panel(view,'security',[security]);p.hidden=true;items.push({key:'security',label:'Security',access:'owner'})}else security?.remove();
+ if(owner&&database){database.hidden=false;const p=panel(view,'database',[database]);p.hidden=true;items.push({key:'database',label:'Database',access:'owner'})}else database?.remove();
+ makeTabs(view,items);
+}
+
 function dashboard(){
  const card=$('.ops73-checklist-card');if(card)card.remove();
 }
 function init(event){
  currentRole=event?.detail?.role||window.ASE_OPS?.role?.()||document.body.dataset.role||'unassigned';
  document.body.dataset.role=currentRole;
- dashboard();games();notifications();users();clover();website();weather();
+ dashboard();games();notifications();users();clover();website();weather();setTimeout(settings,0);
  document.body.classList.add('role-sections-ready');
 }
 window.addEventListener('ase:profile-ready',init);
