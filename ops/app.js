@@ -167,9 +167,39 @@ function dirty(){return current()!==originalStatus||$('#announcementInput').valu
 function updatePreview(){if(!$('#previewStatus'))return;const s=current(),a=$('#announcementInput').value.trim()||'No announcement is currently posted.',k=s.toLowerCase().replace(/\s+/g,'-');$('#previewStatus').textContent=s;$('#previewAnnouncement').textContent=a;$('#previewDot').dataset.status=k;$('#announcementCount').textContent=$('#announcementInput').value.length+' / 240';$('#changeState').textContent=dirty()?'Ready to publish':'None';$('#publishControlsButton').disabled=!dirty()||publishing;$('#resetControlsButton').disabled=!dirty()||publishing}
 async function publish(e){e.preventDefault();if(role()!=='owner')return toast('Only an Owner can publish website changes.');publishing=true;updatePreview();const b=$('#publishControlsButton');b.textContent='Publishing…';try{const d=await api(PUBLISH,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fieldStatus:current(),announcement:$('#announcementInput').value.trim()})});if(!d.site)throw Error('Updated, but no site data returned.');siteData=d.site;originalStatus=d.site.fieldStatus;originalAnnouncement=d.site.announcement;$('#publishNotice').textContent='Public website updated live.';$('#publishNotice').className='publish-notice success';$('#publishNotice').hidden=false;await loadSite()}catch(e){$('#publishNotice').textContent=e.message;$('#publishNotice').className='publish-notice error';$('#publishNotice').hidden=false}finally{publishing=false;b.textContent='Publish Changes';updatePreview()}}
 
-function badge(t,c){if(!$('#cloverConnection'))return;$('#cloverConnection').textContent=t;$('#cloverConnection').className='connection-badge '+c}
-function renderClover(d){$('#dashboardSales').textContent=usd.format(d.netSales||0);$('#dashboardSalesNote').textContent=(d.merchant?.name||'Clover')+' • Net sales live';$('#dashboardTransactions').textContent=d.transactions||0;$('#dashboardTicket').textContent='Average ticket '+usd.format(d.averageTicket||0);$('#cloverGrossSales').textContent=usd.format(d.grossSales||0);$('#cloverNetSales').textContent=usd.format(d.netSales||0);$('#cloverFrontGateSales').textContent=usd.format(d.frontGateSales||0);$('#cloverKitchenSales').textContent=usd.format(d.kitchenSales||0);$('#cloverRefunds').textContent='Refunds '+usd.format(d.refunds||0);$('#cloverTransactions').textContent=d.transactions||0;$('#cloverOrders').textContent=(d.orderCount||0)+' Clover orders';$('#cloverAverageTicket').textContent=usd.format(d.averageTicket||0);$('#cloverMerchant').textContent=d.merchant?.name||'Adventure Sports';$('#cloverSubtitle').textContent='Live Clover results for '+d.date+' in Eastern Time.';$('#cloverUpdated').textContent='Updated '+new Date(d.updatedAt).toLocaleTimeString();badge('Live','ready');$('#cloverNotice').hidden=true}
-async function loadClover(){if(!allowed('clover')||cloverLoading)return;cloverLoading=true;badge('Refreshing','loading');try{renderClover(await api(CLOVER+'?v='+Date.now()))}catch(e){badge('Connection issue','error');$('#cloverNotice').textContent=e.message;$('#cloverNotice').hidden=false}finally{cloverLoading=false}}
+function badge(t,c){const el=$('#cloverConnection');if(!el)return;el.textContent=t;el.className='connection-badge '+c}
+function setCloverText(selector,value){const el=$(selector);if(el)el.textContent=value}
+function renderClover(d){
+  if(!d||typeof d!=='object')throw Error('Clover returned an invalid response.');
+  setCloverText('#dashboardSales',usd.format(d.netSales||0));
+  setCloverText('#dashboardSalesNote',(d.merchant?.name||'Clover')+' • Net sales live');
+  setCloverText('#dashboardTransactions',d.transactions||0);
+  setCloverText('#dashboardTicket','Average ticket '+usd.format(d.averageTicket||0));
+  setCloverText('#cloverGrossSales',usd.format(d.grossSales||0));
+  setCloverText('#cloverNetSales',usd.format(d.netSales||0));
+  setCloverText('#cloverFrontGateSales',usd.format(d.frontGateSales||0));
+  setCloverText('#cloverKitchenSales',usd.format(d.kitchenSales||0));
+  setCloverText('#cloverRefunds','Refunds '+usd.format(d.refunds||0));
+  setCloverText('#cloverTransactions',d.transactions||0);
+  setCloverText('#cloverOrders',(d.orderCount||0)+' Clover orders');
+  setCloverText('#cloverAverageTicket',usd.format(d.averageTicket||0));
+  setCloverText('#cloverMerchant',d.merchant?.name||'Adventure Sports');
+  const rangeLabel=d.range?.label||d.date||'the selected range';
+  setCloverText('#cloverSubtitle','Live Clover results for '+rangeLabel+' in Eastern Time.');
+  const updated=new Date(d.updatedAt||Date.now());
+  setCloverText('#cloverUpdated','Updated '+(Number.isNaN(updated.getTime())?'just now':updated.toLocaleTimeString()));
+  badge('Live','ready');
+  const notice=$('#cloverNotice');if(notice)notice.hidden=true;
+}
+async function loadClover(){
+  if(!allowed('clover')||cloverLoading)return;
+  cloverLoading=true;badge('Refreshing','loading');
+  try{renderClover(await api(CLOVER+'?v='+Date.now()))}
+  catch(e){
+    badge('Connection issue','error');
+    const notice=$('#cloverNotice');if(notice){notice.textContent=e?.message||'Clover could not be loaded.';notice.className='publish-notice error';notice.hidden=false}
+  }finally{cloverLoading=false}
+}
 
 function adminTab(name){$$('.admin-tab').forEach(b=>b.classList.toggle('active',b.dataset.adminTab===name));$$('.admin-panel').forEach(p=>p.classList.toggle('active',p.dataset.adminPanel===name));if(name==='owners')renderOwners();if(name==='permissions')renderPermissions();if(name==='audit')loadAudit()}
 function manageableRoles(){return role()==='owner'?['owner','manager','grounds','kitchen']:['grounds','kitchen']}

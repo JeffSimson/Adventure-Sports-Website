@@ -6,6 +6,7 @@ const usd=new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'});
 const compact=v=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',notation:'compact',maximumFractionDigits:1}).format(v||0);
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const pct=(a,b)=>b?Math.max(0,Math.min(100,a/b*100)):0;
+const setText=(selector,value)=>{const el=$(selector);if(el)el.textContent=value;return el};
 
 window.fetch=async function(input,init){
   let url=typeof input==='string'?input:input?.url||'';
@@ -24,11 +25,11 @@ window.fetch=async function(input,init){
 
 function chartData(d){
   if(d.range?.preset==='today'||d.range?.preset==='yesterday'){
-    $('#cloverChartTitle').textContent='Sales by Hour';
+    setText('#cloverChartTitle','Sales by Hour');
     const a=d.hourlySales||[],first=a.findIndex(x=>x.sales>0),last=a.length-1-[...a].reverse().findIndex(x=>x.sales>0);
     return a.filter((x,i)=>first<0?(i>=7&&i<=21):(i>=Math.max(0,first-1)&&i<=Math.min(23,last+1)))
   }
-  $('#cloverChartTitle').textContent='Net Sales by Day';
+  setText('#cloverChartTitle','Net Sales by Day');
   return (d.salesTrend||[]).map(x=>({label:new Date(x.date+'T12:00:00').toLocaleDateString([],{month:'short',day:'numeric'}),sales:x.sales}))
 }
 function drawChart(d){
@@ -44,19 +45,19 @@ function drawChart(d){
 function render(d){
   if(!$('#cloverSplitRing'))return;
   const gate=Number(d.frontGateSales)||0,kitchen=Number(d.kitchenSales)||0,total=Number(d.netSales)||0,gp=pct(gate,total),kp=pct(kitchen,total);
-  $('#cloverRangeLabel').textContent=d.range?.label||'Selected range';
-  $('#cloverFrontGatePercent').textContent=gp.toFixed(1)+'% of net sales';
-  $('#cloverKitchenPercent').textContent=kp.toFixed(1)+'% of net sales';
-  $('#cloverSplitTotal').textContent=compact(total);
-  $('#cloverGateLegend').textContent=usd.format(gate)+' • '+gp.toFixed(1)+'%';
-  $('#cloverKitchenLegend').textContent=usd.format(kitchen)+' • '+kp.toFixed(1)+'%';
+  setText('#cloverRangeLabel',d.range?.label||'Selected range');
+  setText('#cloverFrontGatePercent',gp.toFixed(1)+'% of net sales');
+  setText('#cloverKitchenPercent',kp.toFixed(1)+'% of net sales');
+  setText('#cloverSplitTotal',compact(total));
+  setText('#cloverGateLegend',usd.format(gate)+' • '+gp.toFixed(1)+'%');
+  setText('#cloverKitchenLegend',usd.format(kitchen)+' • '+kp.toFixed(1)+'%');
   $('#cloverSplitRing').style.setProperty('--gate-percent',gp+'%');
   drawChart(d);
   if(d.tips&&$('#cloverTipsPanel')){
     const rows=Array.isArray(d.tips.byEmployee)?d.tips.byEmployee:[];
-    $('#cloverTipsTotal').textContent=usd.format(Number(d.tips.total)||0);
-    $('#cloverTipsEmployees').textContent=String(rows.length);
-    $('#cloverTipsRange').textContent=d.range?.label||'Selected range';
+    setText('#cloverTipsTotal',usd.format(Number(d.tips.total)||0));
+    setText('#cloverTipsEmployees',String(rows.length));
+    setText('#cloverTipsRange',d.range?.label||'Selected range');
     $('#cloverTipsBody').innerHTML=rows.length?rows.map(x=>'<tr><td><strong>'+escapeHtml(x.name||'Needs Mapping')+'</strong></td><td>'+Number(x.transactions||0)+'</td><td class="money-cell">'+usd.format(Number(x.tips)||0)+'</td></tr>').join(''):'<tr><td colspan="3" class="empty-row">No employee-linked Clover tips were found in this date range.</td></tr>';
     const note=$('#cloverTipsNote');
     const unmatched=Number(d.tips.unmatched||0);
@@ -77,7 +78,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   $('#cloverCustomRange')?.addEventListener('submit',e=>{
     e.preventDefault();startDate=$('#cloverStartDate').value;endDate=$('#cloverEndDate').value;
     if(!startDate||!endDate)return;
-    if(startDate>endDate){const n=$('#cloverNotice');n.textContent='Start date must be before end date.';n.className='publish-notice error';n.hidden=false;return}
+    if(startDate>endDate){const n=$('#cloverNotice');if(n){n.textContent='Start date must be before end date.';n.className='publish-notice error';n.hidden=false}return}
     $('#refreshClover')?.click()
   })
 });
