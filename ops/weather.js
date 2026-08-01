@@ -199,60 +199,39 @@ function renderSafety(){
   else applySafetyCard('#weatherWindCard','safe','Normal Wind',`Current gusts near ${round(currentGust)} mph. No special action required.`);
 }
 
+function windyRadarUrl(){
+  const params=new URLSearchParams({
+    lat:String(LAT),lon:String(LON),detailLat:String(LAT),detailLon:String(LON),
+    width:'900',height:'560',zoom:'8',level:'surface',overlay:'radar',product:'radar',
+    menu:'',message:'true',marker:'true',calendar:'now',pressure:'',type:'map',
+    location:'coordinates',detail:'true',metricWind:'mph',metricTemp:'°F',radarRange:'-1'
+  });
+  return `https://embed.windy.com/embed2.html?${params.toString()}`;
+}
+function renderWindyRadar(){
+  const map=$('#weatherRadarMap'),label=$('#weatherRadarTime');
+  if(!map)return;
+  if(radarTimer){clearInterval(radarTimer);radarTimer=null}
+  if(radarMap){try{radarMap.remove()}catch{} radarMap=null}
+  map.innerHTML=`<iframe class="windy-radar-frame" src="${windyRadarUrl()}" title="Interactive Windy weather radar centered on Adventure Sports" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="fullscreen"></iframe>`;
+  if(label)label.textContent='Drag to move · pinch or scroll to zoom · animated live radar';
+}
 function initRadar(){
-  if(radarMap || typeof L==='undefined')return;
-  radarMap=L.map('weatherRadarMap',{zoomControl:true}).setView([LAT,LON],9);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    maxZoom:18,
-    attribution:'© OpenStreetMap'
-  }).addTo(radarMap);
-  L.marker([LAT,LON]).addTo(radarMap).bindPopup('Adventure Sports<br>Jackson, NJ');
-  loadRadar();
+  const map=$('#weatherRadarMap');
+  if(!map || map.dataset.ready==='true')return;
+  map.dataset.ready='true';
+  renderWindyRadar();
 }
-async function loadRadar(){
-  try{
-    const response=await fetch('https://api.rainviewer.com/public/weather-maps.json',{cache:'no-store'});
-    const data=await response.json();
-    radarFrames=(data.radar?.past||[]).slice(-12);
-    if(!radarFrames.length)throw new Error('No radar frames');
-    radarIndex=radarFrames.length-1;
-    showRadarFrame(radarIndex,data.host);
-    radarMap._rainHost=data.host;
-  }catch(error){
-    showRadarFallback(error);
-  }
-}
-
+function loadRadar(){renderWindyRadar()}
 function showRadarFallback(error){
   const map=$('#weatherRadarMap'),label=$('#weatherRadarTime');
-  if(label)label.textContent='Live NWS radar loop · updated automatically';
+  if(label)label.textContent='Interactive radar could not load. Open the full radar instead.';
   if(!map)return;
-  if(radarMap){try{radarMap.remove()}catch{} radarMap=null}
-  map.innerHTML=`<div class="weather-radar-fallback"><img src="https://radar.weather.gov/ridge/standard/KDIX_loop.gif?${Date.now()}" alt="National Weather Service radar loop for central New Jersey"><div><strong>NWS KDIX Radar</strong><span>Live precipitation loop centered on the Philadelphia / Central New Jersey radar.</span><a href="https://radar.weather.gov/" target="_blank" rel="noopener">Open full NWS radar ↗</a></div></div>`;
-  console.warn('RainViewer radar unavailable; using NWS fallback.',error);
+  map.innerHTML=`<div class="weather-radar-fallback"><img src="https://radar.weather.gov/ridge/standard/KDIX_loop.gif?${Date.now()}" alt="National Weather Service radar loop for central New Jersey"><div><strong>NWS KDIX Radar</strong><span>Backup precipitation loop for central New Jersey.</span><a href="https://www.windy.com/40.115/-74.358?radar,40.115,-74.358,8" target="_blank" rel="noopener">Open interactive radar ↗</a></div></div>`;
+  console.warn('Interactive Windy radar unavailable.',error);
 }
-
-function showRadarFrame(index,host){
-  if(!radarFrames.length||!radarMap)return;
-  const frame=radarFrames[index];
-  if(radarLayer)radarMap.removeLayer(radarLayer);
-  radarLayer=L.tileLayer(`${host||radarMap._rainHost}${frame.path}/256/{z}/{x}/{y}/2/1_1.png`,{
-    opacity:.72,zIndex:10,attribution:'Radar © RainViewer'
-  }).addTo(radarMap);
-  $('#weatherRadarTime').textContent=`Radar frame: ${new Date(frame.time*1000).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}`;
-}
-function toggleRadar(){
-  const btn=$('#weatherRadarPlay');
-  if(radarTimer){
-    clearInterval(radarTimer);radarTimer=null;btn.textContent='▶ Animate';return;
-  }
-  if(!radarFrames.length)return;
-  btn.textContent='Ⅱ Pause';
-  radarTimer=setInterval(()=>{
-    radarIndex=(radarIndex+1)%radarFrames.length;
-    showRadarFrame(radarIndex);
-  },700);
-}
+function showRadarFrame(){renderWindyRadar()}
+function toggleRadar(){renderWindyRadar()}
 
 function lightningState(){
   try{return JSON.parse(localStorage.getItem(LIGHTNING_KEY)||'{"log":[]}')}catch{return {log:[]}}
@@ -360,10 +339,8 @@ function init(){
   if(!$('#weatherRefresh'))return;
   $('#weatherRefresh').addEventListener('click',loadWeather);
   $$('.weather-tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.weatherTab)));
-  $('#weatherRadarPlay').addEventListener('click',toggleRadar);
-  $('#weatherRadarLatest').addEventListener('click',()=>{
-    radarIndex=Math.max(0,radarFrames.length-1);showRadarFrame(radarIndex);
-  });
+  $('#weatherRadarLatest')?.addEventListener('click',renderWindyRadar);
+  $('#weatherRadarRecenter')?.addEventListener('click',renderWindyRadar);
   $('#lightningStart').addEventListener('click',()=>startLightning(false));
   $('#lightningRestart').addEventListener('click',()=>startLightning(true));
   $('#lightningReset').addEventListener('click',resetLightning);
