@@ -8,7 +8,8 @@ const CARD_META={
 const role=()=>window.ASE_OPS?.role?.()||'cashier';
 const api=(u,o)=>window.ASE_OPS.api(u,o);
 const go=v=>document.querySelector(`.nav-item[data-view="${v}"]`)?.click();
-let prefs=null,events=[],monthCursor=new Date(),paletteIndex=0;
+let prefs=null,events=[],monthCursor=new Date(),paletteIndex=0,v9Initialized=false;
+const setText=(selector,value)=>{const el=$(selector);if(el)el.textContent=value};
 
 function installNav(){
  const labels={dashboard:['⌂','Home'],games:['▣','Schedule'],maintenance:['◇','Fields & Work Orders'],staff:['♙','Employees'],incidents:['!','Incidents'],notifications:['◉','Notifications'],settings:['☰','Settings']};
@@ -42,14 +43,23 @@ function dashboardMarkup(){return `<section id="v9Dashboard" class="v9-dashboard
 function replaceDashboard(){const old=$('[data-view-panel="dashboard"]');if(!old)return;old.innerHTML=dashboardMarkup();$$('[data-v9-go]').forEach(b=>b.onclick=()=>go(b.dataset.v9Go));$('#v9DesktopSearch').onclick=openPalette;$('#v9RefreshHome').onclick=refreshHome;}
 
 async function refreshHome(){
+ if(!$('#v9Dashboard'))return;
  try{
-  const site=await fetch('/content/site.json',{cache:'no-store'}).then(r=>r.json());$('#v9Facility').textContent=site.fieldStatus||site.status||'OPEN';$('#v9Announcement').textContent=site.announcement||'No public announcement';
+  const site=await fetch('/content/site.json',{cache:'no-store'}).then(r=>r.json());
+  setText('#v9Facility',site.fieldStatus||site.status||'OPEN');
+  setText('#v9Announcement',site.announcement||'No public announcement');
  }catch{}
  try{
-  const wx=await api('/.netlify/functions/weather-center');const c=wx.current||{};$('#v9Weather').textContent=c.temperature!=null?`${Math.round(c.temperature)}°F`:(c.temp!=null?`${Math.round(c.temp)}°F`:'Weather ready');$('#v9WeatherNote').textContent=c.shortForecast||c.condition||wx.source||'Forecast available';
- }catch{$('#v9Weather').textContent='Backup ready';}
- try{await loadEvents();const now=new Date(),today=now.toISOString().slice(0,10);const todayEvents=events.filter(e=>e.startDate<=today&&e.endDate>=today);$('#v9Schedule').textContent=todayEvents.length?`${todayEvents.length} event${todayEvents.length===1?'':'s'} today`:'No website events today';$('#v9ScheduleNote').textContent=todayEvents[0]?.title||'View calendar and games';renderFocus(todayEvents)}catch{}
- $('#v9System').textContent='Online';$('#v9SystemNote').textContent='Security, database and weather connected';
+  const wx=await api('/.netlify/functions/weather-center');const c=wx.current||{};
+  setText('#v9Weather',c.temperature!=null?`${Math.round(c.temperature)}°F`:(c.temp!=null?`${Math.round(c.temp)}°F`:'Weather ready'));
+  setText('#v9WeatherNote',c.shortForecast||c.condition||wx.source||'Forecast available');
+ }catch{setText('#v9Weather','Backup ready')}
+ try{
+  await loadEvents();const today=new Date().toISOString().slice(0,10);const todayEvents=events.filter(e=>e.startDate<=today&&e.endDate>=today);
+  setText('#v9Schedule',todayEvents.length?`${todayEvents.length} event${todayEvents.length===1?'':'s'} today`:'No website events today');
+  setText('#v9ScheduleNote',todayEvents[0]?.title||'View calendar and games');renderFocus(todayEvents);
+ }catch{}
+ setText('#v9System','Online');setText('#v9SystemNote','Security, database and weather connected');
 }
 function renderFocus(todayEvents){const box=$('#v9FocusList');if(!box)return;const items=[];todayEvents.slice(0,3).forEach(e=>items.push(`<button data-open-event="${events.indexOf(e)}"><span>▣</span><div><b>${esc(e.title)}</b><small>${esc(e.category||'Event')} · ${esc(e.date||'Today')}</small></div><em>View</em></button>`));items.push(`<button data-focus-go="maintenance"><span>◇</span><div><b>Check field readiness</b><small>Inspections, issues, equipment and work orders</small></div><em>Open</em></button>`);items.push(`<button data-focus-go="notifications"><span>◉</span><div><b>Review notifications</b><small>Manual alerts and automatic notification controls</small></div><em>Open</em></button>`);box.innerHTML=items.join('');$$('[data-focus-go]',box).forEach(b=>b.onclick=()=>go(b.dataset.focusGo));$$('[data-open-event]',box).forEach(b=>b.onclick=()=>{go('games');setTimeout(()=>openEvent(Number(b.dataset.openEvent)),100)});}
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
@@ -79,12 +89,21 @@ function openPalette(){const p=$('#v9Palette');p.hidden=false;document.body.clas
 function closePalette(){$('#v9Palette').hidden=true;document.body.classList.remove('v9-modal-open')}
 function renderPalette(q){const words=q.trim().toLowerCase(),items=commands().filter(x=>!words||`${x.label} ${x.hint}`.toLowerCase().includes(words));paletteIndex=0;$('#v9PaletteResults').innerHTML=items.length?items.map((x,i)=>`<button class="${i===0?'active':''}" data-command="${commands().indexOf(x)}"><span>${x.icon}</span><div><b>${esc(x.label)}</b><small>${esc(x.hint)}</small></div><em>↵</em></button>`).join(''):'<p class="v9-empty">No matching command.</p>';$$('[data-command]').forEach(b=>b.onclick=()=>runCommand(commands()[Number(b.dataset.command)]))}
 function runCommand(c){if(!c)return;closePalette();go(c.view);if(c.after)setTimeout(c.after,250)}
-function installPalette(){document.body.insertAdjacentHTML('beforeend',paletteMarkup());$('#v9Palette .v9-palette-backdrop').onclick=closePalette;$('#v9SearchButton').onclick=openPalette;$('#v9PaletteInput').oninput=e=>renderPalette(e.target.value);document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openPalette()}else if(e.key==='Escape'&&!$('#v9Palette').hidden)closePalette()})}
+function installPalette(){if($('#v9Palette'))return;document.body.insertAdjacentHTML('beforeend',paletteMarkup());const backdrop=$('#v9Palette .v9-palette-backdrop'),search=$('#v9SearchButton'),input=$('#v9PaletteInput');if(backdrop)backdrop.onclick=closePalette;if(search)search.onclick=openPalette;if(input)input.oninput=e=>renderPalette(e.target.value);document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openPalette()}else if(e.key==='Escape'&&!$('#v9Palette').hidden)closePalette()})}
 
 // Owner dashboard settings
 function settingsMarkup(){const labels=Object.entries(CARD_META).map(([k,v])=>`<label class="v9-pref-check"><input type="checkbox" data-v9-pref-card="${k}"><span><b>${v.icon} ${v.label}</b><small>Show this card on the selected dashboard</small></span></label>`).join('');return `<article id="v9DashboardSettings" class="panel owner-only v9-settings-panel"><div class="panel-head"><div><p class="eyebrow">Owner Only</p><h2>Dashboard & Role Visibility</h2><p>Choose what each role sees. The app keeps the layout automatically organized.</p></div><span class="connection-badge ready">Option B</span></div><div class="v9-settings-row"><label><span>Configure role</span><select id="v9PrefRole"><option value="manager">Manager</option><option value="grounds">Grounds Crew</option><option value="kitchen">Kitchen</option><option value="cashier">Cashier</option></select></label><label><span>Employee exception (optional)</span><input id="v9PrefEmployee" type="email" placeholder="employee@email.com"><small>Leave blank to edit the whole role.</small></label></div><div id="v9PrefCards" class="v9-pref-grid">${labels}</div><div class="form-actions"><button id="v9PrefLoad" class="secondary-btn" type="button">Load Selection</button><button id="v9PrefSave" class="primary-btn" type="button">Save Dashboard Access</button></div><p id="v9PrefNotice" class="login-status"></p></article>`}
 async function installSettings(){const grid=$('[data-view-panel="settings"] .settings-grid');if(!grid)return;grid.insertAdjacentHTML('afterend',settingsMarkup());if(role()!=='owner')return;let cfg=null;try{cfg=(await api(PREF)).configuration}catch{};if(!cfg)return;const roleSel=$('#v9PrefRole'),email=$('#v9PrefEmployee');function load(){const key=email.value.trim().toLowerCase(),cards=key?(cfg.employees[key]?.cards||cfg.roles[roleSel.value]):cfg.roles[roleSel.value];$$('[data-v9-pref-card]').forEach(x=>x.checked=(cards||[]).includes(x.dataset.v9PrefCard))}$('#v9PrefLoad').onclick=load;roleSel.onchange=load;$('#v9PrefSave').onclick=async()=>{const cards=$$('[data-v9-pref-card]:checked').map(x=>x.dataset.v9PrefCard),key=email.value.trim().toLowerCase();if(key)cfg.employees[key]={cards};else cfg.roles[roleSel.value]=cards;try{const d=await api(PREF,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cfg)});cfg=d.configuration;$('#v9PrefNotice').textContent='Dashboard access saved.';$('#v9PrefNotice').className='login-status success';await loadPrefs()}catch(e){$('#v9PrefNotice').textContent=e.message;$('#v9PrefNotice').className='login-status error'}};load()}
 
-function init(){installNav();replaceDashboard();enhanceSchedule();installPalette();installSettings();loadPrefs();refreshHome();window.addEventListener('ase:profile-ready',()=>{loadPrefs();refreshHome()});}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+function init(){
+ if(v9Initialized)return;
+ if(!window.ASE_OPS?.getProfile?.())return;
+ v9Initialized=true;
+ installNav();replaceDashboard();enhanceSchedule();installPalette();installSettings();loadPrefs();refreshHome();
+}
+function boot(){
+ if(window.ASE_OPS?.getProfile?.())init();
+ window.addEventListener('ase:profile-ready',()=>{init();loadPrefs();refreshHome()});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
