@@ -1669,3 +1669,28 @@ img,video,canvas,svg{max-width:100%}
 #autoOpsSettings .form-actions{position:sticky;bottom:0;z-index:2;margin:18px -24px -22px;padding:14px 24px;background:#fffffff2;border-top:1px solid #e1e8f0;backdrop-filter:blur(10px)}
 @media(max-width:1000px){.auto-alert-input-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){#autoOpsSettings{padding:16px}.auto-master{align-items:flex-start}.auto-alert-section{padding:14px}.auto-alert-section-head{align-items:stretch}.auto-alert-grid,.auto-alert-input-grid{grid-template-columns:1fr}#autoOpsSettings .form-actions{margin:16px -16px -16px;padding:12px 16px}}
+
+/* V9.0.11 mobile Games Command Center fix */
+@media (max-width:700px){
+  [data-view-panel="games"]{width:100%;max-width:100%;min-width:0;overflow:visible}
+  [data-view-panel="games"] .page-head{min-width:0;overflow:hidden}
+  [data-view-panel="games"] .page-head h1{font-size:clamp(34px,10vw,50px);line-height:1.04;overflow-wrap:anywhere}
+  [data-view-panel="games"] .page-head>div,
+  [data-view-panel="games"] .page-head p{max-width:100%;min-width:0}
+  [data-view-panel="games"] .page-head p{white-space:normal;overflow-wrap:anywhere}
+  [data-view-panel="games"] .page-head .primary-btn{width:100%;max-width:100%;white-space:normal}
+  [data-view-panel="games"]>.internal-section-tabs{position:relative;top:auto;width:100%;display:grid;grid-template-columns:1fr 1.35fr;overflow:visible}
+  [data-view-panel="games"]>.internal-section-tabs .internal-section-tab{width:100%;min-width:0;padding:11px 8px;white-space:normal;line-height:1.2;text-align:center}
+  [data-view-panel="games"]>.internal-section-panel{width:100%;max-width:100%;min-width:0}
+  .games-summary-grid{display:grid!important;grid-template-columns:1fr!important;width:100%;max-width:100%;overflow:visible}
+  .games-summary-card{width:100%;max-width:100%;min-width:0}
+  .games-week-panel,.games-field-panel,.games-manager-panel{width:100%;max-width:100%;min-width:0;overflow:hidden}
+  .games-week-panel{padding-left:14px;padding-right:14px}
+  .games-day-tabs{grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
+  .games-day-tab{width:100%}
+  .games-matrix-wrap{display:block;width:100%;max-width:100%;overflow-x:auto!important;overflow-y:visible!important;touch-action:pan-x pan-y!important;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;padding-bottom:10px}
+  .games-matrix{min-width:720px!important;width:720px!important}
+  .games-manager-panel{overflow:visible}
+  .games-manager-grid,.games-manager-grid>*{width:100%;max-width:100%;min-width:0}
+  #gamesMatrixText{width:100%;max-width:100%;box-sizing:border-box}
+}

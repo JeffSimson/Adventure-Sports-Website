@@ -16,11 +16,27 @@ function makeTabs(view,items){
   });
   const anchor=view.querySelector('.page-head,.users-hero,.staff-hero,.weather-hero');
   anchor?.insertAdjacentElement('afterend',tabs);
-  tabs.addEventListener('click',e=>{
+  const activate=b=>{
+    if(!b||!tabs.contains(b))return;
+    const key=b.dataset.internalTarget;
+    $$('.internal-section-tab',tabs).forEach(x=>{
+      const on=x===b;x.classList.toggle('active',on);x.setAttribute('aria-selected',on?'true':'false');
+    });
+    $$(':scope > .internal-section-panel',view).forEach(x=>{
+      const on=x.dataset.internalPanel===key;x.classList.toggle('active',on);x.hidden=!on;
+    });
+    if(view.matches('[data-view-panel="games"]')){
+      requestAnimationFrame(()=>{
+        const target=view.querySelector(':scope > .internal-section-panel.active');
+        target?.scrollIntoView?.({behavior:'smooth',block:'start'});
+      });
+    }
+  };
+  tabs.addEventListener('click',e=>{const b=e.target.closest('[data-internal-target]');if(b){e.preventDefault();activate(b)}});
+  tabs.addEventListener('touchend',e=>{
     const b=e.target.closest('[data-internal-target]');if(!b)return;
-    $$('.internal-section-tab',tabs).forEach(x=>x.classList.toggle('active',x===b));
-    $$(':scope > .internal-section-panel',view).forEach(x=>{const on=x.dataset.internalPanel===b.dataset.internalTarget;x.classList.toggle('active',on);x.hidden=!on});
-  });
+    e.preventDefault();activate(b);
+  },{passive:false});
   return tabs;
 }
 function panel(view,key,nodes){
