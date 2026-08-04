@@ -94,13 +94,56 @@ function setEnableButton(text,busy=false){const b=$('#enableNotifications');if(!
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 function fmtDate(v){try{return new Date(v).toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'})}catch{return v||''}}
 
+function loadFirebaseScript(src,kind){
+  return new Promise((resolve,reject)=>{
+    const existing=[...document.scripts].find(script=>script.src===new URL(src,location.href).href);
+    if(existing){
+      if(kind==='messaging'&&window.firebase&&typeof window.firebase.messaging==='function')return resolve();
+      if(kind==='app'&&window.firebase&&typeof window.firebase.initializeApp==='function')return resolve();
+      existing.addEventListener('load',resolve,{once:true});
+      existing.addEventListener('error',()=>reject(Error(`Could not load the Firebase ${kind} library.`)),{once:true});
+      setTimeout(()=>reject(Error(`Firebase ${kind} library timed out while loading.`)),10000);
+      return;
+    }
+    const script=document.createElement('script');
+    script.src=src;
+    script.async=false;
+    script.dataset.firebaseFallback=kind;
+    script.onload=resolve;
+    script.onerror=()=>reject(Error(`Could not load the Firebase ${kind} library.`));
+    document.head.appendChild(script);
+  });
+}
+
+async function ensureFirebaseMessagingSdk(){
+  // Some privacy browsers block Google's gstatic SDK URL while allowing the
+  // rest of the Operations Hub to load. Use jsDelivr and retry the individual
+  // Firebase modules so enrollment never fails with "firebase.messaging is not a function".
+  if(!window.firebase||typeof window.firebase.initializeApp!=='function'){
+    await loadFirebaseScript('https://cdnjs.cloudflare.com/ajax/libs/firebase/8.10.1/firebase-app.min.js?build=9110','app');
+  }
+  if(!window.firebase||typeof window.firebase.messaging!=='function'){
+    await loadFirebaseScript('https://cdnjs.cloudflare.com/ajax/libs/firebase/8.10.1/firebase-messaging.min.js?build=9110','messaging');
+  }
+  if(!window.firebase||typeof window.firebase.initializeApp!=='function'){
+    throw Error('Firebase could not start. Disable browser blocking for adventurenj.com, then refresh and try again.');
+  }
+  if(typeof window.firebase.messaging!=='function'){
+    throw Error('Firebase Messaging did not load. Refresh once, then try Enable on This Device again.');
+  }
+  if(typeof window.firebase.messaging.isSupported==='function'&&!window.firebase.messaging.isSupported()){
+    throw Error('This browser does not support Firebase push notifications. On iPhone, install the Operations Hub on the Home Screen and open it from the icon.');
+  }
+  return window.firebase;
+}
+
 async function initFirebase(){
   if(!window.isSecureContext)throw Error('Notifications require HTTPS. Open the live Netlify site, not a local file.');
   if(!('serviceWorker' in navigator))throw Error('This browser does not support service workers.');
   if(!('Notification' in window))throw Error('This browser does not support web notifications.');
-  if(!window.firebase)throw Error('Firebase did not load. Refresh the page and try again.');
-  if(!firebase.apps.length)firebase.initializeApp(FIREBASE_CONFIG);
-  messaging=firebase.messaging();
+  const firebaseSdk=await ensureFirebaseMessagingSdk();
+  if(!firebaseSdk.apps.length)firebaseSdk.initializeApp(FIREBASE_CONFIG);
+  messaging=firebaseSdk.messaging();
   // Remove the broken V7.1 root worker before installing the corrected /ops worker.
   const registrations=await navigator.serviceWorker.getRegistrations();
   for(const existing of registrations){
@@ -108,7 +151,7 @@ async function initFirebase(){
       await existing.unregister().catch(()=>false);
     }
   }
-  const reg=await navigator.serviceWorker.register('/ops/firebase-messaging-sw.js?v=9100',{scope:'/ops/',updateViaCache:'none'});
+  const reg=await navigator.serviceWorker.register('/ops/firebase-messaging-sw.js?v=9110',{scope:'/ops/',updateViaCache:'none'});
   await reg.update().catch(()=>{});
   await new Promise((resolve,reject)=>{
     const worker=reg.installing||reg.waiting||reg.active;

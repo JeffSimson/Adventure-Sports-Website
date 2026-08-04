@@ -1,7 +1,15 @@
-const WORKER_VERSION='9100';
+const WORKER_VERSION='9110';
 /* Adventure Sports Operations Hub — Firebase Messaging service worker */
-importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');
-importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js');
+try {
+  importScripts('https://cdn.jsdelivr.net/npm/firebase@8.10.1/firebase-app.js');
+} catch (error) {
+  importScripts('https://cdnjs.cloudflare.com/ajax/libs/firebase/8.10.1/firebase-app.min.js');
+}
+try {
+  importScripts('https://cdn.jsdelivr.net/npm/firebase@8.10.1/firebase-messaging.js');
+} catch (error) {
+  importScripts('https://cdnjs.cloudflare.com/ajax/libs/firebase/8.10.1/firebase-messaging.min.js');
+}
 
 firebase.initializeApp({
   apiKey: 'AIzaSyCJ2bzP2XdpSvbqdr4eg5ALHcQUBAFXQ1E',
@@ -12,6 +20,9 @@ firebase.initializeApp({
   appId: '1:366845908808:web:bc9cbeeb1fafd67a64857d'
 });
 
+if (!self.firebase || typeof self.firebase.messaging !== 'function') {
+  throw new Error('Firebase Messaging SDK failed to load in the service worker.');
+}
 const messaging = firebase.messaging();
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
