@@ -10,6 +10,7 @@ const parts=d=>Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:TZ,h
 const offsetFor=key=>{const p=new Intl.DateTimeFormat('en-US',{timeZone:TZ,timeZoneName:'longOffset'}).formatToParts(new Date(`${key}T12:00:00Z`));return (p.find(x=>x.type==='timeZoneName')?.value||'GMT-04:00').replace('GMT','')};
 function parseLocal(key,time){const m=String(time||'').match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);if(!m)return null;let h=Number(m[1])%12;if(m[3].toUpperCase()==='PM')h+=12;return new Date(`${key}T${String(h).padStart(2,'0')}:${m[2]}:00${offsetFor(key)}`)}
 const formatTime=d=>new Intl.DateTimeFormat('en-US',{timeZone:TZ,hour:'numeric',minute:'2-digit'}).format(d);
+const workOrderDue=x=>x?.due_at||x?.scheduled_end||x?.scheduled_start||null;
 async function safeTable(path){try{return (await supabase(path)).data||[]}catch{return []}}
 async function weather(){
  try{
@@ -34,7 +35,7 @@ exports.handler=async event=>{
   const [matrix,settings,workOrders,alerts,clover]=await Promise.all([
     getStoreValue('tournament-matrices','current',null),
     getStoreValue('ase-automation','settings',{}),
-    safeTable('work_orders?select=id,title,priority,status,field_id,assigned_to,due_at,updated_at&status=not.in.(completed,closed,cancelled)&order=due_at.asc.nullslast&limit=100'),
+    safeTable('work_orders?select=*&status=not.in.(completed,closed,cancelled)&limit=100'),
     weather(),cloverStatus(actor)
   ]);
   const cfg={...SETTINGS_DEFAULT,...settings};
@@ -54,7 +55,8 @@ exports.handler=async event=>{
   }
   const openingSoon=fieldInfo.filter(x=>x.opensAt&&new Date(x.opensAt)>now&&new Date(x.opensAt)-now<=180*60000).sort((a,b)=>new Date(a.opensAt)-new Date(b.opensAt));
   const inUse=fieldInfo.filter(x=>x.status==='in-use');
-  const overdue=workOrders.filter(x=>x.due_at&&new Date(x.due_at)<now).map(x=>({...x,overdueMinutes:Math.round((now-new Date(x.due_at))/60000)}));
-  return json(200,{ok:true,checkedAt:now.toISOString(),date:today,matrix:matrix?{id:matrix.id,name:matrix.name,version:matrix.version,dateRange:matrix.dateRange}:null,today:{dayLabel:day?.label||'',gameCount:games.length,slotCount:slots.length,firstStart:slots[0]?.start?.toISOString()||null,lastStart:slots.at(-1)?.start?.toISOString()||null,games:games.slice(0,100),fields:fieldInfo,fieldsInUse:inUse,fieldsOpeningSoon:openingSoon},weather:{activeAlerts:alerts,count:alerts.length},workOrders:{open:workOrders.length,overdue:overdue.length,items:overdue.slice(0,8)},clover});
+  const normalizedWorkOrders=workOrders.map(x=>({...x,dueAt:workOrderDue(x)})).sort((a,b)=>{if(!a.dueAt&&!b.dueAt)return 0;if(!a.dueAt)return 1;if(!b.dueAt)return-1;return new Date(a.dueAt)-new Date(b.dueAt)});
+  const overdue=normalizedWorkOrders.filter(x=>x.dueAt&&new Date(x.dueAt)<now).map(x=>({...x,overdueMinutes:Math.round((now-new Date(x.dueAt))/60000)}));
+  return json(200,{ok:true,checkedAt:now.toISOString(),date:today,matrix:matrix?{id:matrix.id,name:matrix.name,version:matrix.version,dateRange:matrix.dateRange}:null,today:{dayLabel:day?.label||'',gameCount:games.length,slotCount:slots.length,firstStart:slots[0]?.start?.toISOString()||null,lastStart:slots.at(-1)?.start?.toISOString()||null,games:games.slice(0,100),fields:fieldInfo,fieldsInUse:inUse,fieldsOpeningSoon:openingSoon},weather:{activeAlerts:alerts,count:alerts.length},workOrders:{open:normalizedWorkOrders.length,overdue:overdue.length,items:overdue.slice(0,8)},clover});
  }catch(error){return json(error.statusCode||500,{error:error.message||'Operations summary could not be loaded.'})}
 };

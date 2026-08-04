@@ -88,11 +88,13 @@ async function weatherAlerts(s,now,state){
  return out;
 }
 async function table(path){try{return (await supabase(path)).data||[]}catch{return []}}
+const workOrderDue=x=>x?.due_at||x?.scheduled_end||x?.scheduled_start||null;
 async function operationsAlerts(s,now,state){
  const out=[],aud=s.operationsAudience;
  const [wo,mr,inc,inv,eq,fh]=await Promise.all([table('work_orders?select=*&status=not.in.(completed,closed,cancelled)&limit=200'),table('maintenance_requests?select=*&status=not.in.(completed,closed,cancelled)&limit=200'),table('incident_reports?select=*&severity=in.(major,critical)&status=not.in.(closed,archived)&limit=100'),table('inventory_items?select=*&active=eq.true&limit=300'),table('equipment?select=*&limit=200'),table('field_status_history?select=*&order=created_at.desc&limit=50')]);
  for(const x of wo){
-  if(s.overdueWorkOrders&&x.due_at&&new Date(x.due_at)<now){const r=await once(state,`wo-overdue:${x.id}:${String(x.updated_at||x.due_at).slice(0,16)}`,()=>push({title:'Work order overdue',body:`${x.title||'A work order'} is overdue. Review and reassign it.`,audience:aud,priority:'high',url:'/ops/#maintenance'},s,now));if(r)out.push(r)}
+  const due=workOrderDue(x);
+  if(s.overdueWorkOrders&&due&&new Date(due)<now){const r=await once(state,`wo-overdue:${x.id}:${String(x.updated_at||due).slice(0,16)}`,()=>push({title:'Work order overdue',body:`${x.title||'A work order'} is overdue. Review and reassign it.`,audience:aud,priority:'high',url:'/ops/#maintenance'},s,now));if(r)out.push(r)}
   if(s.urgentWorkOrders&&/urgent|critical|emergency/i.test(x.priority||'')){const r=await once(state,`wo-urgent:${x.id}`,()=>push({title:'Urgent work order open',body:`${x.title||'An urgent work order'} still needs attention.`,audience:aud,priority:'high',url:'/ops/#maintenance'},s,now));if(r)out.push(r)}
   if(s.unassignedUrgentWork&&!x.assigned_to&&/urgent|critical|emergency|high/i.test(x.priority||'')){const r=await once(state,`wo-unassigned:${x.id}`,()=>push({title:'Urgent work is unassigned',body:`${x.title||'A high-priority work order'} has no assigned employee.`,audience:aud,priority:'high',url:'/ops/#maintenance'},s,now));if(r)out.push(r)}
  }

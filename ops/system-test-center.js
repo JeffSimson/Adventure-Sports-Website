@@ -27,7 +27,7 @@ function summary(r){
  $('#systemTestPassed').textContent=r?.counts?.pass??0;
  $('#systemTestWarnings').textContent=r?.counts?.warn??0;
  $('#systemTestFailed').textContent=r?.counts?.fail??0;
- $('#systemTestBuild').textContent=`Build V${r?.version||'9.1.2'} · ${r?.build||'9120'}`;
+ $('#systemTestBuild').textContent=`Build V${r?.version||'9.1.3'} · ${r?.build||'9130'}`;
  setOverall(r?.status||'idle');
 }
 function checkRow(c){

@@ -1,9 +1,10 @@
-Adventure Sports Operations Hub — V9.1.2 Stability & System Tests
+Adventure Sports Operations Hub V9.1.3
 
-1. Upload every file and folder from this ZIP to the root of the current website repository, replacing the existing V9.1.1 files.
-2. Wait for Netlify to finish deploying.
-3. Open https://adventurenj.com/ops/ and confirm the sidebar badge says V9.1.2.
-4. Fully close and reopen the iPhone Home Screen app once so build 9120 replaces the old cached build.
-5. Sign in as an owner, open Settings > System Tests, and press Run Full System Test.
+Upload the entire contents of this ZIP to the same Netlify site.
+After deployment:
+1. Confirm the sidebar badge says V9.1.3.
+2. Fully close and reopen the Home Screen app.
+3. Open Settings > System Tests.
+4. Run Full System Test again.
 
-The System Tests page is owner-only. Its matrix, duplicate-alert, and lightning-clear tests are safe simulations and do not publish a new live matrix or send test alerts.
+This build fixes the work_orders due_at schema error and treats a date with no scheduled games as a healthy zero-game day.
