@@ -1716,3 +1716,18 @@ img,video,canvas,svg{max-width:100%}
  [data-v9-schedule-panel="games"] .games-matrix{min-width:920px!important;width:920px!important}
  [data-v9-schedule-panel="games"] #gamesMatrixManager{scroll-margin-top:110px}
 }
+
+/* V9.0.13 dedicated Games & Matrix module */
+.games-matrix-view{max-width:100%;overflow-x:hidden}
+.games-matrix-view .games-manager-panel{display:block!important;max-width:100%;overflow:hidden}
+.games-matrix-view .games-manager-grid{min-width:0}
+.games-matrix-view textarea{width:100%;max-width:100%;box-sizing:border-box}
+@media(max-width:760px){
+ .games-matrix-view .page-head{align-items:flex-start}
+ .games-matrix-view .games-manager-grid{display:block}
+ .games-matrix-view .games-manager-grid>aside{margin-top:18px}
+ .games-matrix-view .form-actions{display:grid;grid-template-columns:1fr;gap:10px}
+ .games-matrix-view .form-actions button,.games-matrix-view .games-upload-row .secondary-btn{width:100%}
+ .games-matrix-view .games-upload-row{align-items:stretch;flex-direction:column}
+ .games-matrix-view .games-preview-card,.games-matrix-view .games-archive-card,.games-matrix-view .games-manager-meta{max-width:100%;overflow:auto}
+}

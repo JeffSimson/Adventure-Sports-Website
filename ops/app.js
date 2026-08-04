@@ -4,7 +4,7 @@ const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelect
 const app=$('#app'), gate=$('#loginGate'), sidebar=$('#sidebar');
 const AUTH_KEY='ase_ops_identity_session_v2';
 const TRUSTED_DEVICE_KEY='ase_trusted_device_v1';
-const APP_BUILD='905';
+const APP_BUILD='913';
 async function ensureFreshBuild(){
   try{
     const key='ase_ops_build';
@@ -33,15 +33,15 @@ const CLOVER='/.netlify/functions/clover-dashboard';
 
 const ROLE_LABELS={owner:'Owner',manager:'Manager',grounds:'Grounds Crew',kitchen:'Kitchen',cashier:'Cashier'};
 const DEFAULT_PERMISSIONS={
-  owner:['dashboard','website','clover','staff','games','maintenance','weather','reports','incidents','kitchen','notifications','users','settings'],
-  manager:['dashboard','clover','staff','games','maintenance','weather','reports','incidents','kitchen','notifications','users'],
+  owner:['dashboard','website','clover','staff','games','gamesmatrix','maintenance','weather','reports','incidents','kitchen','notifications','users','settings'],
+  manager:['dashboard','clover','staff','games','gamesmatrix','maintenance','weather','reports','incidents','kitchen','notifications','users'],
   grounds:['maintenance','weather','incidents','notifications'],
   kitchen:['kitchen','weather','incidents','notifications'],
   cashier:['dashboard','incidents','notifications']
 };
 const MODULES=[
   ['dashboard','Dashboard'],['website','Website Control'],['clover','Clover'],['staff','Staffing'],
-  ['games','Games'],['maintenance','Fields & Maintenance'],['weather','Weather Center'],
+  ['games','Games'],['gamesmatrix','Games & Matrix'],['maintenance','Fields & Maintenance'],['weather','Weather Center'],
   ['reports','Reports'],['incidents','Incident Reports'],['kitchen','Kitchen'],['notifications','Notifications'],['users','People & Permissions'],['settings','Settings']
 ];
 
