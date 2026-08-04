@@ -68,13 +68,35 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 async function loadEvents(){if(events.length)return events;const d=await fetch('/content/events.json',{cache:'no-store'}).then(r=>r.json());events=(d.events||[]).map(e=>({...e,startDate:e.startDate||e.start_date,endDate:e.endDate||e.end_date||e.startDate||e.start_date})).filter(e=>e.startDate);return events}
 function scheduleMarkup(){return `<section id="v9ScheduleCenter" class="v9-schedule-center">
  <div class="v9-module-head"><div><p class="eyebrow">Website-linked calendar</p><h1>Schedule</h1><p>Events update from the same calendar used on adventurenj.com.</p></div><button id="v9ScheduleToday" class="secondary-btn">Today</button></div>
- <div class="v9-segmented"><button class="active" data-v9-schedule-tab="agenda">Upcoming</button><button data-v9-schedule-tab="month">Month</button><button data-v9-schedule-tab="games">Games & Matrix</button></div>
+ <div class="v9-segmented"><button class="active" data-v9-schedule-tab="agenda">Upcoming</button><button data-v9-schedule-tab="month">Month</button><button data-v9-schedule-tab="games">Games</button></div>
  <div data-v9-schedule-panel="agenda" class="v9-schedule-panel active"><div id="v9UpcomingEvents" class="v9-event-list"></div></div>
  <div data-v9-schedule-panel="month" class="v9-schedule-panel"><div class="v9-calendar-head"><button id="v9PrevMonth">‹</button><h2 id="v9MonthLabel"></h2><button id="v9NextMonth">›</button></div><div class="v9-calendar-week"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div><div id="v9Calendar" class="v9-calendar"></div></div>
  <div data-v9-schedule-panel="games" class="v9-schedule-panel"><div id="v9ExistingGamesHost"></div></div>
  </section><div id="v9EventModal" class="v9-modal" hidden><div class="v9-modal-backdrop"></div><section class="v9-modal-card"><header><div><p class="eyebrow">Event Details</p><h2 id="v9EventTitle"></h2></div><button id="v9EventClose">×</button></header><div id="v9EventBody"></div></section></div>`}
-function enhanceSchedule(){const view=$('[data-view-panel="games"]');if(!view)return;const existing=[...view.childNodes];view.innerHTML=scheduleMarkup();const host=$('#v9ExistingGamesHost');existing.forEach(n=>host.appendChild(n));$$('[data-v9-schedule-tab]').forEach(b=>b.onclick=()=>scheduleTab(b.dataset.v9ScheduleTab));$('#v9PrevMonth').onclick=()=>{monthCursor.setMonth(monthCursor.getMonth()-1);renderCalendar()};$('#v9NextMonth').onclick=()=>{monthCursor.setMonth(monthCursor.getMonth()+1);renderCalendar()};$('#v9ScheduleToday').onclick=()=>{monthCursor=new Date();scheduleTab('agenda');renderCalendar()};$('#v9EventClose').onclick=closeEvent;$('#v9EventModal .v9-modal-backdrop').onclick=closeEvent;loadEvents().then(()=>{renderAgenda();renderCalendar()})}
-function scheduleTab(name){$$('[data-v9-schedule-tab]').forEach(b=>b.classList.toggle('active',b.dataset.v9ScheduleTab===name));$$('[data-v9-schedule-panel]').forEach(p=>p.classList.toggle('active',p.dataset.v9SchedulePanel===name));}
+function enhanceSchedule(){
+ const view=$('[data-view-panel="games"]');if(!view)return;
+ const existing=[...view.childNodes];view.innerHTML=scheduleMarkup();
+ const host=$('#v9ExistingGamesHost');existing.forEach(n=>host.appendChild(n));
+ $$('[data-v9-schedule-tab]').forEach(b=>b.addEventListener('click',()=>scheduleTab(b.dataset.v9ScheduleTab)));
+ const gamesPanel=$('[data-v9-schedule-panel="games"]');
+ const openInternal=e=>{
+  const b=e.target.closest('[data-internal-target]');
+  if(!b||!gamesPanel?.contains(b))return;
+  e.preventDefault();e.stopPropagation();activateGameSection(b.dataset.internalTarget);
+ };
+ gamesPanel?.addEventListener('click',openInternal,true);
+ gamesPanel?.addEventListener('touchend',openInternal,{capture:true,passive:false});
+ $('#v9PrevMonth').onclick=()=>{monthCursor.setMonth(monthCursor.getMonth()-1);renderCalendar()};
+ $('#v9NextMonth').onclick=()=>{monthCursor.setMonth(monthCursor.getMonth()+1);renderCalendar()};
+ $('#v9ScheduleToday').onclick=()=>{monthCursor=new Date();scheduleTab('agenda');renderCalendar()};
+ $('#v9EventClose').onclick=closeEvent;$('#v9EventModal .v9-modal-backdrop').onclick=closeEvent;
+ loadEvents().then(()=>{renderAgenda();renderCalendar()});
+}
+function scheduleTab(name){
+ $$('[data-v9-schedule-tab]').forEach(b=>b.classList.toggle('active',b.dataset.v9ScheduleTab===name));
+ $$('[data-v9-schedule-panel]').forEach(p=>p.classList.toggle('active',p.dataset.v9SchedulePanel===name));
+ if(name==='games')requestAnimationFrame(()=>{if(!$('[data-v9-schedule-panel="games"] .internal-section-tab.active'))activateGameSection('overview')});
+}
 function renderAgenda(){const box=$('#v9UpcomingEvents');if(!box)return;const today=new Date().toISOString().slice(0,10),up=events.filter(e=>e.endDate>=today).sort((a,b)=>a.startDate.localeCompare(b.startDate)).slice(0,60);box.innerHTML=up.length?up.map((e,i)=>`<button class="v9-event-card" data-event-index="${events.indexOf(e)}"><div class="v9-event-date"><b>${new Date(e.startDate+'T12:00:00').toLocaleDateString('en-US',{month:'short'})}</b><strong>${new Date(e.startDate+'T12:00:00').getDate()}</strong></div><div><span>${esc(e.category||'Event')}</span><h3>${esc(e.title)}</h3><p>${esc(e.date||`${e.startDate} – ${e.endDate}`)}</p></div><em>›</em></button>`).join(''):'<p class="v9-empty">No upcoming website events.</p>';$$('[data-event-index]',box).forEach(b=>b.onclick=()=>openEvent(Number(b.dataset.eventIndex)))}
 function renderCalendar(){const box=$('#v9Calendar');if(!box)return;const y=monthCursor.getFullYear(),m=monthCursor.getMonth(),first=new Date(y,m,1),last=new Date(y,m+1,0);$('#v9MonthLabel').textContent=first.toLocaleDateString('en-US',{month:'long',year:'numeric'});const cells=[];for(let i=0;i<first.getDay();i++)cells.push('<span class="v9-calendar-empty"></span>');for(let d=1;d<=last.getDate();d++){const iso=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,dayEvents=events.filter(e=>e.startDate<=iso&&e.endDate>=iso);cells.push(`<button class="v9-calendar-day ${dayEvents.length?'has-events':''}" data-date="${iso}"><b>${d}</b>${dayEvents.slice(0,2).map(e=>`<small>${esc(e.title)}</small>`).join('')}${dayEvents.length>2?`<em>+${dayEvents.length-2} more</em>`:''}</button>`)}box.innerHTML=cells.join('');$$('.v9-calendar-day.has-events',box).forEach(b=>b.onclick=()=>{const e=events.find(x=>x.startDate<=b.dataset.date&&x.endDate>=b.dataset.date);openEvent(events.indexOf(e))})}
 function openEvent(i){const e=events[i];if(!e)return;$('#v9EventTitle').textContent=e.title;$('#v9EventBody').innerHTML=`<div class="v9-event-detail"><span class="viz-badge">${esc(e.category||'Event')}</span><h3>${esc(e.date||`${e.startDate} – ${e.endDate}`)}</h3><p>${esc(e.description||'No event description has been added.')}</p><dl><div><dt>Location</dt><dd>${esc(e.location||'Adventure Sports & Entertainment')}</dd></div><div><dt>Dates</dt><dd>${esc(e.startDate)} through ${esc(e.endDate)}</dd></div><div><dt>Price</dt><dd>${esc(e.price||'See event details')}</dd></div></dl><div class="v9-event-actions">${e.register?`<a class="primary-btn" href="${esc(e.register)}" target="_blank" rel="noopener">Registration ↗</a>`:''}<button class="secondary-btn" data-event-games>Open Games & Matrix</button></div></div>`;$('#v9EventModal').hidden=false;document.body.classList.add('v9-modal-open');$('[data-event-games]')?.addEventListener('click',()=>{closeEvent();scheduleTab('games')})}

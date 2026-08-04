@@ -1694,3 +1694,25 @@ img,video,canvas,svg{max-width:100%}
   .games-manager-grid,.games-manager-grid>*{width:100%;max-width:100%;min-width:0}
   #gamesMatrixText{width:100%;max-width:100%;box-sizing:border-box}
 }
+
+
+/* V9.0.12 Games navigation and matrix editor fix */
+#v9ScheduleCenter,#v9ScheduleCenter .v9-schedule-panel,#v9ExistingGamesHost{width:100%;max-width:100%;min-width:0}
+[data-v9-schedule-panel="games"] #v9ExistingGamesHost>.internal-section-tabs{margin:0 0 16px}
+[data-v9-schedule-panel="games"] #v9ExistingGamesHost>.internal-section-panel{width:100%;max-width:100%;min-width:0}
+[data-v9-schedule-panel="games"] .games-matrix-wrap{display:block;width:100%;max-width:100%;overflow-x:auto!important;overflow-y:visible!important;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;overscroll-behavior-x:contain;scrollbar-gutter:stable;padding-bottom:12px}
+[data-v9-schedule-panel="games"] .games-matrix{min-width:900px!important;width:900px!important}
+@media(max-width:700px){
+ [data-view-panel="games"]{overflow-x:hidden!important}
+ .v9-schedule-center{overflow:hidden}
+ .v9-module-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start}
+ .v9-module-head>div{min-width:0}.v9-module-head h1,.v9-module-head p{max-width:100%;overflow-wrap:anywhere}
+ .v9-segmented{display:grid!important;grid-template-columns:1fr 1fr 1fr!important;overflow:visible!important;max-width:none!important}
+ .v9-segmented button{min-width:0!important;padding:12px 6px!important;white-space:normal!important;line-height:1.15}
+ [data-v9-schedule-panel="games"] #v9ExistingGamesHost>.internal-section-tabs{display:grid!important;grid-template-columns:1fr 1.35fr!important;width:100%!important;max-width:100%!important;overflow:visible!important}
+ [data-v9-schedule-panel="games"] #v9ExistingGamesHost>.internal-section-tabs .internal-section-tab{min-width:0!important;width:100%!important;white-space:normal!important;text-align:center!important}
+ [data-v9-schedule-panel="games"] .games-week-panel,[data-v9-schedule-panel="games"] .games-field-panel,[data-v9-schedule-panel="games"] .games-manager-panel{overflow:visible!important;max-width:100%!important}
+ [data-v9-schedule-panel="games"] .games-matrix-wrap{width:100%!important;max-width:100%!important;border-radius:12px;box-shadow:inset -18px 0 18px -18px rgba(13,48,91,.28)}
+ [data-v9-schedule-panel="games"] .games-matrix{min-width:920px!important;width:920px!important}
+ [data-v9-schedule-panel="games"] #gamesMatrixManager{scroll-margin-top:110px}
+}
