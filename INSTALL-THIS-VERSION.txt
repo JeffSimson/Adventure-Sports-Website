@@ -1,15 +1,9 @@
-Adventure Sports — App Admin + Classic Backup
+Adventure Sports Operations Hub — V9.1.2 Stability & System Tests
 
-Upload all contents to the root of the aseupgrade repository and replace existing files.
+1. Upload every file and folder from this ZIP to the root of the current website repository, replacing the existing V9.1.1 files.
+2. Wait for Netlify to finish deploying.
+3. Open https://adventurenj.com/ops/ and confirm the sidebar badge says V9.1.2.
+4. Fully close and reopen the iPhone Home Screen app once so build 9120 replaces the old cached build.
+5. Sign in as an owner, open Settings > System Tests, and press Run Full System Test.
 
-NEW ADMIN
-https://adventurenj.com/admin/
-
-CLASSIC BACKUP
-https://adventurenj.com/admin-classic/
-
-The public website and admin now use the same Adventure Sports browser-tab logo.
-The admin browser title is Adventure Sports Admin.
-The new dashboard includes overview cards for field status, upcoming events, gallery photos and connection status.
-
-After Netlify deploys, use Command + Shift + R.
+The System Tests page is owner-only. Its matrix, duplicate-alert, and lightning-clear tests are safe simulations and do not publish a new live matrix or send test alerts.

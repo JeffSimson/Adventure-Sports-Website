@@ -30,7 +30,16 @@ async function push({title,body,audience='staff',priority='normal',url='/ops/'},
  const history=await getStoreValue('ase-notifications','history',[]);history.unshift({id,title,body,audience,priority,url,createdAt:now.toISOString(),createdBy:{name:'Operations Automation',email:'automation@adventurenj.com',role:'system'},targeted:selected.length,sent:accepted.length,failed:failures.length,automatic:true});await setStoreValue('ase-notifications','history',history.slice(0,250));
  return {sent:accepted.length,failed:failures.length};
 }
-async function once(state,key,fn){if(state.sent[key])return null;const out=await fn();state.sent[key]=new Date().toISOString();return {key,...out}}
+async function once(state,key,fn){
+ if(state.sent[key])return null;
+ // Reserve the alert key before delivery. This makes scheduled retries and most
+ // overlapping invocations see the pending key instead of sending a duplicate.
+ state.sent[key]=`pending:${new Date().toISOString()}`;
+ await setStoreValue(STORE,'state',state);
+ try{
+  const out=await fn();state.sent[key]=new Date().toISOString();await setStoreValue(STORE,'state',state);return {key,...out};
+ }catch(error){delete state.sent[key];await setStoreValue(STORE,'state',state).catch(()=>{});throw error}
+}
 
 async function matrixAlerts(s,now,state){
  const out=[],matrix=await getStoreValue('tournament-matrices','current',null);if(!matrix)return out;
@@ -95,10 +104,30 @@ async function operationsAlerts(s,now,state){
  return out;
 }
 exports.handler=async()=>{
+ const now=new Date(),runId=`run_${Date.now()}_${Math.random().toString(36).slice(2,7)}`;
+ let state=null;
  try{
-  const s={...DEFAULTS,...await getStoreValue(STORE,'settings',{})};if(!s.enabled)return {statusCode:200,body:'Automation disabled'};
-  const state=await getStoreValue(STORE,'state',{sent:{}});state.sent=state.sent||{};const cutoff=Date.now()-30*86400000;for(const[k,v]of Object.entries(state.sent))if(new Date(v).getTime()<cutoff)delete state.sent[k];
-  const now=new Date(),[matrix,weather,operations]=await Promise.all([matrixAlerts(s,now,state),weatherAlerts(s,now,state),operationsAlerts(s,now,state)]);await setStoreValue(STORE,'state',state);
-  return {statusCode:200,headers:{'Content-Type':'application/json'},body:JSON.stringify({ok:true,matrix,weather,operations,checkedAt:now.toISOString(),lightning:state.lightning||null})};
- }catch(e){console.error(e);return {statusCode:500,body:JSON.stringify({error:e.message})}}
+  const s={...DEFAULTS,...await getStoreValue(STORE,'settings',{})};
+  state=await getStoreValue(STORE,'state',{sent:{}});state.sent=state.sent||{};
+  if(!s.enabled){state.lastRunAt=now.toISOString();state.lastResult={disabled:true};await setStoreValue(STORE,'state',state);return {statusCode:200,headers:{'Content-Type':'application/json'},body:JSON.stringify({ok:true,disabled:true,checkedAt:now.toISOString()})}}
+  const existingUntil=state.running?.until?new Date(state.running.until).getTime():0;
+  if(existingUntil>Date.now())return {statusCode:200,headers:{'Content-Type':'application/json'},body:JSON.stringify({ok:true,skipped:true,reason:'Another automation check is already running.',checkedAt:now.toISOString()})};
+  state.running={id:runId,startedAt:now.toISOString(),until:new Date(Date.now()+4*60000).toISOString()};
+  await setStoreValue(STORE,'state',state);
+  const lock=await getStoreValue(STORE,'state',state);
+  if(lock.running?.id!==runId)return {statusCode:200,headers:{'Content-Type':'application/json'},body:JSON.stringify({ok:true,skipped:true,reason:'A newer automation check owns the run lock.',checkedAt:now.toISOString()})};
+  state=lock;state.sent=state.sent||{};
+  const cutoff=Date.now()-30*86400000;
+  for(const[k,v]of Object.entries(state.sent)){const stamp=String(v).replace(/^pending:/,'');if(new Date(stamp).getTime()<cutoff)delete state.sent[k]}
+  const matrix=await matrixAlerts(s,now,state);
+  const weather=await weatherAlerts(s,now,state);
+  const operations=await operationsAlerts(s,now,state);
+  state.lastRunAt=new Date().toISOString();state.lastSuccessAt=state.lastRunAt;state.lastError='';state.lastResult={matrix:matrix.length,weather:weather.length,operations:operations.length};state.running=null;
+  await setStoreValue(STORE,'state',state);
+  return {statusCode:200,headers:{'Content-Type':'application/json'},body:JSON.stringify({ok:true,matrix,weather,operations,checkedAt:state.lastRunAt,lightning:state.lightning||null,dedupeKeys:Object.keys(state.sent).length})};
+ }catch(e){
+  console.error(e);
+  if(state){state.lastRunAt=new Date().toISOString();state.lastErrorAt=state.lastRunAt;state.lastError=e.message;state.running=null;await setStoreValue(STORE,'state',state).catch(()=>{})}
+  return {statusCode:500,headers:{'Content-Type':'application/json'},body:JSON.stringify({error:e.message})}
+ }
 };

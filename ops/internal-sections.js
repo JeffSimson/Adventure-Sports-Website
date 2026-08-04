@@ -145,6 +145,7 @@ function weather(){
 function addAutoOpsTab(){
  const view=$('[data-view-panel="settings"]');
  const autoOps=$('#autoOpsSettings');
+ const systemTests=$('#systemTestCenter');
  if(!view||!autoOps)return;
  if(!ownerAllowed()){autoOps.remove();return}
  if(view.querySelector(':scope > .internal-section-panel[data-internal-panel="autoops"]'))return;
@@ -166,12 +167,14 @@ function settings(){
  const security=$('#securityCenter');
  const database=$('#databaseCenter');
  const autoOps=$('#autoOpsSettings');
+ const systemTests=$('#systemTestCenter');
  const account=panel(view,'account',[base]);account.classList.add('active');account.hidden=false;
  const items=[{key:'account',label:'Account & App'}];
  if(owner&&prefs){const p=panel(view,'visibility',[prefs]);p.hidden=true;items.push({key:'visibility',label:'Dashboard Access',access:'owner'})}
  if(owner&&security){security.hidden=false;const p=panel(view,'security',[security]);p.hidden=true;items.push({key:'security',label:'Security',access:'owner'})}else security?.remove();
  if(owner&&database){database.hidden=false;const p=panel(view,'database',[database]);p.hidden=true;items.push({key:'database',label:'Database',access:'owner'})}else database?.remove();
  if(owner&&autoOps){autoOps.hidden=false;const p=panel(view,'autoops',[autoOps]);p.hidden=true;items.push({key:'autoops',label:'Auto Ops Alerts',access:'owner'})}else if(autoOps&&!owner)autoOps.remove();
+ if(owner&&systemTests){systemTests.hidden=false;const p=panel(view,'systemtests',[systemTests]);p.hidden=true;items.push({key:'systemtests',label:'System Tests',access:'owner'})}else if(systemTests&&!owner)systemTests.remove();
  makeTabs(view,items);
 }
 

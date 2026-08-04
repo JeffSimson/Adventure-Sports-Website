@@ -1770,7 +1770,7 @@ img,video,canvas,svg{max-width:100%}
  .v9-schedule-two-tabs{display:grid!important;grid-template-columns:1fr 1fr!important;max-width:none!important;width:100%}
 }
 
-/* V9.1.1 — tournament builder, command-center data, and iPhone containment */
+/* V9.1.2 — tournament builder, command-center data, and iPhone containment */
 .games-manager-suite{display:grid;gap:16px;min-width:0}
 .games-manager-toolbar{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;padding:22px 24px}
 .games-manager-toolbar h2{margin:3px 0 6px}.games-manager-toolbar p:last-child{margin:0;color:var(--muted)}
@@ -1812,3 +1812,70 @@ button,a,input,select,textarea{touch-action:manipulation}
  .page-head,.v9-module-head,.weather-hero,.users-hero,.maintenance-hero{min-width:0}.page-head h1,.v9-module-head h1,.weather-hero h1,.maintenance-hero h1{overflow-wrap:anywhere}
  .games-summary-grid,.staff-kpi-grid,.maintenance-kpi-grid{grid-template-columns:1fr!important}.games-summary-card,.staff-kpi,.maintenance-kpi{min-width:0!important}
 }
+
+/* V9.1.2 — Owner System Test Center and stability polish */
+.system-test-center{padding:0;overflow:hidden}
+.system-test-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:25px 26px 18px;border-bottom:1px solid #e2eaf3}
+.system-test-head h2{margin:3px 0 5px;font-size:27px;color:var(--ase-navy)}
+.system-test-head p{margin:0;max-width:760px;color:var(--ase-muted);line-height:1.5}
+.system-test-actions{display:flex;flex-wrap:wrap;gap:9px;padding:16px 26px;border-bottom:1px solid #e2eaf3;background:#f8fbff}
+.system-test-center>.publish-notice{margin:16px 26px 0}
+.system-test-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:18px 26px}
+.system-test-summary article{border:1px solid #dfe8f2;border-radius:15px;padding:15px;background:#fff;min-width:0}
+.system-test-summary span{display:block;color:#64758a;font-size:11px;font-weight:850;letter-spacing:.08em;text-transform:uppercase}
+.system-test-summary strong{display:block;margin:6px 0 2px;color:var(--ase-navy);font-size:25px;line-height:1.1;overflow-wrap:anywhere}
+.system-test-summary small{display:block;color:#8593a5}
+.system-test-toolbar{display:flex;align-items:end;justify-content:space-between;gap:14px;padding:0 26px 16px}
+.system-test-toolbar label{display:grid;gap:5px;min-width:180px;color:#607187;font-size:11px;font-weight:850;text-transform:uppercase;letter-spacing:.06em}
+.system-test-toolbar select{height:42px;border:1px solid #d4dfeb;border-radius:11px;background:#fff;padding:0 12px;font:inherit;color:#213b5c;text-transform:none;letter-spacing:normal}
+.system-test-toolbar p{margin:0;color:#728197;font-weight:800}
+.system-test-results{display:grid;gap:16px;padding:0 26px 24px}
+.system-test-group{border:1px solid #dfe8f2;border-radius:16px;overflow:hidden;background:#fff}
+.system-test-group-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;background:#f4f8fc;border-bottom:1px solid #e1e9f2}
+.system-test-group-head h3{margin:0;color:var(--ase-navy);font-size:16px}
+.system-test-group-head span{color:#718197;font-size:12px;font-weight:750}
+.system-test-row{display:grid;grid-template-columns:38px minmax(0,1fr);gap:12px;padding:14px 16px;border-bottom:1px solid #edf1f6}
+.system-test-row:last-child{border-bottom:0}
+.system-test-icon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:18px;font-weight:950;background:#edf3f9;color:#45617f}
+.system-test-row.pass .system-test-icon{background:#e5f8ef;color:#158354}
+.system-test-row.warn .system-test-icon{background:#fff4d8;color:#9b6600}
+.system-test-row.fail .system-test-icon{background:#ffe9e7;color:#b53a31}
+.system-test-row-title{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.system-test-row-title b{color:#173653}
+.system-test-row-title span{border-radius:999px;padding:4px 8px;background:#eef3f8;color:#607187;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.05em}
+.system-test-row.pass .system-test-row-title span{background:#e5f8ef;color:#158354}
+.system-test-row.warn .system-test-row-title span{background:#fff4d8;color:#8d5d00}
+.system-test-row.fail .system-test-row-title span{background:#ffe9e7;color:#ac342d}
+.system-test-row p{margin:5px 0 3px;color:#617287;line-height:1.45;overflow-wrap:anywhere}
+.system-test-row small{color:#93a0b0}
+.system-test-empty{padding:34px;text-align:center;border:1px dashed #cfdbe8;border-radius:16px;color:#718197;background:#f8fbff}
+.system-test-empty b{display:block;color:#254363;font-size:17px;margin-bottom:4px}
+.system-test-empty p{margin:0}
+.system-test-footnote{margin:0 26px 24px;padding:13px 15px;border-radius:13px;background:#eef5fc;color:#58708b;line-height:1.5}
+
+/* Keep every module inside the phone viewport. Wide data remains scrollable inside its own section. */
+html,body{max-width:100%;overflow-x:hidden}
+.app-shell,.main-area,main,.view,.internal-section-panel,.panel,.page-head,.system-test-center{min-width:0;max-width:100%}
+.view>*{min-width:0}
+.table-wrap,.games-matrix-wrap,.database-table-wrap,.clover-table-wrap,[data-horizontal-scroll]{scrollbar-gutter:stable}
+
+@media(max-width:760px){
+ .system-test-head{padding:18px 16px 14px;flex-direction:column;align-items:stretch}
+ .system-test-head h2{font-size:23px}
+ .system-test-actions{padding:12px 16px;display:grid;grid-template-columns:1fr 1fr}
+ .system-test-actions button{width:100%;min-height:46px;white-space:normal}
+ .system-test-center>.publish-notice{margin:12px 16px 0}
+ .system-test-summary{grid-template-columns:1fr 1fr;padding:14px 16px;gap:9px}
+ .system-test-summary article{padding:13px}
+ .system-test-summary strong{font-size:21px}
+ .system-test-toolbar{padding:0 16px 13px;align-items:stretch;flex-direction:column}
+ .system-test-toolbar label{width:100%;min-width:0}
+ .system-test-results{padding:0 16px 18px;gap:12px}
+ .system-test-row{grid-template-columns:34px minmax(0,1fr);padding:13px 12px;gap:9px}
+ .system-test-row-title{align-items:flex-start;flex-direction:column;gap:5px}
+ .system-test-footnote{margin:0 16px 18px}
+ .internal-section-tabs{touch-action:pan-x;overscroll-behavior-x:contain}
+ button,.primary-btn,.secondary-btn,.warning-btn,.danger-outline-btn{min-height:44px}
+ .page-head h1,.games-page-head h1{overflow-wrap:anywhere;word-break:normal}
+}
+@media(max-width:390px){.system-test-actions,.system-test-summary{grid-template-columns:1fr}}
