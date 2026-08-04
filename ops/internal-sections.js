@@ -44,14 +44,25 @@ function panel(view,key,nodes){
   nodes.filter(Boolean).forEach(n=>p.appendChild(n));view.appendChild(p);return p;
 }
 function games(){
- const view=$('[data-view-panel="games"]');if(!view)return;
- const manager=$('#gamesMatrixManager');const r=role();const canManage=['owner','manager'].includes(r);
- const head=view.querySelector('.page-head');
- const general=[...view.children].filter(n=>n!==head&&n!==manager);
- const overview=panel(view,'overview',general);overview.classList.add('active');overview.hidden=false;
- if(canManage&&manager){manager.hidden=false;const mp=panel(view,'management',[manager]);mp.dataset.internalAccess='management';mp.hidden=true}
- else if(manager){manager.hidden=true}
- makeTabs(view,[{key:'overview',label:'Games & Fields'},...(canManage?[{key:'management',label:'Tournament Management',access:'management'}]:[])]);
+ const view=$('[data-view-panel="gamesmatrix"]');if(!view)return;
+ const tabs=view.querySelector(':scope > .gamesmatrix-section-tabs');
+ const managerPanel=view.querySelector(':scope > [data-internal-panel="management"]');
+ const managerTab=tabs?.querySelector('[data-internal-target="management"]');
+ const canManage=managementAllowed();
+ if(!canManage){managerTab?.remove();managerPanel?.remove()}
+ const activate=key=>{
+   const target=tabs?.querySelector(`[data-internal-target="${key}"]`);
+   if(!target||target.hidden)return;
+   $$('.internal-section-tab',tabs).forEach(x=>{const on=x===target;x.classList.toggle('active',on);x.setAttribute('aria-selected',on?'true':'false')});
+   $$(':scope > .internal-section-panel',view).forEach(x=>{const on=x.dataset.internalPanel===key;x.classList.toggle('active',on);x.hidden=!on});
+   requestAnimationFrame(()=>window.scrollTo({top:Math.max(0,view.getBoundingClientRect().top+window.scrollY-18),left:0,behavior:'auto'}));
+ };
+ if(tabs&&!tabs.dataset.bound){
+   tabs.dataset.bound='true';
+   tabs.addEventListener('click',e=>{const b=e.target.closest('[data-internal-target]');if(!b)return;e.preventDefault();activate(b.dataset.internalTarget)});
+ }
+ window.ASE_GAMES_MATRIX_OPEN=()=>{activate('management');document.querySelector('.nav-item[data-view="gamesmatrix"]')?.click()};
+ activate('overview');
 }
 function notifications(){
  const view=$('[data-view-panel="notifications"]');if(!view)return;

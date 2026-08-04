@@ -143,7 +143,7 @@ async function load(){
  try{
   const d=await request();matrix=d.matrix||FALLBACK;archive=d.archive||[];
   active=todayIndex();render();
-  const manager=$('#gamesMatrixManager');if(manager){manager.hidden=!d.canManage;if(d.canManage)managerMeta()}
+  const manager=$('#gamesMatrixManager');if(manager){const localCanManage=['owner','manager'].includes(window.ASE_OPS?.role?.());const canManage=Boolean(d.canManage||localCanManage);manager.hidden=!canManage;if(canManage)managerMeta()}
  }catch(e){matrix=FALLBACK;active=todayIndex();render();console.warn(e)}
 }
 function init(){
