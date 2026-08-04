@@ -4,7 +4,7 @@ const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelect
 const app=$('#app'), gate=$('#loginGate'), sidebar=$('#sidebar');
 const AUTH_KEY='ase_ops_identity_session_v2';
 const TRUSTED_DEVICE_KEY='ase_trusted_device_v1';
-const APP_BUILD='913';
+const APP_BUILD='914';
 async function ensureFreshBuild(){
   try{
     const key='ase_ops_build';
@@ -148,7 +148,7 @@ async function loadProfile(){
   let d=await api(PROFILE);profile=d;renderMaintenanceState(d.system||{});
   await requireOwnerVerification(d);
   if(d.mfaRequired&&!d.mfaVerified){d=await api(PROFILE);profile=d;renderMaintenanceState(d.system||{})}
-  try{const p=await api(PERMS);permissions=p.permissions||permissions}catch{} Object.keys(DEFAULT_PERMISSIONS).forEach(r=>{permissions[r]=permissions[r]||[];if(!permissions[r].includes('incidents'))permissions[r].push('incidents')})
+  try{const p=await api(PERMS);permissions=p.permissions||permissions}catch{} Object.keys(DEFAULT_PERMISSIONS).forEach(r=>{permissions[r]=permissions[r]||[];if(!permissions[r].includes('incidents'))permissions[r].push('incidents')}); ['owner','manager'].forEach(r=>{permissions[r]=permissions[r]||[];if(!permissions[r].includes('gamesmatrix'))permissions[r].splice(Math.max(0,permissions[r].indexOf('games')+1),0,'gamesmatrix')})
   return d;
 }
 async function show(u){
