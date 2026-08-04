@@ -108,7 +108,7 @@ async function initFirebase(){
       await existing.unregister().catch(()=>false);
     }
   }
-  const reg=await navigator.serviceWorker.register('/ops/firebase-messaging-sw.js?v=734',{scope:'/ops/',updateViaCache:'none'});
+  const reg=await navigator.serviceWorker.register('/ops/firebase-messaging-sw.js?v=9100',{scope:'/ops/',updateViaCache:'none'});
   await reg.update().catch(()=>{});
   await new Promise((resolve,reject)=>{
     const worker=reg.installing||reg.waiting||reg.active;

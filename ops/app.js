@@ -4,19 +4,16 @@ const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelect
 const app=$('#app'), gate=$('#loginGate'), sidebar=$('#sidebar');
 const AUTH_KEY='ase_ops_identity_session_v2';
 const TRUSTED_DEVICE_KEY='ase_trusted_device_v1';
-const APP_BUILD='914';
+const APP_BUILD='9100';
 async function ensureFreshBuild(){
   try{
-    const key='ase_ops_build';
-    const previous=localStorage.getItem(key);
-    if(previous!==APP_BUILD){
-      localStorage.setItem(key,APP_BUILD);
-      if(previous){
-        const url=new URL(location.href);
-        url.searchParams.set('build',APP_BUILD);
-        location.replace(url.pathname+url.search+url.hash);
-        return false;
-      }
+    const key='ase_ops_build',previous=localStorage.getItem(key);
+    localStorage.setItem(key,APP_BUILD);
+    const remote=await fetch(`/ops/build.json?ts=${Date.now()}`,{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null);
+    const target=String(remote?.build||APP_BUILD);
+    if((previous&&previous!==APP_BUILD)||target!==APP_BUILD){
+      localStorage.setItem(key,target);
+      const url=new URL(location.href);url.searchParams.set('build',target);location.replace(url.pathname+url.search+url.hash);return false;
     }
   }catch{}
   return true;
@@ -347,5 +344,7 @@ $('#closeProfileModal').onclick=()=>closeModal('#profileModal');$('#inviteUserFo
 $('#profileForm').onsubmit=saveProfile;$('#toggleDisabledButton').onclick=toggleDisabled;$('#terminateFromProfile').onclick=terminateSelected;$('#sendRecoveryButton').onclick=sendRecovery;
 $('#savePermissions').onclick=savePermissions;$('#refreshAudit').onclick=loadAudit;
 $$('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModal('#'+m.id)}));
+window.addEventListener('pageshow',e=>{if(e.persisted)ensureFreshBuild()});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')ensureFreshBuild()});
 ensureFreshBuild().then(ok=>{if(ok)restore()});
 })();

@@ -104,3 +104,12 @@
 # Automatic operations checks run every five minutes.
 [functions."auto-operations-alerts"]
   schedule = "*/5 * * * *"
+
+# Always expose the newest installed-app build marker.
+[[headers]]
+  for = "/ops/build.json"
+  [headers.values]
+    Content-Type = "application/json; charset=utf-8"
+    Cache-Control = "no-store, no-cache, must-revalidate, max-age=0"
+    CDN-Cache-Control = "no-store"
+    Netlify-CDN-Cache-Control = "no-store"

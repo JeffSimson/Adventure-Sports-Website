@@ -60,6 +60,7 @@ function games(){
  if(tabs&&!tabs.dataset.bound){
    tabs.dataset.bound='true';
    tabs.addEventListener('click',e=>{const b=e.target.closest('[data-internal-target]');if(!b)return;e.preventDefault();activate(b.dataset.internalTarget)});
+   tabs.addEventListener('touchend',e=>{const b=e.target.closest('[data-internal-target]');if(!b)return;e.preventDefault();activate(b.dataset.internalTarget)},{passive:false});
  }
  window.ASE_GAMES_MATRIX_OPEN=()=>{activate('management');document.querySelector('.nav-item[data-view="gamesmatrix"]')?.click()};
  activate('overview');

@@ -2,8 +2,9 @@
 'use strict';
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const PREF='/.netlify/functions/dashboard-preferences';
+const OPS_SUMMARY='/.netlify/functions/operations-summary';
 const CARD_META={
- facility:{label:'Facility Status',icon:'●',go:'website'},weather:{label:'Weather',icon:'☁',go:'weather'},schedule:{label:'Schedule',icon:'▣',go:'games'},fields:{label:'Fields',icon:'◇',go:'maintenance'},staff:{label:'Employees',icon:'♙',go:'staff'},incidents:{label:'Incidents',icon:'!',go:'incidents'},workorders:{label:'Work Orders',icon:'⚒',go:'maintenance'},notifications:{label:'Notifications',icon:'◉',go:'notifications'},clover:{label:'Clover',icon:'$',go:'clover'},system:{label:'System Health',icon:'✓',go:'settings'}
+ facility:{label:'Facility Status',icon:'●',go:'website'},weather:{label:'Weather',icon:'☁',go:'weather'},schedule:{label:'Schedule',icon:'▣',go:'gamesmatrix'},fields:{label:'Fields',icon:'◇',go:'maintenance'},staff:{label:'Employees',icon:'♙',go:'staff'},incidents:{label:'Incidents',icon:'!',go:'incidents'},workorders:{label:'Work Orders',icon:'⚒',go:'maintenance'},notifications:{label:'Notifications',icon:'◉',go:'notifications'},clover:{label:'Clover',icon:'$',go:'clover'},system:{label:'System Health',icon:'✓',go:'settings'}
 };
 const role=()=>window.ASE_OPS?.role?.()||'cashier';
 const api=(u,o)=>window.ASE_OPS.api(u,o);
@@ -29,7 +30,7 @@ function dashboardMarkup(){return `<section id="v9Dashboard" class="v9-dashboard
  <div class="v9-card-grid">
   <button data-v9-card="facility" data-v9-go="website" class="v9-home-card"><span class="v9-card-icon">●</span><small>Facility</small><strong id="v9Facility">Loading…</strong><em id="v9Announcement">Public status</em></button>
   <button data-v9-card="weather" data-v9-go="weather" class="v9-home-card"><span class="v9-card-icon">☁</span><small>Weather</small><strong id="v9Weather">Loading…</strong><em id="v9WeatherNote">Jackson, NJ</em></button>
-  <button data-v9-card="schedule" data-v9-go="games" class="v9-home-card"><span class="v9-card-icon">▣</span><small>Today’s Schedule</small><strong id="v9Schedule">Loading…</strong><em id="v9ScheduleNote">Website events + games</em></button>
+  <button data-v9-card="schedule" data-v9-go="gamesmatrix" class="v9-home-card"><span class="v9-card-icon">▣</span><small>Today’s Schedule</small><strong id="v9Schedule">Loading…</strong><em id="v9ScheduleNote">Website events + games</em></button>
   <button data-v9-card="fields" data-v9-go="maintenance" class="v9-home-card"><span class="v9-card-icon">◇</span><small>Fields</small><strong id="v9Fields">8 fields</strong><em id="v9FieldsNote">Tap for readiness</em></button>
   <button data-v9-card="staff" data-v9-go="staff" class="v9-home-card"><span class="v9-card-icon">♙</span><small>Employees</small><strong id="v9Staff">View staff</strong><em>Coverage and profiles</em></button>
   <button data-v9-card="incidents" data-v9-go="incidents" class="v9-home-card"><span class="v9-card-icon">!</span><small>Incidents</small><strong id="v9Incidents">Create or review</strong><em>Confidential reports</em></button>
@@ -38,7 +39,19 @@ function dashboardMarkup(){return `<section id="v9Dashboard" class="v9-dashboard
   <button data-v9-card="clover" data-v9-go="clover" class="v9-home-card"><span class="v9-card-icon">$</span><small>Clover</small><strong id="v9Clover">Sales & tips</strong><em>Owner controls</em></button>
   <button data-v9-card="system" data-v9-go="settings" class="v9-home-card"><span class="v9-card-icon">✓</span><small>System Health</small><strong id="v9System">Checking…</strong><em id="v9SystemNote">Connected services</em></button>
  </div>
- <section class="v9-focus-panel"><div class="panel-head"><div><p class="eyebrow">Today</p><h2>What needs attention</h2></div><button class="secondary-btn" id="v9RefreshHome" type="button">Refresh</button></div><div id="v9FocusList" class="v9-focus-list"><p>Loading today’s schedule and facility status…</p></div></section>
+ <div class="v91-ops-grid" aria-live="polite">
+  <button class="v91-ops-card" data-v9-go="gamesmatrix"><span>Today’s Games</span><strong id="v91TodayGames">—</strong><small id="v91TodayGamesNote">Loading live matrix</small></button>
+  <button class="v91-ops-card" data-v9-go="gamesmatrix"><span>Fields In Use</span><strong id="v91FieldsInUse">—</strong><small id="v91FieldsInUseNote">Checking current game times</small></button>
+  <button class="v91-ops-card" data-v9-go="gamesmatrix"><span>Fields Opening Soon</span><strong id="v91OpeningSoon">—</strong><small id="v91OpeningSoonNote">Based on game and cleanup time</small></button>
+  <button class="v91-ops-card" data-v9-go="weather"><span>Active Weather Alerts</span><strong id="v91WeatherAlerts">—</strong><small id="v91WeatherAlertsNote">Checking official alerts</small></button>
+  <button class="v91-ops-card" data-v9-go="maintenance"><span>Overdue Work Orders</span><strong id="v91OverdueWork">—</strong><small id="v91OverdueWorkNote">Checking open work</small></button>
+  <button class="v91-ops-card" data-v9-go="clover"><span>Clover Status</span><strong id="v91CloverStatus">—</strong><small id="v91CloverStatusNote">Checking POS connection</small></button>
+ </div>
+ <div class="v91-live-sections">
+  <section class="panel"><div class="panel-head"><div><p class="eyebrow">Live matrix</p><h2>Today’s Games & Fields</h2></div><button class="secondary-btn compact-btn" data-v9-go="gamesmatrix">Open Matrix</button></div><div id="v91GameList" class="v91-live-list"><p class="v91-empty">Loading game times…</p></div></section>
+  <section class="panel"><div class="panel-head"><div><p class="eyebrow">Attention</p><h2>Weather, Work & Systems</h2></div><button class="secondary-btn compact-btn" id="v9RefreshHome" type="button">Refresh</button></div><div id="v91AttentionList" class="v91-live-list"><p class="v91-empty">Checking operations…</p></div></section>
+ </div>
+ <section class="v9-focus-panel"><div class="panel-head"><div><p class="eyebrow">Website calendar</p><h2>Upcoming Facility Events</h2></div></div><div id="v9FocusList" class="v9-focus-list"><p>Loading website events…</p></div></section>
  </section>`}
 function replaceDashboard(){const old=$('[data-view-panel="dashboard"]');if(!old)return;old.innerHTML=dashboardMarkup();$$('[data-v9-go]').forEach(b=>b.onclick=()=>go(b.dataset.v9Go));$('#v9DesktopSearch').onclick=openPalette;$('#v9RefreshHome').onclick=refreshHome;}
 
@@ -46,21 +59,37 @@ async function refreshHome(){
  if(!$('#v9Dashboard'))return;
  try{
   const site=await fetch('/content/site.json',{cache:'no-store'}).then(r=>r.json());
-  setText('#v9Facility',site.fieldStatus||site.status||'OPEN');
-  setText('#v9Announcement',site.announcement||'No public announcement');
+  setText('#v9Facility',site.fieldStatus||site.status||'OPEN');setText('#v9Announcement',site.announcement||'No public announcement');
  }catch{}
  try{
-  const wx=await api('/.netlify/functions/weather-center');const c=wx.current||{};
-  setText('#v9Weather',c.temperature!=null?`${Math.round(c.temperature)}°F`:(c.temp!=null?`${Math.round(c.temp)}°F`:'Weather ready'));
-  setText('#v9WeatherNote',c.shortForecast||c.condition||wx.source||'Forecast available');
+  const wx=await api('/.netlify/functions/weather-center'),c=wx.current||{};
+  setText('#v9Weather',c.temperature_2m!=null?`${Math.round(c.temperature_2m)}°F`:(c.temperature!=null?`${Math.round(c.temperature)}°F`:'Weather ready'));
+  setText('#v9WeatherNote',wx.alerts?.[0]?.event||wx.source||'Forecast available');
  }catch{setText('#v9Weather','Backup ready')}
  try{
-  await loadEvents();const today=new Date().toISOString().slice(0,10);const todayEvents=events.filter(e=>e.startDate<=today&&e.endDate>=today);
-  setText('#v9Schedule',todayEvents.length?`${todayEvents.length} event${todayEvents.length===1?'':'s'} today`:'No website events today');
-  setText('#v9ScheduleNote',todayEvents[0]?.title||'View calendar and games');renderFocus(todayEvents);
+  await loadEvents();const today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date()),todayEvents=events.filter(e=>e.startDate<=today&&e.endDate>=today);
+  setText('#v9Schedule',todayEvents.length?`${todayEvents.length} website event${todayEvents.length===1?'':'s'}`:'No website events today');setText('#v9ScheduleNote',todayEvents[0]?.title||'Open live games and matrix');renderFocus(todayEvents);
  }catch{}
- setText('#v9System','Online');setText('#v9SystemNote','Security, database and weather connected');
+ try{renderOperationsSummary(await api(OPS_SUMMARY+'?v='+Date.now()))}catch(e){renderOperationsSummaryError(e)}
+ setText('#v9System','Online');setText('#v9SystemNote','Operations services checked live');
 }
+function localTime(value){if(!value)return'—';const d=new Date(value);return Number.isNaN(d.getTime())?'—':d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}
+function renderOperationsSummary(d){
+ const t=d.today||{},weather=d.weather||{},work=d.workOrders||{},clover=d.clover||{};
+ setText('#v91TodayGames',String(t.gameCount||0));setText('#v91TodayGamesNote',t.firstStart?`${localTime(t.firstStart)} first pitch · ${localTime(t.lastStart)} last start`:'No games scheduled today');
+ setText('#v91FieldsInUse',String(t.fieldsInUse?.length||0));setText('#v91FieldsInUseNote',t.fieldsInUse?.length?t.fieldsInUse.map(x=>x.field).join(', '):'No fields currently in a game');
+ setText('#v91OpeningSoon',String(t.fieldsOpeningSoon?.length||0));setText('#v91OpeningSoonNote',t.fieldsOpeningSoon?.[0]?`${t.fieldsOpeningSoon[0].field} around ${localTime(t.fieldsOpeningSoon[0].opensAt)}`:'No field releases in the next 3 hours');
+ setText('#v91WeatherAlerts',String(weather.count||0));setText('#v91WeatherAlertsNote',weather.activeAlerts?.[0]?.event||'No active official alerts');
+ setText('#v91OverdueWork',String(work.overdue||0));setText('#v91OverdueWorkNote',work.overdue?`${work.overdue} of ${work.open||0} open work orders overdue`:`${work.open||0} open work orders · none overdue`);
+ setText('#v91CloverStatus',clover.label||'Unknown');setText('#v91CloverStatusNote',clover.merchant|| (clover.visible===false?'Visible to management':'POS connection check'));
+ setText('#v9Schedule',`${t.gameCount||0} game${t.gameCount===1?'':'s'} today`);setText('#v9ScheduleNote',d.matrix?.name||'Live tournament matrix');
+ setText('#v9Fields',`${t.fieldsInUse?.length||0} in use`);setText('#v9FieldsNote',t.fieldsOpeningSoon?.length?`${t.fieldsOpeningSoon.length} opening soon`:'View field readiness');
+ setText('#v9WorkOrders',work.overdue?`${work.overdue} overdue`:`${work.open||0} open`);
+ setText('#v9Clover',clover.label||'Unknown');
+ const gameBox=$('#v91GameList');if(gameBox){const rows=[];(t.fieldsInUse||[]).forEach(x=>rows.push(`<button class="v91-live-row" data-v9-go="gamesmatrix"><span><b>Field ${esc(x.field)} · In Use</b><small>${esc(x.label||'Game in progress')}</small></span><em>LIVE</em></button>`));(t.fieldsOpeningSoon||[]).slice(0,6).forEach(x=>rows.push(`<button class="v91-live-row" data-v9-go="gamesmatrix"><span><b>Field ${esc(x.field)} opens soon</b><small>Expected around ${esc(localTime(x.opensAt))}</small></span><em>${esc(localTime(x.opensAt))}</em></button>`));if(!rows.length)(t.games||[]).slice(0,8).forEach(x=>rows.push(`<button class="v91-live-row" data-v9-go="gamesmatrix"><span><b>Field ${esc(x.field)}</b><small>${esc(x.time)}</small></span><em>${esc(x.time)}</em></button>`));gameBox.innerHTML=rows.join('')||'<p class="v91-empty">No tournament games scheduled today.</p>';$$('[data-v9-go]',gameBox).forEach(b=>b.onclick=()=>go(b.dataset.v9Go))}
+ const attention=$('#v91AttentionList');if(attention){const rows=[];(weather.activeAlerts||[]).slice(0,3).forEach(x=>rows.push(`<button class="v91-live-row" data-v9-go="weather"><span><b>${esc(x.event)}</b><small>${esc(x.headline||'Official weather alert is active')}</small></span><em class="warn">WEATHER</em></button>`));(work.items||[]).slice(0,4).forEach(x=>rows.push(`<button class="v91-live-row" data-v9-go="maintenance"><span><b>${esc(x.title||'Overdue work order')}</b><small>${x.field_id?`Field ${esc(x.field_id)} · `:''}${Math.max(1,Math.round((x.overdueMinutes||0)/60))} hour(s) overdue</small></span><em class="warn">OVERDUE</em></button>`));rows.push(`<button class="v91-live-row" data-v9-go="clover"><span><b>Clover POS</b><small>${esc(clover.merchant||clover.label||'Status unavailable')}</small></span><em class="${clover.status==='live'?'':'warn'}">${esc(String(clover.label||'Unknown').toUpperCase())}</em></button>`);attention.innerHTML=rows.join('');$$('[data-v9-go]',attention).forEach(b=>b.onclick=()=>go(b.dataset.v9Go))}
+}
+function renderOperationsSummaryError(e){setText('#v91TodayGames','—');setText('#v91FieldsInUse','—');setText('#v91OpeningSoon','—');setText('#v91WeatherAlerts','—');setText('#v91OverdueWork','—');setText('#v91CloverStatus','Check');const box=$('#v91AttentionList');if(box)box.innerHTML=`<p class="v91-empty">${esc(e?.message||'Live operations summary is temporarily unavailable.')}</p>`}
 function renderFocus(todayEvents){const box=$('#v9FocusList');if(!box)return;const items=[];todayEvents.slice(0,3).forEach(e=>items.push(`<button data-open-event="${events.indexOf(e)}"><span>▣</span><div><b>${esc(e.title)}</b><small>${esc(e.category||'Event')} · ${esc(e.date||'Today')}</small></div><em>View</em></button>`));items.push(`<button data-focus-go="maintenance"><span>◇</span><div><b>Check field readiness</b><small>Inspections, issues, equipment and work orders</small></div><em>Open</em></button>`);items.push(`<button data-focus-go="notifications"><span>◉</span><div><b>Review notifications</b><small>Manual alerts and automatic notification controls</small></div><em>Open</em></button>`);box.innerHTML=items.join('');$$('[data-focus-go]',box).forEach(b=>b.onclick=()=>go(b.dataset.focusGo));$$('[data-open-event]',box).forEach(b=>b.onclick=()=>{go('games');setTimeout(()=>openEvent(Number(b.dataset.openEvent)),100)});}
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 
