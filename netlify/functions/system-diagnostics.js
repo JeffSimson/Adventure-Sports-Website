@@ -6,7 +6,7 @@ const {serviceAccount}=require('./_firebase-fcm');
 
 const TZ='America/New_York';
 const LAT=40.0919,LON=-74.3587;
-const BUILD='9130',VERSION='9.1.3';
+const BUILD='9200',VERSION='9.2.0';
 const nowIso=()=>new Date().toISOString();
 const elapsed=start=>Date.now()-start;
 const good=(id,label,detail,ms=0,meta={})=>({id,label,status:'pass',detail,ms,...meta});
@@ -109,6 +109,24 @@ async function checkOperationsCenter(){
   return good('operations-center','Operations Center data',`Cards can be built for ${games.length} game(s), ${inUse} field(s) in use, ${openingSoon} opening soon, and ${overdue} overdue work order(s).`,elapsed(started),{todayGames:games.length,fieldsInUse:inUse,fieldsOpeningSoon:openingSoon,overdueWorkOrders:overdue});
  }catch(e){return bad('operations-center','Operations Center data',e.message,elapsed(started))}
 }
+async function checkGameDayControl(){
+ const started=Date.now();
+ try{
+  const [matrix,state,publicBoard]=await Promise.all([
+   getStoreValue('tournament-matrices','current',null),
+   getStoreValue('ase-game-day','state',null),
+   getStoreValue('ase-game-day','public',null)
+  ]);
+  if(!matrix)return warn('game-day-control','Live Game Day Control','Publish a tournament matrix before using Game Day Control.',elapsed(started));
+  const days=Array.isArray(matrix.days)?matrix.days:[];
+  if(!days.length)return bad('game-day-control','Live Game Day Control','The published matrix has no tournament dates.',elapsed(started));
+  const stateMatches=!state||!state.matrixId||state.matrixId===matrix.id;
+  if(!stateMatches)return warn('game-day-control','Live Game Day Control','Stored Game Day state belongs to an older matrix and will resync when the control center opens.',elapsed(started),{matrixId:matrix.id,stateMatrixId:state.matrixId});
+  const controlledDays=Object.keys(state?.days||{}).length;
+  const publicReady=Boolean(publicBoard?.matrix?.id===matrix.id||!publicBoard);
+  return good('game-day-control','Live Game Day Control',`Ready for ${days.length} tournament day(s); ${controlledDays} day(s) currently have live control state. Public board storage is ${publicReady?'ready':'waiting to resync'}.`,elapsed(started),{matrixId:matrix.id,controlledDays,publicReady,lightning:state?.lightning?.status||'inactive'});
+ }catch(e){return bad('game-day-control','Live Game Day Control',e.message,elapsed(started))}
+}
 async function checkPwa(){const started=Date.now(),base=process.env.URL||process.env.DEPLOY_PRIME_URL;if(!base)return warn('pwa','Home Screen app','Netlify site URL is unavailable inside this deployment context.',elapsed(started));const files=[['build','/ops/build.json'],['manifest','/ops/manifest.webmanifest'],['worker','/ops/firebase-messaging-sw.js']];const result={};for(const [name,path] of files){try{const r=await fetch(base.replace(/\/$/,'')+path+`?diag=${Date.now()}`,{signal:timeout(),headers:{'Cache-Control':'no-cache'}});result[name]=r.ok}catch{result[name]=false}}const ok=Object.values(result).filter(Boolean).length;if(ok===3)return good('pwa','Home Screen app','Build marker, manifest, and service worker are reachable with the current deployment.',elapsed(started),result);if(ok)return warn('pwa','Home Screen app',`Only ${ok} of 3 required PWA files were reachable.`,elapsed(started),result);return bad('pwa','Home Screen app','Build marker, manifest, and service worker could not be reached.',elapsed(started),result)}
 
 async function runDiagnostics(actor){
@@ -117,7 +135,7 @@ async function runDiagnostics(actor){
   for(const fn of [matrixCrudSimulation,duplicateSimulation]){try{simulation.push(fn())}catch(e){simulation.push(bad(fn===matrixCrudSimulation?'matrix-crud':'alert-dedupe',fn===matrixCrudSimulation?'Tournament matrix CRUD':'Duplicate-alert protection',e.message))}}
   let settings={};try{settings=await getStoreValue('ase-automation','settings',{})}catch{}
   try{simulation.push(lightningSimulation(settings))}catch(e){simulation.push(bad('lightning-clear','Lightning clear workflow',e.message))}
-  const live=await Promise.all([checkDatabase(),checkStorage(),checkMatrix(),checkAutomation(),checkNotifications(actor),checkWeather(),checkClover(),checkWorkOrders(),checkOperationsCenter(),checkPwa()]);
+  const live=await Promise.all([checkDatabase(),checkStorage(),checkMatrix(),checkAutomation(),checkNotifications(actor),checkWeather(),checkClover(),checkWorkOrders(),checkOperationsCenter(),checkGameDayControl(),checkPwa()]);
   const checks=[...simulation,...live],counts={pass:checks.filter(x=>x.status==='pass').length,warn:checks.filter(x=>x.status==='warn').length,fail:checks.filter(x=>x.status==='fail').length};
   const status=counts.fail?'fail':counts.warn?'warn':'pass';
   const report={ok:status!=='fail',status,build:BUILD,version:VERSION,startedAt:new Date(started).toISOString(),completedAt:nowIso(),durationMs:elapsed(started),counts,checks};

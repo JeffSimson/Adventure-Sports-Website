@@ -48,8 +48,10 @@ function games(){
  const tabs=view.querySelector(':scope > .gamesmatrix-section-tabs');
  const managerPanel=view.querySelector(':scope > [data-internal-panel="management"]');
  const managerTab=tabs?.querySelector('[data-internal-target="management"]');
+ const gameDayPanel=view.querySelector(':scope > [data-internal-panel="gameday"]');
+ const gameDayTab=tabs?.querySelector('[data-internal-target="gameday"]');
  const canManage=managementAllowed();
- if(!canManage){managerTab?.remove();managerPanel?.remove()}
+ if(!canManage){managerTab?.remove();managerPanel?.remove();gameDayTab?.remove();gameDayPanel?.remove()}
  const activate=key=>{
    const target=tabs?.querySelector(`[data-internal-target="${key}"]`);
    if(!target||target.hidden)return;
@@ -62,7 +64,8 @@ function games(){
    tabs.addEventListener('click',e=>{const b=e.target.closest('[data-internal-target]');if(!b)return;e.preventDefault();activate(b.dataset.internalTarget)});
    tabs.addEventListener('touchend',e=>{const b=e.target.closest('[data-internal-target]');if(!b)return;e.preventDefault();activate(b.dataset.internalTarget)},{passive:false});
  }
- window.ASE_GAMES_MATRIX_OPEN=()=>{activate('management');document.querySelector('.nav-item[data-view="gamesmatrix"]')?.click()};
+ window.ASE_GAMES_MATRIX_OPEN=()=>{document.querySelector('.nav-item[data-view="gamesmatrix"]')?.click();activate('management')};
+ window.ASE_GAME_DAY_OPEN=()=>{document.querySelector('.nav-item[data-view="gamesmatrix"]')?.click();activate('gameday')};
  activate('overview');
 }
 function notifications(){

@@ -50,15 +50,41 @@ async function matrixAlerts(s,now,state){
   state.lastMatrixVersion=version;
  }
  const day=matrix.days?.find(d=>d.key===dateKey(now));if(!day)return out;
+ const gameDayState=await getStoreValue('ase-game-day','state',null);
+ const liveDay=gameDayState?.matrixId===matrix.id?gameDayState.days?.[day.key]:null;
  for(const field of matrix.fields||[]){
-  const starts=(day.rows||[]).filter(r=>(r[1]||[]).includes(field)).map(r=>parseLocal(day.key,r[0])).filter(Boolean).sort((a,b)=>a-b);
+  const liveGames=(liveDay?.games||[]).filter(g=>g.field===field&&g.status!=='canceled').sort((a,b)=>parseLocal(day.key,a.time)-parseLocal(day.key,b.time));
+  const starts=(liveGames.length?liveGames.map(g=>parseLocal(day.key,g.time)):(day.rows||[]).filter(r=>(r[1]||[]).includes(field)).map(r=>parseLocal(day.key,r[0]))).filter(Boolean).sort((a,b)=>a-b);
   if(!starts.length){if(s.fieldNoGames&&Number(parts(now).hour)>=7){const r=await once(state,`no-games:${version}:${day.key}:${field}`,()=>push({title:`Field ${field} has no games today`,body:`No tournament games are scheduled on Field ${field}. Confirm whether it is open for rentals, practice, or maintenance.`,audience:s.fieldReleaseAudience,url:'/ops/#gamesmatrix'},s,now));if(r)out.push(r)}continue}
-  const first=starts[0],last=starts.at(-1),firstAt=new Date(first.getTime()-s.firstGameLeadMinutes*60000),lastAt=new Date(last.getTime()-s.lastGameLeadMinutes*60000),release=new Date(last.getTime()+(s.gameMinutes+s.releaseBufferMinutes)*60000);
-  if(s.firstGameReminder&&now>=firstAt&&now<first){const r=await once(state,`first:${version}:${day.key}:${field}`,()=>push({title:`Field ${field} starts soon`,body:`The first game on Field ${field} begins at ${day.rows.find(r=>(r[1]||[]).includes(field))?.[0]||'the scheduled time'}. Complete field and equipment opening checks.`,audience:s.fieldReleaseAudience,url:'/ops/#gamesmatrix'},s,now));if(r)out.push(r)}
-  if(s.lastGameReminder&&now>=lastAt&&now<last){const r=await once(state,`last:${version}:${day.key}:${field}`,()=>push({title:`Final game approaching on Field ${field}`,body:`The last scheduled game on Field ${field} starts in about ${s.lastGameLeadMinutes} minutes. Prepare closing or field-release coverage.`,audience:s.fieldReleaseAudience,url:'/ops/#gamesmatrix'},s,now));if(r)out.push(r)}
-  if(s.fieldRelease&&now>=release){const r=await once(state,`release:${version}:${day.key}:${field}`,()=>push({title:`Field ${field} is now open`,body:`The final scheduled game on Field ${field} should be complete, including the ${s.releaseBufferMinutes}-minute cleanup buffer. The field is available unless management changes its status.`,audience:s.fieldReleaseAudience,url:'/ops/#gamesmatrix'},s,now));if(r)out.push(r)}
+  const first=starts[0],last=starts.at(-1),firstAt=new Date(first.getTime()-s.firstGameLeadMinutes*60000),lastAt=new Date(last.getTime()-s.lastGameLeadMinutes*60000);
+  const lastGame=liveGames.at(-1)||null;
+  const releaseBase=lastGame?.status==='complete'&&lastGame.completedAt?new Date(lastGame.completedAt):new Date(last.getTime()+s.gameMinutes*60000);
+  const release=new Date(releaseBase.getTime()+s.releaseBufferMinutes*60000);
+  const liveBlocksRelease=Boolean(lastGame&&['upcoming','in-progress','delayed'].includes(lastGame.status));
+  if(s.firstGameReminder&&now>=firstAt&&now<first){const firstLabel=liveGames[0]?.time||day.rows.find(r=>(r[1]||[]).includes(field))?.[0]||'the scheduled time';const r=await once(state,`first:${version}:${day.key}:${field}:${firstLabel}`,()=>push({title:`Field ${field} starts soon`,body:`The first game on Field ${field} begins at ${firstLabel}. Complete field and equipment opening checks.`,audience:s.fieldReleaseAudience,url:'/ops/#gamesmatrix'},s,now));if(r)out.push(r)}
+  if(s.lastGameReminder&&!['complete','canceled'].includes(lastGame?.status)&&now>=lastAt&&now<last){const r=await once(state,`last:${version}:${day.key}:${field}:${liveGames.at(-1)?.time||last.toISOString()}`,()=>push({title:`Final game approaching on Field ${field}`,body:`The last scheduled game on Field ${field} starts in about ${s.lastGameLeadMinutes} minutes. Prepare closing or field-release coverage.`,audience:s.fieldReleaseAudience,url:'/ops/#gamesmatrix'},s,now));if(r)out.push(r)}
+  if(s.fieldRelease&&!liveBlocksRelease&&now>=release){const releaseKey=lastGame?.completedAt||release.toISOString();const r=await once(state,`release:${version}:${day.key}:${field}:${releaseKey}`,()=>push({title:`Field ${field} is now open`,body:`The final scheduled game on Field ${field} is complete, including the ${s.releaseBufferMinutes}-minute cleanup buffer. The field is available unless management changes its status.`,audience:s.fieldReleaseAudience,url:'/ops/#gamesmatrix'},s,now));if(r)out.push(r)}
  }
  return out;
+}
+
+
+async function gameDayLightningAlerts(s,now,state){
+ const out=[],gameDay=await getStoreValue('ase-game-day','state',null);if(!gameDay?.lightning?.active||!gameDay.lightning.clearAt)return out;
+ if(now<new Date(gameDay.lightning.clearAt))return out;
+ if(gameDay.lightning.status!=='clear-ready'){
+  gameDay.lightning.status='clear-ready';gameDay.lightning.updatedAt=now.toISOString();gameDay.updatedAt=now.toISOString();
+  const publicBoard=await getStoreValue('ase-game-day','public',{});publicBoard.lightning={...(publicBoard.lightning||{}),active:true,status:'clear-ready',clearAt:gameDay.lightning.clearAt,clearMinutes:gameDay.lightning.clearMinutes||s.lightningClearMinutes};publicBoard.headline='Lightning clear period complete';publicBoard.updatedAt=now.toISOString();
+  await Promise.all([setStoreValue('ase-game-day','state',gameDay),setStoreValue('ase-game-day','public',publicBoard)]);
+ }
+ if(s.lightningClear){const key=`manual-lightning-clear:${gameDay.lightning.clearAt}`;const r=await once(state,key,()=>push({title:'Lightning clear period complete',body:`The ${gameDay.lightning.clearMinutes||s.lightningClearMinutes}-minute Game Day Control timer is complete. Management must confirm on-site conditions before reopening fields.`,audience:s.weatherAudience,priority:'high',url:'/ops/#gamesmatrix'},s,now));if(r)out.push(r)}
+ return out;
+}
+async function restartGameDayLightningFromWeather(now){
+ const gameDay=await getStoreValue('ase-game-day','state',null);if(!gameDay?.lightning?.active)return;
+ const minutes=Number(gameDay.lightning.clearMinutes||30);gameDay.lightning.status='hold';gameDay.lightning.lastStrikeAt=now.toISOString();gameDay.lightning.clearAt=new Date(now.getTime()+minutes*60000).toISOString();gameDay.lightning.updatedAt=now.toISOString();gameDay.updatedAt=now.toISOString();
+ const publicBoard=await getStoreValue('ase-game-day','public',{});publicBoard.lightning={...(publicBoard.lightning||{}),active:true,status:'hold',clearAt:gameDay.lightning.clearAt,clearMinutes:minutes};publicBoard.headline='Lightning hold';publicBoard.updatedAt=now.toISOString();
+ await Promise.all([setStoreValue('ase-game-day','state',gameDay),setStoreValue('ase-game-day','public',publicBoard)]);
 }
 
 async function weatherAlerts(s,now,state){
@@ -71,6 +97,7 @@ async function weatherAlerts(s,now,state){
  const lightningActive=Boolean(thunderAlerts.length||code>=95);
  state.lightning=state.lightning||{active:false,lastDetectedAt:null,episode:0};
  if(lightningActive){
+  await restartGameDayLightningFromWeather(now);
   if(!state.lightning.active){state.lightning.active=true;state.lightning.episode=Number(state.lightning.episode||0)+1;state.lightning.startedAt=now.toISOString()}
   state.lightning.lastDetectedAt=now.toISOString();
   if(s.lightningRisk){const r=await once(state,`lightning-episode:${state.lightning.episode}`,()=>push({title:'Lightning risk detected',body:'Thunderstorm conditions are reported near Adventure Sports. Clear outdoor activity and begin or restart the facility lightning timer.',audience:s.weatherAudience,priority:'urgent',url:'/ops/#weather'},s,now));if(r)out.push(r)}
@@ -122,7 +149,8 @@ exports.handler=async()=>{
   const cutoff=Date.now()-30*86400000;
   for(const[k,v]of Object.entries(state.sent)){const stamp=String(v).replace(/^pending:/,'');if(new Date(stamp).getTime()<cutoff)delete state.sent[k]}
   const matrix=await matrixAlerts(s,now,state);
-  const weather=await weatherAlerts(s,now,state);
+  const manualLightning=await gameDayLightningAlerts(s,now,state);
+  const weather=[...manualLightning,...await weatherAlerts(s,now,state)];
   const operations=await operationsAlerts(s,now,state);
   state.lastRunAt=new Date().toISOString();state.lastSuccessAt=state.lastRunAt;state.lastError='';state.lastResult={matrix:matrix.length,weather:weather.length,operations:operations.length};state.running=null;
   await setStoreValue(STORE,'state',state);
