@@ -1,11 +1,11 @@
-INSTALL ADVENTURE SPORTS V9.2.0
+INSTALL ADVENTURE SPORTS V9.2.1
 
 1. Upload this entire ZIP to Netlify using the same deployment method as the previous version.
 2. Wait for the deployment to finish.
-3. Open /ops/ and confirm the sidebar badge says V9.2.0.
+3. Open /ops/ and confirm the sidebar badge says V9.2.1.
 4. Fully close and reopen the iPhone Home Screen app.
 5. Open Games & Matrix > Game Day Control.
 6. Run Settings > System Tests > Run Full System Test.
 
-Build: 9200
-Version: 9.2.0
+Build: 9210
+Version: 9.2.1

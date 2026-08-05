@@ -1118,33 +1118,46 @@ label{font-size:13px;color:#263651}
   .policy-hero{min-height:360px}
 }
 
-/* V9.2.0 public live game-day status board */
-.ase-live-game-day{background:#eef5ff;border-bottom:1px solid #bfd2eb;padding:18px 0;color:#071c3b}
+/* V9.2.1 polished public live game-day status board */
+.ase-live-game-day{position:relative;background:#f4f8fd;border-top:1px solid #d8e3f1;border-bottom:1px solid #d8e3f1;padding:28px 0;color:#071c3b;overflow:hidden}
+.ase-live-game-day:before{content:"";position:absolute;inset:0 auto 0 0;width:6px;background:#1768c5}
+.ase-live-game-day.delayed:before,.ase-live-game-day.lightning:before{background:#e39a22}
+.ase-live-game-day.live:before{background:#18a66a}
 .ase-live-game-day[hidden]{display:none!important}
-.ase-live-game-day-inner{display:grid;gap:14px}
-.ase-live-game-day-head{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
-.ase-live-kicker{display:block;color:#1558a7;font-size:11px;font-weight:950;letter-spacing:.14em;margin-bottom:5px}
-.ase-live-game-day h2{margin:0 0 5px;font-size:clamp(22px,3vw,34px);color:#071c3b}
-.ase-live-game-day p{margin:0;color:#53647c;max-width:780px}
+.ase-live-game-day-inner{display:grid;gap:16px}
+.ase-live-game-day-head{display:flex;justify-content:space-between;align-items:center;gap:24px}
+.ase-live-title-row{display:flex;align-items:center;gap:13px;min-width:0}
+.ase-live-status-dot{width:13px;height:13px;border-radius:50%;background:#1768c5;box-shadow:0 0 0 7px rgba(23,104,197,.11);flex:0 0 auto}
+.ase-live-game-day.delayed .ase-live-status-dot,.ase-live-game-day.lightning .ase-live-status-dot{background:#e39a22;box-shadow:0 0 0 7px rgba(227,154,34,.13)}
+.ase-live-game-day.live .ase-live-status-dot{background:#18a66a;box-shadow:0 0 0 7px rgba(24,166,106,.12)}
+.ase-live-kicker{display:block;color:#1558a7;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px}
+.ase-live-game-day.delayed .ase-live-kicker,.ase-live-game-day.lightning .ase-live-kicker{color:#9b5a00}
+.ase-live-game-day.live .ase-live-kicker{color:#087c4f}
+.ase-live-game-day h2{margin:0;font-size:clamp(22px,2.6vw,32px);line-height:1.08;letter-spacing:-.025em;color:#071c3b}
+.ase-live-message{margin:0;color:#53647c;max-width:900px;font-size:15px;line-height:1.55}
 .ase-live-game-day-stats{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-.ase-live-game-day-stats span{background:#fff;border:1px solid #c6d7ec;border-radius:999px;padding:8px 11px;font-size:12px;font-weight:800;color:#53647c;white-space:nowrap}
-.ase-live-game-day-stats b{color:#0a4f9f;margin-right:3px}
-.ase-public-lightning{display:flex;align-items:center;gap:16px;flex-wrap:wrap;border-radius:12px;padding:13px 15px;background:#fff1d8;border:1px solid #e8bd68;color:#754400}
+.ase-live-game-day-stats span{background:#fff;border:1px solid #d2deed;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:800;color:#53647c;white-space:nowrap}
+.ase-live-game-day-stats b{color:#0a4f9f;margin-right:3px;font-size:14px}
+.ase-public-lightning{display:flex;align-items:center;gap:16px;flex-wrap:wrap;border-radius:14px;padding:14px 16px;background:#fff8eb;border:1px solid #edc878;color:#754400}
 .ase-public-lightning strong{font-size:14px}.ase-public-lightning span{font-weight:750}.ase-public-lightning small{color:#855d21}
-.ase-live-game-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
-.ase-live-game{background:#fff;border:1px solid #c9d9eb;border-radius:12px;padding:11px 12px;display:grid;grid-template-columns:1fr auto;gap:3px 10px;align-items:center;min-width:0}
-.ase-live-game span{font-size:11px;font-weight:900;color:#52647b;text-transform:uppercase;letter-spacing:.04em}
-.ase-live-game strong{font-size:18px;color:#071c3b}.ase-live-game em{grid-row:1/3;grid-column:2;font-style:normal;font-size:10px;font-weight:950;color:#0b5aab;background:#eaf3ff;border-radius:999px;padding:6px 8px}
-.ase-live-game.in-progress{border-color:#6ec59d;background:#f8fffb}.ase-live-game.in-progress em{background:#e2f7ec;color:#087c4f}
+.ase-live-game-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.ase-live-game{background:#fff;border:1px solid #d2deed;border-radius:14px;padding:13px 14px;display:grid;grid-template-columns:1fr auto;gap:5px 12px;align-items:center;min-width:0;box-shadow:0 5px 18px rgba(11,40,79,.04)}
+.ase-live-game>div{display:grid;gap:2px}.ase-live-game span{font-size:11px;font-weight:900;color:#64748a;text-transform:uppercase;letter-spacing:.06em}
+.ase-live-game strong{font-size:19px;color:#071c3b}.ase-live-game em{font-style:normal;font-size:10px;font-weight:900;color:#0b5aab;background:#eaf3ff;border-radius:999px;padding:6px 9px}
+.ase-live-game.in-progress{border-color:#83d3ad;background:#fbfffd}.ase-live-game.in-progress em{background:#e2f7ec;color:#087c4f}
 .ase-live-game.delayed{border-color:#e5b761;background:#fffdfa}.ase-live-game.delayed em{background:#fff0d5;color:#9b5a00}
 .ase-live-game small{grid-column:1/-1;color:#6d7b8d;margin-top:2px}
-.ase-live-no-games{grid-column:1/-1;background:#fff;border:1px solid #c9d9eb;border-radius:12px;padding:14px}
-.ase-live-updated{color:#728096}
+.ase-live-empty{display:flex;align-items:center;justify-content:space-between;gap:18px;background:#fff;border:1px solid #d2deed;border-radius:14px;padding:15px 17px;box-shadow:0 5px 18px rgba(11,40,79,.04)}
+.ase-live-empty>div{display:grid;gap:3px}.ase-live-empty strong{font-size:15px;color:#102a58}.ase-live-empty span{font-size:13px;color:#6b7b91}
+.ase-live-empty a{display:inline-flex;align-items:center;justify-content:center;border:1px solid #b9cee7;border-radius:10px;padding:9px 12px;color:#0b55a5;font-size:13px;font-weight:800;text-decoration:none;white-space:nowrap;background:#f8fbff}
+.ase-live-empty a:hover{background:#eaf3ff}
+.ase-live-footer{display:flex;justify-content:space-between;gap:16px;color:#78879b;font-size:11px}.ase-live-footer small{font-size:11px}.ase-live-footer span{text-align:right}
 @media(max-width:900px){.ase-live-game-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){
- .ase-live-game-day{padding:14px 0}
- .ase-live-game-day-head{display:grid;gap:12px}
- .ase-live-game-day-stats{justify-content:flex-start}
- .ase-live-game-grid{grid-template-columns:1fr}
- .ase-public-lightning{display:grid;gap:5px}
+ .ase-live-game-day{padding:21px 0}.ase-live-game-day:before{width:4px}
+ .ase-live-game-day-head{display:grid;gap:14px}.ase-live-game-day-stats{justify-content:flex-start}
+ .ase-live-game-grid{grid-template-columns:1fr}.ase-public-lightning{display:grid;gap:5px}
+ .ase-live-empty{align-items:flex-start;flex-direction:column}.ase-live-empty a{width:100%}
+ .ase-live-footer{display:grid;gap:3px}.ase-live-footer span{text-align:left}
 }
+

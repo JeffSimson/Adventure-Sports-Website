@@ -1,4 +1,4 @@
-const WORKER_VERSION='9200';
+const WORKER_VERSION='9210';
 /* Adventure Sports Operations Hub — Firebase Messaging service worker */
 try {
   importScripts('https://cdn.jsdelivr.net/npm/firebase@8.10.1/firebase-app.js');

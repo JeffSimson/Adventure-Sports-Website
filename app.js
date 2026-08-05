@@ -202,8 +202,11 @@ function aseEnsureGameDayBoard(){
   board.id='aseLiveGameDayBoard';
   board.className='ase-live-game-day';
   board.hidden=true;
+  const hero=document.querySelector('.hero, .page-hero, .policy-hero');
   const nav=document.querySelector('.top-nav');
-  if(nav)nav.insertAdjacentElement('afterend',board);else document.body.prepend(board);
+  if(hero)hero.insertAdjacentElement('afterend',board);
+  else if(nav)nav.insertAdjacentElement('afterend',board);
+  else document.body.prepend(board);
   return board;
 }
 function aseGameStatusLabel(value){return {'in-progress':'LIVE','delayed':'DELAYED','upcoming':'UPCOMING','complete':'FINAL','canceled':'CANCELED'}[value]||String(value||'').toUpperCase()}
@@ -212,14 +215,19 @@ function aseRenderGameDayBoard(gameDay){
   if(!gameDay?.enabled){board.hidden=true;board.innerHTML='';return}
   const games=Array.isArray(gameDay.games)?gameDay.games:[],summary=gameDay.summary||{},lightning=gameDay.lightning||{};
   board.hidden=false;
+  const liveCount=Number(summary['in-progress']||0), delayedCount=Number(summary.delayed||0), upcomingCount=Number(summary.upcoming||0);
+  const stateClass=lightning.active?'lightning':delayedCount?'delayed':liveCount?'live':'normal';
+  const stateLabel=lightning.active?'Lightning hold':delayedCount?'Schedule delay':liveCount?'Games live':'Game-day update';
+  board.className=`ase-live-game-day ${stateClass}`;
   board.innerHTML=`<div class="wrap ase-live-game-day-inner">
     <div class="ase-live-game-day-head">
-      <div><span class="ase-live-kicker">LIVE GAME DAY</span><h2>${esc(gameDay.headline||gameDay.matrixName||'Game Day Updates')}</h2><p>${esc(gameDay.message||'Live fields, times, delays, and weather status from Adventure Sports.')}</p></div>
-      <div class="ase-live-game-day-stats"><span><b>${Number(summary['in-progress']||0)}</b> Live</span><span><b>${Number(summary.delayed||0)}</b> Delayed</span><span><b>${Number(summary.upcoming||0)}</b> Upcoming</span></div>
+      <div class="ase-live-title-row"><span class="ase-live-status-dot" aria-hidden="true"></span><div><span class="ase-live-kicker">${esc(stateLabel)}</span><h2>${esc(gameDay.headline||gameDay.matrixName||'Live Game-Day Updates')}</h2></div></div>
+      <div class="ase-live-game-day-stats"><span><b>${liveCount}</b> Live</span><span><b>${delayedCount}</b> Delayed</span><span><b>${upcomingCount}</b> Upcoming</span></div>
     </div>
-    ${lightning.active?`<div class="ase-public-lightning" data-clear-at="${esc(lightning.clearAt||'')}"><strong>⚡ LIGHTNING HOLD</strong><span>Clearance timer: <b data-public-lightning-timer>Calculating…</b></span><small>Management must confirm conditions before fields reopen.</small></div>`:''}
-    <div class="ase-live-game-grid">${games.length?games.map(g=>`<article class="ase-live-game ${esc(g.status)}"><span>Field ${esc(g.field)}</span><strong>${esc(g.time)}</strong><em>${esc(aseGameStatusLabel(g.status))}</em>${g.note?`<small>${esc(g.note)}</small>`:''}</article>`).join(''):'<p class="ase-live-no-games">No remaining games are currently listed.</p>'}</div>
-    <small class="ase-live-updated">Updated ${gameDay.updatedAt?new Date(gameDay.updatedAt).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'live'}</small>
+    <p class="ase-live-message">${esc(gameDay.message||'Live fields, start times, delays, and weather updates from Adventure Sports.')}</p>
+    ${lightning.active?`<div class="ase-public-lightning" data-clear-at="${esc(lightning.clearAt||'')}"><strong>⚡ Lightning hold active</strong><span>Clearance timer: <b data-public-lightning-timer>Calculating…</b></span><small>Play resumes only after management confirms conditions are safe.</small></div>`:''}
+    ${games.length?`<div class="ase-live-game-grid">${games.map(g=>`<article class="ase-live-game ${esc(g.status)}"><div><span>Field ${esc(g.field)}</span><strong>${esc(g.time)}</strong></div><em>${esc(aseGameStatusLabel(g.status))}</em>${g.note?`<small>${esc(g.note)}</small>`:''}</article>`).join('')}</div>`:`<div class="ase-live-empty"><div><strong>No remaining games listed</strong><span>The live board will update automatically when games are added or changed.</span></div><a href="/events.html">View upcoming events</a></div>`}
+    <div class="ase-live-footer"><small>Updated ${gameDay.updatedAt?new Date(gameDay.updatedAt).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'live'}</small><span>Live updates from the Adventure Sports Operations Hub</span></div>
   </div>`;
   aseUpdatePublicLightningTimer();
 }
