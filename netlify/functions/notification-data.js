@@ -12,6 +12,7 @@ exports.handler=async event=>{try{
   let registrations=dedupe(await getStoreValue('ase-notifications','registrations',[]));
   await setStoreValue('ase-notifications','registrations',registrations);
   if(!visibility.deliveryReports)registrations=[];
-  const devices=registrations.map(({token,...x})=>({...x,tokenFingerprint:fingerprint(token)}));
+  const defaults={categories:{general:true,games:true,weather:true,operations:true,safety:true},quietHours:{enabled:false,start:'22:00',end:'06:00'}};
+  const devices=registrations.map(({token,...x})=>({...x,preferences:{...defaults,...(x.preferences||{}),categories:{...defaults.categories,...(x.preferences?.categories||{})},quietHours:{...defaults.quietHours,...(x.preferences?.quietHours||{})}},tokenFingerprint:fingerprint(token)}));
   return json(200,{ok:true,history,devices,visibility,canSend:(settings.sendRoles||[]).includes(actor.role),settings:actor.role==='owner'?settings:undefined});
 }catch(e){return json(e.statusCode||500,{error:e.message})}};

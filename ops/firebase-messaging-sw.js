@@ -1,4 +1,4 @@
-const WORKER_VERSION='9210';
+const WORKER_VERSION='9300';
 /* Adventure Sports Operations Hub — Firebase Messaging service worker */
 try {
   importScripts('https://cdn.jsdelivr.net/npm/firebase@8.10.1/firebase-app.js');
@@ -36,8 +36,8 @@ messaging.onBackgroundMessage(payload => {
   const title = d.title || 'Adventure Sports';
   return self.registration.showNotification(title, {
     body: d.body || 'Open the Operations Hub for details.',
-    icon: 'https://adventurenj.com/uploads/branding/adventure-logo.png',
-    badge: 'https://adventurenj.com/uploads/branding/adventure-logo.png',
+    icon: 'https://adventurenj.com/uploads/branding/icon-192.png',
+    badge: 'https://adventurenj.com/uploads/branding/icon-192.png',
     tag: d.notificationId || 'ase-notification',
     renotify: true,
     requireInteraction: d.priority === 'emergency',

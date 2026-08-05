@@ -120,10 +120,10 @@ async function ensureFirebaseMessagingSdk(){
   // rest of the Operations Hub to load. Use jsDelivr and retry the individual
   // Firebase modules so enrollment never fails with "firebase.messaging is not a function".
   if(!window.firebase||typeof window.firebase.initializeApp!=='function'){
-    await loadFirebaseScript('https://cdnjs.cloudflare.com/ajax/libs/firebase/8.10.1/firebase-app.min.js?build=9210','app');
+    await loadFirebaseScript('https://cdnjs.cloudflare.com/ajax/libs/firebase/8.10.1/firebase-app.min.js?build=9300','app');
   }
   if(!window.firebase||typeof window.firebase.messaging!=='function'){
-    await loadFirebaseScript('https://cdnjs.cloudflare.com/ajax/libs/firebase/8.10.1/firebase-messaging.min.js?build=9210','messaging');
+    await loadFirebaseScript('https://cdnjs.cloudflare.com/ajax/libs/firebase/8.10.1/firebase-messaging.min.js?build=9300','messaging');
   }
   if(!window.firebase||typeof window.firebase.initializeApp!=='function'){
     throw Error('Firebase could not start. Disable browser blocking for adventurenj.com, then refresh and try again.');
@@ -151,7 +151,7 @@ async function initFirebase(){
       await existing.unregister().catch(()=>false);
     }
   }
-  const reg=await navigator.serviceWorker.register('/ops/firebase-messaging-sw.js?v=9210',{scope:'/ops/',updateViaCache:'none'});
+  const reg=await navigator.serviceWorker.register('/ops/firebase-messaging-sw.js?v=9300',{scope:'/ops/',updateViaCache:'none'});
   await reg.update().catch(()=>{});
   await new Promise((resolve,reject)=>{
     const worker=reg.installing||reg.waiting||reg.active;

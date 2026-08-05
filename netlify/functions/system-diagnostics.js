@@ -6,7 +6,7 @@ const {serviceAccount}=require('./_firebase-fcm');
 
 const TZ='America/New_York';
 const LAT=40.0919,LON=-74.3587;
-const BUILD='9210',VERSION='9.2.1';
+const BUILD='9300',VERSION='9.3.0';
 const nowIso=()=>new Date().toISOString();
 const elapsed=start=>Date.now()-start;
 const good=(id,label,detail,ms=0,meta={})=>({id,label,status:'pass',detail,ms,...meta});

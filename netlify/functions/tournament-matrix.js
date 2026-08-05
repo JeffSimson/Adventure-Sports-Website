@@ -1,5 +1,6 @@
 const {verifiedUser,requireRole,json}=require('./_role-auth');
 const {getStoreValue,setStoreValue}=require('./_v2-storage');
+const {appendAudit}=require('./_audit');
 
 const STORE='tournament-matrices';
 const CURRENT='current';
@@ -22,6 +23,7 @@ const timeMinutes=value=>{const m=normalizeTime(value).match(/^(\d+):(\d+) (AM|P
 const dayMeta=key=>{const d=new Date(`${key}T12:00:00Z`);return {label:d.toLocaleDateString('en-US',{weekday:'long',timeZone:'UTC'}),short:d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'}).replace(',',' ·')}};
 const dateRange=days=>{if(!days.length)return'';const first=new Date(`${days[0].key}T12:00:00Z`),last=new Date(`${days.at(-1).key}T12:00:00Z`);const a=first.toLocaleDateString('en-US',{month:'long',day:'numeric',timeZone:'UTC'}),b=last.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric',timeZone:'UTC'});return days[0].key===days.at(-1).key?b:`${a}–${b}`};
 const slug=()=>`matrix-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
+const shiftDate=(key,days)=>{const d=new Date(`${key}T12:00:00Z`);d.setUTCDate(d.getUTCDate()+Number(days||0));return d.toISOString().slice(0,10)};
 
 function cleanMatrix(input,{keepId=true}={}){
   if(!input||typeof input!=='object')throw fail('No matrix data was provided.');
@@ -38,6 +40,7 @@ function cleanMatrix(input,{keepId=true}={}){
       return [time,active];
     }).filter(Boolean).sort((a,b)=>timeMinutes(a[0])-timeMinutes(b[0]));
     if(!rows.length)return null;
+    const times=rows.map(r=>r[0]);if(unique(times).length!==times.length)throw fail(`Duplicate game times were found on ${key}. Each time may only appear once per day.`);
     const meta=dayMeta(key);
     return {key,label:String(day.label||meta.label).slice(0,30),short:String(day.short||meta.short).slice(0,40),rows};
   }).filter(Boolean).sort((a,b)=>a.key.localeCompare(b.key));
@@ -79,7 +82,7 @@ exports.handler=async event=>{
       const prior=library.find(x=>x.id===parsed.id);
       if(editingLive){parsed.id=slug();parsed.status='draft';}
       const saved={...prior,...parsed,status:'draft',version:Number(prior?.version||0),updatedAt:now,updatedBy:email,publishedAt:editingLive?null:(prior?.publishedAt||null),publishedBy:editingLive?'':(prior?.publishedBy||'')};
-      library=upsert(library,saved);await setStoreValue(STORE,LIBRARY,library);
+      library=upsert(library,saved);await setStoreValue(STORE,LIBRARY,library);await appendAudit(actor,'tournament-matrix-draft-saved',`Saved draft ${saved.name}.`,'⚾');
       return json(200,{ok:true,matrix:saved,current,library,archive:archive.slice(0,30),message:'Tournament matrix draft saved.'});
     }
     if(action==='delete'){
@@ -87,7 +90,7 @@ exports.handler=async event=>{
       if(current?.id===id)throw fail('The live matrix cannot be deleted. Publish another matrix first.',409);
       const before=library.length;library=library.filter(x=>x?.id!==id);archive=archive.filter(x=>x?.id!==id);
       if(library.length===before)throw fail('That matrix could not be found.',404);
-      await Promise.all([setStoreValue(STORE,LIBRARY,library),setStoreValue(STORE,ARCHIVE,archive)]);
+      await Promise.all([setStoreValue(STORE,LIBRARY,library),setStoreValue(STORE,ARCHIVE,archive)]);await appendAudit(actor,'tournament-matrix-deleted',`Deleted tournament matrix ${id}.`,'🗑️');
       return json(200,{ok:true,current,library,archive:archive.slice(0,30),message:'Tournament matrix deleted.'});
     }
     if(action==='restore'){
@@ -96,13 +99,24 @@ exports.handler=async event=>{
       const restored=cleanMatrix({...selected,id:selected.id});
       const published={...selected,...restored,status:'published',version:Number(current?.version||0)+1,updatedAt:now,updatedBy:email,publishedAt:now,publishedBy:email};
       archive=upsert(archive.filter(x=>x?.id!==selected.id),current).slice(0,30);library=upsert(library,published);
-      await Promise.all([setStoreValue(STORE,CURRENT,published),setStoreValue(STORE,LIBRARY,library),setStoreValue(STORE,ARCHIVE,archive)]);
+      await Promise.all([setStoreValue(STORE,CURRENT,published),setStoreValue(STORE,LIBRARY,library),setStoreValue(STORE,ARCHIVE,archive)]);await appendAudit(actor,'tournament-matrix-restored',`Restored and published ${published.name}.`,'↩️');
       return json(200,{ok:true,matrix:published,current:published,library,archive,message:'Saved matrix published live.'});
     }
     if(action==='new'){
       const blank={id:slug(),name:String(body.name||'New Tournament Matrix').slice(0,100),dateRange:'',fields:STANDARD_FIELDS,days:[],status:'draft',version:0,updatedAt:now,updatedBy:email};
-      library=upsert(library,blank);await setStoreValue(STORE,LIBRARY,library);
+      library=upsert(library,blank);await setStoreValue(STORE,LIBRARY,library);await appendAudit(actor,'tournament-matrix-created',`Created ${blank.name}.`,'➕');
       return json(200,{ok:true,matrix:blank,current,library,archive:archive.slice(0,30)});
+    }
+    if(action==='duplicate'){
+      const source=library.find(x=>x?.id===body.id)||archive.find(x=>x?.id===body.id)||current;if(!source)throw fail('Choose a tournament matrix to duplicate.',404);
+      const offset=Math.max(-365,Math.min(365,Number(body.dayOffset??7)));
+      const shifted={...source,id:slug(),name:String(body.name||`${source.name||'Tournament Matrix'} Copy`).slice(0,100),status:'draft',version:0,publishedAt:null,publishedBy:'',days:(source.days||[]).map(d=>({...d,key:shiftDate(d.key,offset)}))};
+      const parsed=cleanMatrix(shifted);const saved={...parsed,status:'draft',version:0,updatedAt:now,updatedBy:email,publishedAt:null,publishedBy:''};library=upsert(library,saved);await setStoreValue(STORE,LIBRARY,library);await appendAudit(actor,'tournament-matrix-duplicated',`Duplicated ${source.name||'tournament matrix'} to ${saved.name}.`,'📋');
+      return json(200,{ok:true,matrix:saved,current,library,archive:archive.slice(0,30),message:'Tournament matrix duplicated as a draft.'});
+    }
+    if(action==='validate'){
+      const parsed=cleanMatrix(body.matrix);const warnings=[];for(const day of parsed.days){const used=new Set(day.rows.flatMap(r=>r[1]||[]));const unused=parsed.fields.filter(f=>!used.has(f));if(unused.length)warnings.push(`${day.label}: no games on ${unused.join(', ')}`)}
+      return json(200,{ok:true,valid:true,matrix:parsed,warnings,summary:summary(parsed)});
     }
 
     const parsed=cleanMatrix(body.matrix);
@@ -110,9 +124,11 @@ exports.handler=async event=>{
     const published={...prior,...parsed,status:'published',version:Number(current?.version||0)+1,updatedAt:now,updatedBy:email,publishedAt:now,publishedBy:email};
     if(current?.id||current?.days?.length)archive=upsert(archive,current).slice(0,30);
     library=upsert(library,published);
-    await Promise.all([setStoreValue(STORE,CURRENT,published),setStoreValue(STORE,LIBRARY,library),setStoreValue(STORE,ARCHIVE,archive)]);
+    await Promise.all([setStoreValue(STORE,CURRENT,published),setStoreValue(STORE,LIBRARY,library),setStoreValue(STORE,ARCHIVE,archive)]);await appendAudit(actor,'tournament-matrix-published',`Published ${published.name} version ${published.version}.`,'📣');
     return json(200,{ok:true,matrix:published,current:published,library,archive,message:'Tournament matrix published live.'});
   }catch(error){
     return json(error.statusCode||500,{error:error.message||'Tournament matrix request failed.'});
   }
 };
+
+exports._test={cleanMatrix,normalizeTime,timeMinutes,shiftDate,dateRange,summary,STANDARD_FIELDS};

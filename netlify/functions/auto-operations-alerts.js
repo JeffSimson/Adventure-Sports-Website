@@ -1,6 +1,7 @@
 const crypto=require('crypto');
 const {getStoreValue,setStoreValue}=require('./_v2-storage');
 const {sendFCM}=require('./_firebase-fcm');
+const {allowsRegistration,categoryFor}=require('./_notification-preferences');
 const {supabase}=require('./_supabase');
 
 const STORE='ase-automation',LAT=40.0919,LON=-74.3587,TZ='America/New_York';
@@ -22,12 +23,12 @@ function audienceMatch(r,a){if(a==='everyone')return true;if(a==='management')re
 function quiet(settings,now){if(!settings.quietHoursEnabled)return false;const p=parts(now),cur=`${p.hour}:${p.minute}`,s=settings.quietStart,e=settings.quietEnd;return s<e?cur>=s&&cur<e:cur>=s||cur<e}
 async function push({title,body,audience='staff',priority='normal',url='/ops/'},settings,now){
  if(quiet(settings,now)&&priority!=='urgent')return {sent:0,failed:0,quiet:true};
- const all=await getStoreValue('ase-notifications','registrations',[]),selected=all.filter(r=>r.enabled!==false&&audienceMatch(r,audience));
+ const all=await getStoreValue('ase-notifications','registrations',[]),category=categoryFor({title,body,url}),selected=all.filter(r=>audienceMatch(r,audience)&&allowsRegistration(r,{category,priority,url,title},now));
  const id=`auto_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,origin='https://adventurenj.com',payload={title,body,url,priority,notificationId:id};
  const settled=await Promise.allSettled(selected.map(r=>sendFCM(r,payload,origin))),invalid=[],accepted=[],failures=[];
  settled.forEach((res,i)=>{const r=selected[i]||{};if(res.status==='fulfilled')accepted.push({email:r.email||'',role:r.role||'',tokenFingerprint:fp(r.token)});else{const message=res.reason?.message||'Firebase error';failures.push({email:r.email||'',role:r.role||'',message});if(/UNREGISTERED|not found|registration-token-not-registered|Requested entity was not found/i.test(message))invalid.push(r.token)}});
  if(invalid.length)await setStoreValue('ase-notifications','registrations',all.filter(r=>!invalid.includes(r.token)));
- const history=await getStoreValue('ase-notifications','history',[]);history.unshift({id,title,body,audience,priority,url,createdAt:now.toISOString(),createdBy:{name:'Operations Automation',email:'automation@adventurenj.com',role:'system'},targeted:selected.length,sent:accepted.length,failed:failures.length,automatic:true});await setStoreValue('ase-notifications','history',history.slice(0,250));
+ const history=await getStoreValue('ase-notifications','history',[]);history.unshift({id,title,body,audience,priority,url,createdAt:now.toISOString(),category,createdBy:{name:'Operations Automation',email:'automation@adventurenj.com',role:'system'},targeted:selected.length,sent:accepted.length,failed:failures.length,automatic:true});await setStoreValue('ase-notifications','history',history.slice(0,250));
  return {sent:accepted.length,failed:failures.length};
 }
 async function once(state,key,fn){

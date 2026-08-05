@@ -3,6 +3,7 @@ const {verifiedUser,requireRole,json}=require('./_role-auth');
 const {getStoreValue,setStoreValue}=require('./_v2-storage');
 const {appendAudit}=require('./_audit');
 const {sendFCM}=require('./_firebase-fcm');
+const {allowsRegistration}=require('./_notification-preferences');
 
 const STORE='ase-game-day';
 const STATE_KEY='state';
@@ -15,7 +16,7 @@ const SETUP_NOTES={
   A2:'Confirm the current division setup before play. This field may change between 11U and 12U.',
   C2:'Confirm mound and division setup before play. This field may change from coach pitch to 9U.'
 };
-const DEFAULT_STATE={matrixId:null,matrixVersion:null,days:{},lightning:{status:'inactive',active:false,startedAt:null,lastStrikeAt:null,clearAt:null,clearMinutes:30,clearedAt:null,updatedAt:null,updatedBy:''},publicMessage:'',publicHeadline:'',publicUpdatedAt:null,audit:[]};
+const DEFAULT_STATE={matrixId:null,matrixVersion:null,days:{},lightning:{status:'inactive',active:false,startedAt:null,lastStrikeAt:null,clearAt:null,clearMinutes:30,clearedAt:null,updatedAt:null,updatedBy:''},publicMessage:'',publicHeadline:'',publicUpdatedAt:null,audit:[],undoStack:[]};
 
 const fail=(message,statusCode=400)=>Object.assign(new Error(message),{statusCode});
 const clean=v=>String(v??'').trim();
@@ -37,7 +38,7 @@ function sourceKey(day,time,field){return `${day}|${normalizeTime(time)||time}|$
 function gameId(matrix,day,time,field){return 'g_'+crypto.createHash('sha1').update(`${matrix?.id||'matrix'}|${matrix?.version||0}|${sourceKey(day,time,field)}`).digest('hex').slice(0,16)}
 function actorInfo(actor){return {id:actor.user.id,email:actor.user.email,name:actor.user.user_metadata?.full_name||actor.user.email,role:actor.role}}
 function auditEntry(actor,action,summary,details={}){return {id:crypto.randomUUID(),createdAt:new Date().toISOString(),actor:actorInfo(actor),action,summary,details}}
-function safeState(value){return {...DEFAULT_STATE,...(value||{}),days:{...((value||{}).days||{})},lightning:{...DEFAULT_STATE.lightning,...((value||{}).lightning||{})},audit:Array.isArray(value?.audit)?value.audit:[]}}
+function safeState(value){return {...DEFAULT_STATE,...(value||{}),days:{...((value||{}).days||{})},lightning:{...DEFAULT_STATE.lightning,...((value||{}).lightning||{})},audit:Array.isArray(value?.audit)?value.audit:[],undoStack:Array.isArray(value?.undoStack)?value.undoStack:[]}}
 function effectiveStatus(game,day,gameMinutes=105,now=new Date()){
   if(game.manualStatus)return game.status;
   const start=parseLocal(day,game.time||game.scheduledTime);
@@ -98,7 +99,7 @@ function findGame(day,id){const game=(day.games||[]).find(x=>x.id===id);if(!game
 function pushAudit(state,entry){state.audit.unshift(entry);state.audit=state.audit.slice(0,300)}
 function audienceMatch(reg,audience){if(audience==='everyone'||audience==='teams-public')return true;if(audience==='management')return ['owner','manager'].includes(reg.role);return ['owner','manager','grounds','kitchen','cashier','employee','staff'].includes(reg.role)}
 async function sendBroadcast(actor,{title,body,audience='staff',priority='normal',url='/ops/#gamesmatrix'}){
-  const all=await getStoreValue('ase-notifications','registrations',[]),selected=all.filter(r=>r.enabled!==false&&audienceMatch(r,audience));
+  const all=await getStoreValue('ase-notifications','registrations',[]),category=/lightning|weather/i.test(title+' '+body)?'weather':'games',selected=all.filter(r=>audienceMatch(r,audience)&&allowsRegistration(r,{category,priority,url,title}));
   const id=`gameday_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,origin='https://adventurenj.com',payload={title,body,url,priority,notificationId:id};
   const settled=await Promise.allSettled(selected.map(r=>sendFCM(r,payload,origin))),invalid=[],accepted=[],failures=[];
   settled.forEach((result,i)=>{const reg=selected[i]||{};if(result.status==='fulfilled')accepted.push({email:reg.email||'',role:reg.role||''});else{const message=result.reason?.message||'Push delivery error';failures.push({email:reg.email||'',role:reg.role||'',message});if(/UNREGISTERED|not found|registration-token-not-registered|Requested entity was not found/i.test(message))invalid.push(reg.token)}});
@@ -120,13 +121,21 @@ exports.handler=async event=>{
     let day=syncDay(state,matrix,requestedDate);
     if(event.httpMethod==='GET'){
       const decorated=decorateDay(day,settings),board=await saveAll(state,matrix,day,settings);
-      return json(200,{ok:true,matrix:{id:matrix.id,name:matrix.name,version:matrix.version||0,dateRange:matrix.dateRange,fields:matrix.fields||STANDARD_FIELDS,days:(matrix.days||[]).map(d=>({key:d.key,label:d.label,short:d.short}))},date:requestedDate,day:decorated,stats:stats(decorated),lightning:state.lightning,public:board,audit:state.audit.slice(0,100),canManage:true,settings:{gameMinutes:settings.gameMinutes||105,releaseBufferMinutes:settings.releaseBufferMinutes||15,lightningClearMinutes:settings.lightningClearMinutes||30}});
+      return json(200,{ok:true,canUndo:Boolean(state.undoStack?.some(x=>x.date===requestedDate)),matrix:{id:matrix.id,name:matrix.name,version:matrix.version||0,dateRange:matrix.dateRange,fields:matrix.fields||STANDARD_FIELDS,days:(matrix.days||[]).map(d=>({key:d.key,label:d.label,short:d.short}))},date:requestedDate,day:decorated,stats:stats(decorated),lightning:state.lightning,public:board,audit:state.audit.slice(0,100),canManage:true,settings:{gameMinutes:settings.gameMinutes||105,releaseBufferMinutes:settings.releaseBufferMinutes||15,lightningClearMinutes:settings.lightningClearMinutes||30}});
     }
     if(event.httpMethod!=='POST')return json(405,{error:'Method not allowed.'});
     const body=JSON.parse(event.body||'{}'),action=clean(body.action);if(!action)throw fail('Choose a Game Day action.');
     const now=new Date(),who=actorInfo(actor);let summary='',broadcast=null;
+    if(action==='undo'){
+      const index=(state.undoStack||[]).findIndex(x=>x.date===day.date);if(index<0)throw fail('There is no recent Game Day change to undo.',409);
+      const snapshot=state.undoStack.splice(index,1)[0];day=snapshot.day;state.days[day.date]=day;state.lightning=snapshot.lightning;state.publicHeadline=snapshot.publicHeadline;state.publicMessage=snapshot.publicMessage;state.publicUpdatedAt=now.toISOString();summary=`Undid: ${snapshot.summary||'the previous Game Day change'}.`;
+    }else{
+      state.undoStack=state.undoStack||[];state.undoStack.unshift({id:crypto.randomUUID(),date:day.date,createdAt:now.toISOString(),summary:action,day:JSON.parse(JSON.stringify(day)),lightning:JSON.parse(JSON.stringify(state.lightning)),publicHeadline:state.publicHeadline,publicMessage:state.publicMessage});state.undoStack=state.undoStack.slice(0,20);
+    }
 
-    if(action==='status'){
+    if(action==='undo'){
+      // snapshot restored above
+    }else if(action==='status'){
       const game=findGame(day,body.gameId),status=clean(body.status);if(!STATUS.includes(status))throw fail('Choose a valid game status.');
       game.status=status;game.manualStatus=true;game.updatedAt=now.toISOString();game.updatedBy=who.name;
       if(status==='in-progress'){game.startedAt=game.startedAt||now.toISOString();game.completedAt=null;game.canceledAt=null;day.fields[game.field].cleanup='ready'}
@@ -166,7 +175,7 @@ exports.handler=async event=>{
 
     day.updatedAt=now.toISOString();day.updatedBy=who.name;state.days[day.date]=day;const entry=auditEntry(actor,action,summary,{date:day.date,gameId:body.gameId||null,broadcast});pushAudit(state,entry);const board=await saveAll(state,matrix,day,settings);await appendAudit(actor,`game-day-${action}`,summary,'⚾');
     const decorated=decorateDay(day,settings);
-    return json(200,{ok:true,message:summary,date:day.date,day:decorated,stats:stats(decorated),lightning:state.lightning,public:board,audit:state.audit.slice(0,100),broadcast});
+    return json(200,{ok:true,canUndo:Boolean(state.undoStack?.some(x=>x.date===day.date)),message:summary,date:day.date,day:decorated,stats:stats(decorated),lightning:state.lightning,public:board,audit:state.audit.slice(0,100),broadcast});
   }catch(error){console.error('game-day-control:',error);return json(error.statusCode||500,{error:error.message||'Game Day Control request failed.'})}
 };
 

@@ -1,3 +1,4 @@
+const WORKER_VERSION='9300';
 
 try {
   importScripts('https://cdn.jsdelivr.net/npm/firebase@10.12.5/firebase-app-compat.js');
@@ -22,8 +23,8 @@ messaging.onBackgroundMessage(payload=>{
   const n=payload.notification||{},d=payload.data||{};
   self.registration.showNotification(n.title||'Adventure Sports',{
     body:n.body||'Open the Operations Hub for details.',
-    icon:'/uploads/branding/adventure-logo.png',
-    badge:'/uploads/branding/adventure-logo.png',
+    icon:'/uploads/branding/icon-192.png',
+    badge:'/uploads/branding/icon-192.png',
     tag:d.notificationId||'ase-notification',
     requireInteraction:d.priority==='emergency',
     data:{url:d.url||'/ops/'}

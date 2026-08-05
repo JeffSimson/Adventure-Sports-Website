@@ -1,0 +1,42 @@
+APP NAME
+Adventure Sports Operations Hub
+
+SUBTITLE
+Live facility and game-day operations
+
+VERSION
+9.3.0
+
+WEB BUILD
+9300
+
+PRIMARY CATEGORY
+Business
+
+SECONDARY CATEGORY
+Sports
+
+SUPPORT URL
+https://adventurenj.com/contact.html
+
+PRIVACY POLICY URL
+https://adventurenj.com/privacy.html
+
+TERMS URL
+https://adventurenj.com/terms.html
+
+PROMOTIONAL TEXT DRAFT
+Run Adventure Sports from one secure operations hub with live game-day controls, tournament matrices, fields, weather, alerts, work orders, Clover reporting, incidents, and role-based access.
+
+DESCRIPTION DRAFT
+Adventure Sports Operations Hub gives authorized team members one secure place to manage facility and tournament operations.
+
+Key features include live game-day status controls, tournament matrix creation and publishing, field and weather monitoring, automatic operations alerts, work orders, incident reporting, Clover sales visibility, notification device management, system diagnostics, and protected role-based access.
+
+Access is limited to approved Adventure Sports team accounts. Features shown depend on each employee's assigned role and permissions.
+
+KEYWORDS DRAFT
+sports,operations,tournament,fields,schedule,facility,weather,alerts,work orders
+
+REVIEW NOTES DRAFT
+This is a private workforce operations app. Review access requires an approved test account supplied separately. Sensitive owner-only features are hidden from non-owner roles. Push notifications are used for operational and safety updates selected by the user or facility owner.

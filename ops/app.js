@@ -4,7 +4,8 @@ const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelect
 const app=$('#app'), gate=$('#loginGate'), sidebar=$('#sidebar');
 const AUTH_KEY='ase_ops_identity_session_v2';
 const TRUSTED_DEVICE_KEY='ase_trusted_device_v1';
-const APP_BUILD='9210';
+const APP_VERSION='9.3.0';
+const APP_BUILD='9300';
 async function ensureFreshBuild(){
   try{
     const key='ase_ops_build',previous=localStorage.getItem(key);
@@ -76,10 +77,17 @@ async function refresh(s){if(!s?.token?.refresh_token)return null;const r=await 
 async function ensure(){if(session?.token?.access_token)return session;const s=read();if(!s)return null;try{const u=await identityUser(s.token.access_token);save(s.token,u);return session}catch{return refresh(s)}}
 async function api(url,options={}){
   const s=await ensure();if(!s)throw Error('You are not signed in.');
-  const r=await fetch(url,{cache:'no-store',...options,headers:authHeaders(options.headers||{})});
-  let d={};const raw=await r.text();if(raw){try{d=JSON.parse(raw)}catch{d={error:raw.slice(0,300)}}}
-  if(!r.ok)throw Error(d.error||d.message||`Request failed (${r.status}).`);
-  return d;
+  const method=String(options.method||'GET').toUpperCase(),attempts=method==='GET'?2:1;
+  let lastError=null;
+  for(let attempt=0;attempt<attempts;attempt++){
+    try{
+      const r=await fetch(url,{cache:'no-store',...options,headers:authHeaders(options.headers||{})});
+      let d={};const raw=await r.text();if(raw){try{d=JSON.parse(raw)}catch{d={error:raw.slice(0,300)}}}
+      if(!r.ok){const error=Error(d.error||d.message||`Request failed (${r.status}).`);error.status=r.status;if(attempt+1<attempts&&[502,503,504].includes(r.status)){lastError=error;await new Promise(resolve=>setTimeout(resolve,450));continue}throw error}
+      return d;
+    }catch(error){lastError=error;if(attempt+1>=attempts)throw error;await new Promise(resolve=>setTimeout(resolve,450))}
+  }
+  throw lastError||Error('The request could not be completed.');
 }
 function showGate(message='Enter the email and password from your invitation.'){if(app)app.hidden=true;if(gate)gate.hidden=false;if(timer)clearInterval(timer);const status=$('#loginStatus');if(status)status.textContent=message}
 function unauthorized(message){clear();showGate(message||'Your account does not have an assigned Adventure Sports role.');const status=$('#loginStatus');if(status)status.className='login-status error'}

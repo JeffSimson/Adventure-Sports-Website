@@ -6,7 +6,7 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const role=()=>window.ASE_OPS?.role?.()||document.body.dataset.role||'';
 const canManage=()=>['owner','manager'].includes(role());
 const today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-let data=null,loading=false,countdownTimer=null,initialized=false;
+let data=null,loading=false,countdownTimer=null,initialized=false,hideCompleted=localStorage.getItem('ase_hide_completed_games')==='1';
 
 async function api(options={}){
   const date=$('#gameDayDate')?.value||today();
@@ -78,7 +78,7 @@ function gameCard(g){
     </div>
   </article>`;
 }
-function filteredGames(){const field=$('#gameDayFieldFilter')?.value||'all',status=$('#gameDayStatusFilter')?.value||'all';return(data?.day?.games||[]).filter(g=>(field==='all'||g.field===field)&&(status==='all'||(g.effectiveStatus||g.status)===status))}
+function filteredGames(){const field=$('#gameDayFieldFilter')?.value||'all',status=$('#gameDayStatusFilter')?.value||'all';return(data?.day?.games||[]).filter(g=>{const st=g.effectiveStatus||g.status;return(field==='all'||g.field===field)&&(status==='all'||st===status)&&(!hideCompleted||!['complete','canceled'].includes(st))})}
 function renderGames(){const box=$('#gameDayGameList');if(!box)return;const games=filteredGames();box.innerHTML=games.length?games.map(gameCard).join(''):'<div class="dashboard-empty"><b>No games match this filter.</b><p>Change the field or status filter, or publish a matrix containing this date.</p></div>'}
 function fieldCard(f){
   const attention=f.cleanup==='needed'||f.setup==='needed';
@@ -91,19 +91,20 @@ function fieldCard(f){
 function renderFields(){const box=$('#gameDayFieldReadiness');if(!box)return;const list=Object.values(data?.day?.fields||{});box.innerHTML=list.length?list.map(fieldCard).join(''):'<p class="dashboard-empty">No field readiness data is available for this date.</p>'}
 function renderPublic(){const p=data?.public||{},box=$('#gameDayPublicPreview');if(!box)return;box.innerHTML=`<span>Public board preview</span><strong>${esc(p.headline||'Live game-day board')}</strong><p>${esc(p.message||'The live schedule, active games, delays, and lightning status appear automatically.')}</p><small>Last updated ${esc(localDateTime(p.updatedAt))}</small>`}
 function renderAudit(){const box=$('#gameDayAudit');if(!box)return;const list=data?.audit||[];box.innerHTML=list.length?list.slice(0,60).map(x=>`<article><span>${esc((x.action||'update').replace(/^game-day-/,'').replace(/-/g,' '))}</span><div><strong>${esc(x.summary||'Game day updated')}</strong><small>${esc(x.actor?.name||x.actor?.email||'Unknown user')} · ${esc(localDateTime(x.createdAt))}</small></div></article>`).join(''):'<p class="dashboard-empty">No game-day changes recorded yet.</p>'}
-function render(){if(!data)return;renderDates();renderStats();renderLightning();renderFilters();renderGames();renderFields();renderPublic();renderAudit();const badge=$('#gameDayLiveBadge');if(badge){badge.textContent='Live';badge.className='connection-badge ready'}}
+function render(){if(!data)return;renderDates();renderStats();renderLightning();renderFilters();renderGames();renderFields();renderPublic();renderAudit();const undo=$('#gameDayUndo');if(undo)undo.disabled=!data.canUndo;const hc=$('#gameDayHideCompleted');if(hc)hc.checked=hideCompleted;const badge=$('#gameDayLiveBadge');if(badge){badge.textContent='Live';badge.className='connection-badge ready'}}
 async function load(){if(!canManage()||loading||!$('#gameDayControl'))return;setBusy(true,'Loading');try{data=await api();render()}catch(e){notice(e.message,'error');const box=$('#gameDayGameList');if(box)box.innerHTML=`<div class="dashboard-empty"><b>Game Day Control could not load.</b><p>${esc(e.message)}</p></div>`}finally{setBusy(false)}}
 async function action(payload,success){if(loading)return;setBusy(true);try{data={...data,...await api({method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...payload,date:$('#gameDayDate')?.value||today()})})};render();notice(success||data.message||'Game day updated.','success');window.dispatchEvent(new CustomEvent('ase:game-day-updated',{detail:data}))}catch(e){notice(e.message,'error')}finally{setBusy(false)}}
 function cardFrom(el){return el.closest('[data-game-id]')}
+function installLaunchControls(){const head=$('.game-day-list-head .game-day-filters');if(head&&!$('#gameDayHideCompleted')){const label=document.createElement('label');label.className='game-day-inline-check game-day-hide-completed';label.innerHTML=`<input id="gameDayHideCompleted" type="checkbox" ${hideCompleted?'checked':''}><span>Hide completed games</span>`;head.appendChild(label);label.querySelector('input').addEventListener('change',e=>{hideCompleted=e.target.checked;localStorage.setItem('ase_hide_completed_games',hideCompleted?'1':'0');renderGames()})}const hero=$('.game-day-hero-actions');if(hero&&!$('#gameDayUndo')){const undo=document.createElement('button');undo.id='gameDayUndo';undo.className='secondary-btn';undo.type='button';undo.textContent='Undo Last Change';undo.disabled=true;undo.onclick=()=>{if(confirm('Undo the most recent Game Day change for this date?'))action({action:'undo'})};hero.insertBefore(undo,$('#gameDayLiveBadge'))}const preview=$('#gameDayPublicPreview');if(preview&&!$('#gameDayOpenPublicBoard')){const b=document.createElement('a');b.id='gameDayOpenPublicBoard';b.className='secondary-btn compact-btn';b.href='/#game-day-board';b.target='_blank';b.rel='noopener';b.textContent='Open Public Board';preview.appendChild(b)}}
 function bind(){
   $('#gameDayRefresh')?.addEventListener('click',load);$('#gameDayToday')?.addEventListener('click',()=>{$('#gameDayDate').value=today();load()});$('#gameDayDate')?.addEventListener('change',load);
   $('#gameDayFieldFilter')?.addEventListener('change',renderGames);$('#gameDayStatusFilter')?.addEventListener('change',renderGames);
   $('#gameDayGameList')?.addEventListener('click',e=>{
     const card=cardFrom(e.target);if(!card)return;const id=card.dataset.gameId;
-    const status=e.target.closest('[data-game-status]');if(status){const notify=$('[data-game-notify]',card)?.checked||false;action({action:'status',gameId:id,status:status.dataset.gameStatus,notify,audience:notify?'everyone':'staff'});return}
+    const status=e.target.closest('[data-game-status]');if(status){const next=status.dataset.gameStatus;if(next==='canceled'&&!confirm('Cancel this game? This will update the live game-day board.'))return;const notify=$('[data-game-notify]',card)?.checked||false;action({action:'status',gameId:id,status:next,notify,audience:notify?'everyone':'staff'});return}
     if(e.target.closest('[data-toggle-game-move]')){$('.game-day-move-editor',card).hidden=false;return}
     if(e.target.closest('[data-cancel-game-move]')){$('.game-day-move-editor',card).hidden=true;return}
-    if(e.target.closest('[data-save-game-move]')){const field=$('[data-move-field]',card).value,time=$('[data-move-time]',card).value,notify=$('[data-move-notify]',card).checked;action({action:'move',gameId:id,field,time,notify,audience:'everyone'});return}
+    if(e.target.closest('[data-save-game-move]')){const field=$('[data-move-field]',card).value,time=$('[data-move-time]',card).value,notify=$('[data-move-notify]',card).checked;if(!confirm(`Move this game to Field ${field} at ${time}?`))return;action({action:'move',gameId:id,field,time,notify,audience:'everyone'});return}
   });
   $('#gameDayFieldReadiness')?.addEventListener('click',e=>{const b=e.target.closest('[data-field-task]'),card=e.target.closest('[data-field]');if(!b||!card)return;action({action:'field-task',field:card.dataset.field,task:b.dataset.fieldTask,status:b.dataset.taskStatus})});
   $$('[data-delay-all]').forEach(b=>b.addEventListener('click',()=>{const minutes=Number(b.dataset.delayAll),notify=$('#gameDayDelayNotify')?.checked!==false,reason=$('#gameDayDelayReason')?.value.trim()||'';if(confirm(`Delay every remaining game by ${minutes} minutes?`))action({action:'delay-all',minutes,notify,reason,audience:'everyone'})}));
@@ -115,7 +116,8 @@ function bind(){
   $('#gameDayBroadcastSend')?.addEventListener('click',()=>{const title=$('#gameDayBroadcastTitle').value.trim(),message=$('#gameDayBroadcastMessage').value.trim();if(!title||!message)return notice('Add a title and message first.','error');action({action:'broadcast',title,message,audience:$('#gameDayBroadcastAudience').value,priority:$('#gameDayBroadcastPriority').value,public:$('#gameDayBroadcastPublic').checked})});
   $('#gameDayClearPublic')?.addEventListener('click',()=>action({action:'clear-public-message'}));
 }
-function init(){if(initialized||!$('#gameDayControl')||!canManage())return;initialized=true;bind();$('#gameDayDate').value=today();countdownTimer=setInterval(updateCountdown,1000);load()}
+function init(){if(initialized||!$('#gameDayControl')||!canManage())return;initialized=true;installLaunchControls();bind();$('#gameDayDate').value=today();countdownTimer=setInterval(updateCountdown,1000);load()}
 document.addEventListener('click',e=>{if(e.target.closest('[data-internal-target="gameday"]'))setTimeout(()=>{init();load()},50)});
+window.ASE_GAME_DAY={load,undo:()=>action({action:'undo'}),getData:()=>data};
 window.addEventListener('ase:profile-ready',init);document.addEventListener('DOMContentLoaded',()=>setTimeout(init,700));
 })();
