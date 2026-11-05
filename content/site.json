@@ -1,27 +1,4 @@
 {
-  "name": "Adventure Sports and Entertainment",
-  "legalName": "Adventure Sports & Entertainment LLC",
-  "headline": "A Premier Sporting Destination",
-  "heroButtonText": "Register for Baseball & Softball",
-  "logo": "/uploads/site/adventure-logo.png",
-  "heroImage": "/uploads/site/hero-aerial.jpg",
-  "address": "Adventure Crossing Bar & Grill at The Dome, 515 Monmouth Rd, Building 200, Jackson Township, NJ 08527, USA",
-  "shortAddress": "Adventure Crossing Bar & Grill at The Dome",
-  "cityStateZip": "515 Monmouth Rd, Building 200, Jackson Township, NJ 08527",
-  "phone": "(732) 580-1731",
-  "email": "adventuresports1@yahoo.com",
-  "facebook": "https://www.facebook.com/AdventureSportsAndEntertainment",
-  "hours": "Monday – Sunday: 7:00 am – 10:00 pm",
-  "kitchenHours": "Kitchen closes at 9:00 pm",
-  "fieldStatus": "OPEN",
-  "announcement": "Registration is now open for upcoming baseball and softball events.",
-  "about": "Adventure Sports & Entertainment LLC was formed to provide a community resource for athletes. We partner with national training experts to offer teams and organizations the best training opportunities, then host weekend tournaments for national and regional teams that showcase their talent. As a premier destination, we offer great amenities at our park along with discounts to enjoy local attractions.",
-  "parking": "Free on-site parking is available. Overflow parking is available near the dome. Do not park in the side lots to the right of the A fields.",
-  "waiverUrl": "https://form.jotform.com/232632661950052",
-  "menuUrl": "https://www.clover.com/online-ordering/adventure-sports-enterta-jackson",
-  "discountHotelUrl": "#",
-  "videoStreamsUrl": "https://watch.livebarn.com/en/register",
-  "facilityMap": "/uploads/site/facility-map.jpg",
   "homeSlider": [
     "/uploads/home-slider/youth-baseball-players.jpg",
     "/uploads/home-slider/softball-player-smiling.jpg",
@@ -33,6 +10,7 @@
     "/uploads/home-slider/flag-player-pink.jpg",
     "/uploads/home-slider/usa-softball-pitcher.jpg"
   ],
+  "heroImage": "/uploads/site/hero-aerial.jpg",
   "facilityHighlights": [
     {
       "title": "All-Turf Facility",
@@ -68,11 +46,33 @@
     "No seeds, gum, tobacco, or pets.",
     "No outside food or drink, except allowed team cooler rules."
   ],
+  "legalName": "Adventure Sports & Entertainment LLC",
+  "facebook": "https://www.facebook.com/AdventureSportsAndEntertainment",
+  "announcement": "Registration is now open for upcoming baseball and softball events.",
+  "logo": "/uploads/site/adventure-logo.png",
+  "kitchenHours": "Kitchen closes at 9:00 pm",
+  "waiverUrl": "https://form.jotform.com/232632661950052",
+  "name": "Adventure Sports and Entertainment",
+  "fieldStatus": "OPEN",
+  "about": "Welcome to Adventure Sports!\n\n\nThis complex was built to serve as a vital community resource for youth athletics. Our goal is to attract regional and national tournaments that help sustain these operations, keeping our facility thriving for the next generation of athletes.\nWe are deeply proud that Adventure Sports was built using local small businesses, many of whom share a personal connection to youth sports or Multiple Sclerosis (MS) advocacy. As part of our core mission, this venue actively raises funds and awareness to support vital MS research.\nDriven by our dedicated donors, volunteers, and staff, we strive to deliver an exceptional experience for every athlete and family. While high operating costs make it a challenge to balance our budget, we remain entirely committed to keeping this resource affordable for our community.\nWe cannot do this alone. If you want to help us make Adventure Sports even better—whether through volunteering your time, offering strategic help, or providing financial support—we would love to connect with you.\nThank you for being here and supporting our mission!",
+  "phone": "(732) 580-1731",
+  "hours": "Monday – Sunday: 7:00 am – 10:00 pm",
+  "menuUrl": "https://www.clover.com/online-ordering/adventure-sports-enterta-jackson",
+  "headline": "A Premier Sporting Destination",
+  "address": "Adventure Crossing Bar & Grill at The Dome, 515 Monmouth Rd, Building 200, Jackson Township, NJ 08527, USA",
+  "videoStreamsUrl": "https://watch.livebarn.com/en/register",
+  "contactTitle": "Contact Us",
+  "parking": "Free on-site parking is available. Overflow parking is available near the dome. Do not park in the side lots to the right of the A fields.",
+  "shortAddress": "Adventure Crossing Bar & Grill at The Dome",
+  "heroButtonText": "Register for Baseball & Softball",
+  "facilityMap": "/uploads/site/facility-map.jpg",
+  "cityStateZip": "515 Monmouth Rd, Building 200, Jackson Township, NJ 08527",
+  "discountHotelUrl": "#",
+  "email": "adventuresports1@yahoo.com",
   "whyChoose": [
     "Premier sports destination in Jackson, New Jersey.",
     "Great for tournaments, rentals, camps, showcases, and private events.",
     "Built for teams, families, coaches, athletes, and spectators.",
     "Food, seating, clubhouse access, viewing areas, and field amenities in one location."
-  ],
-  "contactTitle": "Contact Us"
+  ]
 }
