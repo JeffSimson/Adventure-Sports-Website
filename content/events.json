@@ -1029,21 +1029,6 @@
       "directRegister": true
     },
     {
-      "register": "https://adventurenj.com/contact",
-      "price": "See registration page",
-      "endDate": "2027-04-17",
-      "logo": "/uploads/event-logos/adventure-turf-complex.webp",
-      "directRegister": false,
-      "featured": false,
-      "date": "April 16 - 17, 2027",
-      "startDate": "2027-04-16",
-      "location": "Adventure Crossing Bar & Grill at The Dome, 515 Monmouth Rd, Building 200, Jackson Township, NJ 08527, USA",
-      "title": "MCT / OCT Baseball Event",
-      "image": "/uploads/event-logos/adventure-turf-complex.webp",
-      "description": "MCT / OCT baseball event listed on the 2027 Adventure Sports master calendar. Public registration details are still to be announced.",
-      "category": "Baseball"
-    },
-    {
       "register": "https://play.usabl.com/events",
       "price": "See registration page",
       "endDate": "2027-04-18",
