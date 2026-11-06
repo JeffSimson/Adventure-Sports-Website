@@ -803,5 +803,147 @@
       "description": "Softball tournament at Adventure Sports and Entertainment.",
       "category": "Softball"
     }
+  {
+  "categories": [
+    "Baseball",
+    "Softball",
+    "Flag Football",
+    "Private Rentals",
+    "Camps",
+    "Tournaments"
+  ],
+  "events": [
+    {
+      "title": "Adventure's Northeast Championship",
+      "category": "Softball",
+      "date": "November 14, 2026",
+      "location": "Adventure Crossing Bar & Grill at The Dome, 515 Monmouth Rd, Building 200, Jackson Township, NJ 08527, USA",
+      "price": "See registration page",
+      "register": "https://www.usssa.com/fastpitch/event_home/?eventID=414835",
+      "image": "/uploads/site/hero-aerial.jpg",
+      "logo": "/uploads/site/adventure-logo.png",
+      "description": "Adventure's Northeast Championship fastpitch softball tournament at Adventure Sports in Jackson, New Jersey.",
+      "featured": false
+    },
+    {
+      "title": "Thanksgiving One Day Indoor",
+      "category": "Softball",
+      "date": "November 28, 2026",
+      "location": "Adventure Crossing Bar & Grill at The Dome, 515 Monmouth Rd, Building 200, Jackson Township, NJ 08527, USA",
+      "price": "$400-$413.29",
+      "register": "https://nj.registerplay.com/pages/event/detail/7249769714",
+      "image": "/uploads/site/hero-aerial.jpg",
+      "logo": "/uploads/site/adventure-logo.png",
+      "description": "One-day indoor fastpitch softball tournament at Adventure Sports in Jackson, New Jersey.",
+      "featured": false
+    },
+    {
+      "title": "Adventure's Dome Tournament",
+      "category": "Softball",
+      "date": "January 10, 2027",
+      "location": "Adventure Crossing Bar & Grill at The Dome, 515 Monmouth Rd, Building 200, Jackson Township, NJ 08527, USA",
+      "price": "$850",
+      "register": "https://nj.registerplay.com/pages/event/detail/7804383547",
+      "image": "/uploads/site/hero-aerial.jpg",
+      "logo": "/uploads/site/adventure-logo.png",
+      "description": "Indoor fastpitch softball tournament at the Adventure Sports Dome in Jackson, New Jersey.",
+      "featured": false
+    },
+    {
+      "title": "Adventure's March to Victory - Saturday",
+      "category": "Softball",
+      "date": "March 20, 2027",
+      "location": "Adventure Crossing Bar & Grill at The Dome, 515 Monmouth Rd, Building 200, Jackson Township, NJ 08527, USA",
+      "price": "See registration page",
+      "register": "https://www.usssa.com/fastpitch/event_home/?eventID=422165",
+      "image": "/uploads/site/hero-aerial.jpg",
+      "logo": "/uploads/site/adventure-logo.png",
+      "description": "Adventure's March to Victory one-day Saturday softball tournament at Adventure Sports.",
+      "featured": false
+    },
+    {
+      "title": "Adventure's March to Victory - Sunday",
+      "category": "Softball",
+      "date": "March 21, 2027",
+      "location": "Adventure Crossing Bar & Grill at The Dome, 515 Monmouth Rd, Building 200, Jackson Township, NJ 08527, USA",
+      "price": "See registration page",
+      "register": "https://www.usssa.com/fastpitch/event_home/?eventID=422166",
+      "image": "/uploads/site/hero-aerial.jpg",
+      "logo": "/uploads/site/adventure-logo.png",
+      "description": "Adventure's March to Victory one-day Sunday softball tournament at Adventure Sports.",
+      "featured": false
+    },
+    {
+      "title": "Adventure's Bunny Hop",
+      "category": "Softball",
+      "date": "March 26, 2027",
+      "location": "Adventure Crossing Bar & Grill at The Dome, 515 Monmouth Rd, Building 200, Jackson Township, NJ 08527, USA",
+      "price": "See registration page",
+      "register": "https://www.usssa.com/fastpitch/event_home/?eventID=422168",
+      "image": "/uploads/site/hero-aerial.jpg",
+      "logo": "/uploads/site/adventure-logo.png",
+      "description": "Adventure's Bunny Hop one-day Friday softball tournament at Adventure Sports.",
+      "featured": false
+    },
+    {
+      "title": "Adventure's Annual Bunny Hop",
+      "category": "Softball",
+      "date": "March 27, 2027",
+      "location": "Adventure Crossing Bar & Grill at The Dome, 515 Monmouth Rd, Building 200, Jackson Township, NJ 08527, USA",
+      "price": "$400",
+      "register": "https://nj.registerplay.com/pages/event/detail/8256412706",
+      "image": "/uploads/site/hero-aerial.jpg",
+      "logo": "/uploads/site/adventure-logo.png",
+      "description": "Adventure's Annual Bunny Hop one-day Saturday fastpitch softball tournament at Adventure Sports.",
+      "featured": false
+    },
+    {
+      "title": "Adventure's Spring Fling",
+      "category": "Softball",
+      "date": "April 11, 2027",
+      "location": "Adventure Crossing Bar & Grill at The Dome, 515 Monmouth Rd, Building 200, Jackson Township, NJ 08527, USA",
+      "price": "See registration page",
+      "register": "https://nj.registerplay.com/pages/events",
+      "image": "/uploads/site/hero-aerial.jpg",
+      "logo": "/uploads/site/adventure-logo.png",
+      "description": "Adventure's Spring Fling one-day softball tournament at Adventure Sports.",
+      "featured": false
+    },
+    {
+      "title": "Adventure's Northeast Opener",
+      "category": "Softball",
+      "date": "April 23-25, 2027",
+      "location": "Adventure Crossing Bar & Grill at The Dome, 515 Monmouth Rd, Building 200, Jackson Township, NJ 08527, USA",
+      "price": "See registration page",
+      "register": "https://www.usssa.com/fastpitch/event_home/?eventID=422173",
+      "image": "/uploads/site/hero-aerial.jpg",
+      "logo": "/uploads/site/adventure-logo.png",
+      "description": "Adventure's Northeast Opener softball tournament weekend at Adventure Sports.",
+      "featured": false
+    },
+    {
+      "title": "Adventure's Run for the Roses",
+      "category": "Softball",
+      "date": "May 7-9, 2027",
+      "location": "Adventure Crossing Bar & Grill at The Dome, 515 Monmouth Rd, Building 200, Jackson Township, NJ 08527, USA",
+      "price": "See registration page",
+      "register": "https://nj.registerplay.com/pages/events",
+      "image": "/uploads/site/hero-aerial.jpg",
+      "logo": "/uploads/site/adventure-logo.png",
+      "description": "Run for the Roses Mother's Day Weekend softball tournament at Adventure Sports.",
+      "featured": false
+    },
+    {
+      "title": "Let Freedom Ring - 3 Day 7GG",
+      "category": "Softball",
+      "date": "July 2, 2027",
+      "location": "Adventure Crossing Bar & Grill at The Dome, 515 Monmouth Rd, Building 200, Jackson Township, NJ 08527, USA",
+      "price": "See registration page",
+      "register": "https://www.usssa.com/fastpitch/event_home/?eventID=420585",
+      "image": "/uploads/site/hero-aerial.jpg",
+      "logo": "/uploads/site/adventure-logo.png",
+      "description": "Let Freedom Ring three-day 7-game-guarantee softball tournament at Adventure Sports.",
+      "featured": false
+    }
   ]
 }
