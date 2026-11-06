@@ -802,17 +802,7 @@
       "image": "/uploads/event-logos/adventure-turf-complex.webp",
       "description": "Softball tournament at Adventure Sports and Entertainment.",
       "category": "Softball"
-    }
-  {
-  "categories": [
-    "Baseball",
-    "Softball",
-    "Flag Football",
-    "Private Rentals",
-    "Camps",
-    "Tournaments"
-  ],
-  "events": [
+    },
     {
       "title": "Adventure's Northeast Championship",
       "category": "Softball",
