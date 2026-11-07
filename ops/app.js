@@ -5,7 +5,7 @@ const app=$('#app'), gate=$('#loginGate'), sidebar=$('#sidebar');
 const AUTH_KEY='ase_ops_identity_session_v2';
 const TRUSTED_DEVICE_KEY='ase_trusted_device_v1';
 const APP_VERSION='10.0.4';
-const APP_BUILD='10004';
+const APP_BUILD='10005';
 async function ensureFreshBuild(){
   try{
     const key='ase_ops_build',previous=localStorage.getItem(key);
