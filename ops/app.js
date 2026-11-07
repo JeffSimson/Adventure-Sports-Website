@@ -4,8 +4,8 @@ const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelect
 const app=$('#app'), gate=$('#loginGate'), sidebar=$('#sidebar');
 const AUTH_KEY='ase_ops_identity_session_v2';
 const TRUSTED_DEVICE_KEY='ase_trusted_device_v1';
-const APP_VERSION='10.0.0';
-const APP_BUILD='10000';
+const APP_VERSION='9.3.0';
+const APP_BUILD='9300';
 async function ensureFreshBuild(){
   try{
     const key='ase_ops_build',previous=localStorage.getItem(key);
@@ -31,14 +31,14 @@ const CLOVER='/.netlify/functions/clover-dashboard';
 
 const ROLE_LABELS={owner:'Owner',manager:'Manager',grounds:'Grounds Crew',kitchen:'Kitchen',cashier:'Cashier'};
 const DEFAULT_PERMISSIONS={
-  owner:['dashboard','website','eventsadmin','clover','staff','games','gamesmatrix','maintenance','weather','reports','incidents','kitchen','notifications','users','settings'],
-  manager:['dashboard','eventsadmin','clover','staff','games','gamesmatrix','maintenance','weather','reports','incidents','kitchen','notifications','users'],
+  owner:['dashboard','website','clover','staff','games','gamesmatrix','maintenance','weather','reports','incidents','kitchen','notifications','users','settings'],
+  manager:['dashboard','clover','staff','games','gamesmatrix','maintenance','weather','reports','incidents','kitchen','notifications','users'],
   grounds:['maintenance','weather','incidents','notifications'],
   kitchen:['kitchen','weather','incidents','notifications'],
   cashier:['dashboard','incidents','notifications']
 };
 const MODULES=[
-  ['dashboard','Dashboard'],['website','Website Control'],['eventsadmin','Events & Signups'],['clover','Clover'],['staff','Staffing'],
+  ['dashboard','Dashboard'],['website','Website Control'],['clover','Clover'],['staff','Staffing'],
   ['games','Games'],['gamesmatrix','Games & Matrix'],['maintenance','Fields & Maintenance'],['weather','Weather Center'],
   ['reports','Reports'],['incidents','Incident Reports'],['kitchen','Kitchen'],['notifications','Notifications'],['users','People & Permissions'],['settings','Settings']
 ];
@@ -153,7 +153,7 @@ async function loadProfile(){
   let d=await api(PROFILE);profile=d;renderMaintenanceState(d.system||{});
   await requireOwnerVerification(d);
   if(d.mfaRequired&&!d.mfaVerified){d=await api(PROFILE);profile=d;renderMaintenanceState(d.system||{})}
-  try{const p=await api(PERMS);permissions=p.permissions||permissions}catch{} Object.keys(DEFAULT_PERMISSIONS).forEach(r=>{permissions[r]=permissions[r]||[];if(!permissions[r].includes('incidents'))permissions[r].push('incidents')}); ['owner','manager'].forEach(r=>{permissions[r]=permissions[r]||[];if(!permissions[r].includes('gamesmatrix'))permissions[r].splice(Math.max(0,permissions[r].indexOf('games')+1),0,'gamesmatrix');if(!permissions[r].includes('eventsadmin'))permissions[r].splice(Math.max(0,permissions[r].indexOf('website')+1),0,'eventsadmin')})
+  try{const p=await api(PERMS);permissions=p.permissions||permissions}catch{} Object.keys(DEFAULT_PERMISSIONS).forEach(r=>{permissions[r]=permissions[r]||[];if(!permissions[r].includes('incidents'))permissions[r].push('incidents')}); ['owner','manager'].forEach(r=>{permissions[r]=permissions[r]||[];if(!permissions[r].includes('gamesmatrix'))permissions[r].splice(Math.max(0,permissions[r].indexOf('games')+1),0,'gamesmatrix')})
   return d;
 }
 async function show(u){
@@ -173,7 +173,7 @@ function logout(){clear();location.hash='';location.reload()}
 function resetMenuDrag(){sidebar.style.removeProperty('--drawer-x');sidebar.classList.remove('dragging');document.body.style.removeProperty('--menu-progress')}
 function closeMenu(){resetMenuDrag();sidebar.classList.remove('open');document.body.classList.remove('menu-open')}
 function openMenu(){resetMenuDrag();sidebar.classList.add('open');document.body.classList.add('menu-open');sidebar.scrollTop=0}
-function go(v){if(!v||!allowed(v))v=defaultView();if(!v)return unauthorized();$$('.view').forEach(x=>x.classList.toggle('active',x.dataset.viewPanel===v));$$('.nav-item').forEach(x=>x.classList.toggle('active',x.dataset.view===v));closeMenu();history.replaceState(null,'','#'+v);requestAnimationFrame(()=>window.scrollTo({top:0,left:0,behavior:'auto'}));if(v==='clover')loadClover();if(v==='eventsadmin')window.ASE_EVENT_MANAGER?.load?.();if(v==='users')loadUsers();if(v==='settings')loadSecurityProfile()}
+function go(v){if(!v||!allowed(v))v=defaultView();if(!v)return unauthorized();$$('.view').forEach(x=>x.classList.toggle('active',x.dataset.viewPanel===v));$$('.nav-item').forEach(x=>x.classList.toggle('active',x.dataset.view===v));closeMenu();history.replaceState(null,'','#'+v);requestAnimationFrame(()=>window.scrollTo({top:0,left:0,behavior:'auto'}));if(v==='clover')loadClover();if(v==='users')loadUsers();if(v==='settings')loadSecurityProfile()}
 
 async function loadSite(){if(!allowed('website'))return;const editorState=$('#editorState');if(editorState){editorState.textContent='Loading';editorState.className='connection-badge loading'}try{const r=await fetch(LIVE+'&v='+Date.now(),{cache:'no-store'});const raw=await r.text();if(!r.ok)throw Error((()=>{try{return JSON.parse(raw).error}catch{return 'Website status service unavailable.'}})());siteData=JSON.parse(raw)}catch(firstError){try{const r=await fetch('/content/site.json?ops='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('Local fallback not found.');siteData=await r.json()}catch{siteData={fieldStatus:'OPEN',announcement:''};toast(firstError.message||'Safe default loaded.')}}originalStatus=String(siteData.fieldStatus||'OPEN').toUpperCase();originalAnnouncement=siteData.announcement||'';const radio=$(`input[name="fieldStatus"][value="${CSS.escape(originalStatus)}"]`)||$('input[value="OPEN"]');if(radio)radio.checked=true;const announcement=$('#announcementInput');if(announcement)announcement.value=originalAnnouncement;const liveStatus=$('#currentLiveStatus');if(liveStatus)liveStatus.textContent=originalStatus;const loaded=$('#lastLoadedTime');if(loaded)loaded.textContent=new Date().toLocaleString();updatePreview();const facility=$('#facilityStatus');if(facility)facility.textContent=originalStatus;const liveDot=$('#dashboardLiveDot');if(liveDot)liveDot.dataset.status=originalStatus.toLowerCase().replace(/\s+/g,'-');if(editorState){editorState.textContent='Live';editorState.className='connection-badge ready'}const notice=$('#publishNotice');if(notice&&notice.textContent.trim()==='Not Found')notice.hidden=true}
 function current(){return $('input[name="fieldStatus"]:checked')?.value||'OPEN'}
