@@ -2,6 +2,7 @@ const crypto=require('crypto');
 const {json,error}=require('./_role-auth');
 const {supabase}=require('./_supabase');
 const {rateLimit,clientIp}=require('./_security');
+const {sendSignupEmails}=require('./_event-email');
 
 const clean=(v,n=500)=>String(v??'').trim().slice(0,n);
 const emailOK=v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
@@ -61,5 +62,7 @@ exports.handler=async event=>{try{
   };
   const {data}=await supabase('event_registrations',{method:'POST',body:payload,headers:{Prefer:'return=representation'}});
   const row=data?.[0]||data;
-  return json(201,{ok:true,registration:{registration_number:row.registration_number,status:row.status,event_title:ev.title,event_date:ev.start_date,team_name:row.team_name,participant_name:row.participant_name,email:row.email}});
+  let email_delivery={configured:false,results:[]};
+  try{email_delivery=await sendSignupEmails(ev,row)}catch(emailErr){email_delivery={configured:true,results:[{sent:false,error:String(emailErr?.message||emailErr)}]};console.error('Signup email notification failed',emailErr)}
+  return json(201,{ok:true,registration:{registration_number:row.registration_number,status:row.status,event_title:ev.title,event_date:ev.start_date,team_name:row.team_name,participant_name:row.participant_name,email:row.email},email_delivery});
 }catch(e){return json(e.statusCode||500,{error:e.message})}};
