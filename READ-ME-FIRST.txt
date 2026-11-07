@@ -1,0 +1,13 @@
+Adventure Sports V10.0.2 - Backend/Auth Restore
+
+THIS IS A GITHUB/REPO PATCH. DO NOT DRAG THIS ZIP DIRECTLY INTO NETLIFY DEPLOYS.
+
+1. Unzip this file.
+2. Copy the netlify folder, netlify.toml, and package.json into the ROOT of your existing Adventure Sports website repository.
+3. When macOS asks, choose Replace/Merge as appropriate. This patch contains the COMPLETE Netlify functions set, so replacing the netlify folder is safe.
+4. In GitHub Desktop commit: V10.0.2 restore Ops backend functions
+5. Push origin and let Netlify deploy from GitHub.
+6. Open https://adventurenj.com/ops/?build=10002 in a private/incognito tab and sign in.
+
+This patch does NOT contain content/events.json and does not alter your public event list.
+It restores auth-profile, security, audit, Clover, operations, notification, weather, tournament, and other backend functions, while retaining the V10 event/signup functions.
