@@ -49,8 +49,9 @@ async function loadHome(){
   $('homeHero').style.backgroundImage = `linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.35)), url('${img(site.heroImage)}')`;
   $('heroTitle').textContent = site.headline;
   $('heroCta').textContent = site.heroButtonText;
-  $('aboutTitle').textContent = site.legalName;
-  $('aboutText').textContent = site.about;
+  $('aboutTitle').textContent = site.aboutTitle || site.legalName;
+  const aboutCopy = Array.isArray(site.about) ? site.about : [site.about];
+  $('aboutText').innerHTML = aboutCopy.filter(Boolean).map(paragraph => `<span class="about-paragraph">${esc(paragraph)}</span>`).join('');
   $('facebookLink').href = site.facebook;
   $('videoLink').href = site.videoStreamsUrl || 'https://watch.livebarn.com/en/register';
   $('waiverQuick').href = site.waiverUrl;
@@ -194,6 +195,50 @@ setTimeout(staticHomeFallback, 1200);
   }
 })();
 
+
+function aseEnsureGameDayBoard(){
+  let board=document.getElementById('aseLiveGameDayBoard');
+  if(board)return board;
+  board=document.createElement('section');
+  board.id='aseLiveGameDayBoard';
+  board.className='ase-live-game-day';
+  board.hidden=true;
+  const hero=document.querySelector('.hero, .page-hero, .policy-hero');
+  const nav=document.querySelector('.top-nav');
+  if(hero)hero.insertAdjacentElement('afterend',board);
+  else if(nav)nav.insertAdjacentElement('afterend',board);
+  else document.body.prepend(board);
+  return board;
+}
+function aseGameStatusLabel(value){return {'in-progress':'LIVE','delayed':'DELAYED','upcoming':'UPCOMING','complete':'FINAL','canceled':'CANCELED'}[value]||String(value||'').toUpperCase()}
+function aseRenderGameDayBoard(gameDay){
+  const board=aseEnsureGameDayBoard();
+  if(!gameDay?.enabled){board.hidden=true;board.innerHTML='';return}
+  const games=Array.isArray(gameDay.games)?gameDay.games:[],summary=gameDay.summary||{},lightning=gameDay.lightning||{};
+  board.hidden=false;
+  const liveCount=Number(summary['in-progress']||0), delayedCount=Number(summary.delayed||0), upcomingCount=Number(summary.upcoming||0);
+  const stateClass=lightning.active?'lightning':delayedCount?'delayed':liveCount?'live':'normal';
+  const stateLabel=lightning.active?'Lightning hold':delayedCount?'Schedule delay':liveCount?'Games live':'Game-day update';
+  board.className=`ase-live-game-day ${stateClass}`;
+  board.innerHTML=`<div class="wrap ase-live-game-day-inner">
+    <div class="ase-live-game-day-head">
+      <div class="ase-live-title-row"><span class="ase-live-status-dot" aria-hidden="true"></span><div><span class="ase-live-kicker">${esc(stateLabel)}</span><h2>${esc(gameDay.headline||gameDay.matrixName||'Live Game-Day Updates')}</h2></div></div>
+      <div class="ase-live-game-day-stats"><span><b>${liveCount}</b> Live</span><span><b>${delayedCount}</b> Delayed</span><span><b>${upcomingCount}</b> Upcoming</span></div>
+    </div>
+    <p class="ase-live-message">${esc(gameDay.message||'Live fields, start times, delays, and weather updates from Adventure Sports.')}</p>
+    ${lightning.active?`<div class="ase-public-lightning" data-clear-at="${esc(lightning.clearAt||'')}"><strong>⚡ Lightning hold active</strong><span>Clearance timer: <b data-public-lightning-timer>Calculating…</b></span><small>Play resumes only after management confirms conditions are safe.</small></div>`:''}
+    ${games.length?`<div class="ase-live-game-grid">${games.map(g=>`<article class="ase-live-game ${esc(g.status)}"><div><span>Field ${esc(g.field)}</span><strong>${esc(g.time)}</strong></div><em>${esc(aseGameStatusLabel(g.status))}</em>${g.note?`<small>${esc(g.note)}</small>`:''}</article>`).join('')}</div>`:`<div class="ase-live-empty"><div><strong>No remaining games listed</strong><span>The live board will update automatically when games are added or changed.</span></div><a href="/events.html">View upcoming events</a></div>`}
+    <div class="ase-live-footer"><small>Updated ${gameDay.updatedAt?new Date(gameDay.updatedAt).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'live'}</small><span>Live updates from the Adventure Sports Operations Hub</span></div>
+  </div>`;
+  aseUpdatePublicLightningTimer();
+}
+function aseUpdatePublicLightningTimer(){
+  const hold=document.querySelector('.ase-public-lightning[data-clear-at]'),out=hold?.querySelector('[data-public-lightning-timer]');if(!hold||!out)return;
+  const clearAt=hold.dataset.clearAt;if(!clearAt){out.textContent='Active';return}
+  const ms=new Date(clearAt)-new Date();if(ms<=0){out.textContent='Clear period complete — awaiting management';return}
+  const total=Math.ceil(ms/1000),min=Math.floor(total/60),sec=total%60;out.textContent=`${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
 /* V3 one-second live facility status — preserves all polished design markup. */
 let aseLastLiveSignature='';
 
@@ -216,14 +261,16 @@ async function aseRefreshLiveStatus(){
   const signature=[
     live.fieldStatus||'',
     live.announcement||'',
-    live.updatedAt||''
+    live.updatedAt||'',
+    JSON.stringify(live.gameDay||null)
   ].join('|');
-  if(signature===aseLastLiveSignature)return;
+  if(signature===aseLastLiveSignature){aseUpdatePublicLightningTimer();return;}
   aseLastLiveSignature=signature;
 
   if(typeof renderFixedStatus==='function'){
     renderFixedStatus(live);
   }
+  aseRenderGameDayBoard(live.gameDay);
 }
 
 function aseStartLiveStatus(){
@@ -240,3 +287,14 @@ if(document.readyState==='loading'){
 document.addEventListener('visibilitychange',()=>{
   if(!document.hidden)aseRefreshLiveStatus();
 });
+
+
+/* V9.3.4 — Tournament Admission public page */
+async function loadAdmission(){
+  try{
+    const site = await getJSON('/content/site.json');
+    renderFixedStatus(site);
+  }catch(err){
+    console.warn('Admission page status could not be refreshed.', err);
+  }
+}

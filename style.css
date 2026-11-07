@@ -1117,3 +1117,95 @@ label{font-size:13px;color:#263651}
   #waiver .card,#refund .card{padding:28px 20px}
   .policy-hero{min-height:360px}
 }
+
+/* V9.2.1 polished public live game-day status board */
+.ase-live-game-day{position:relative;background:#f4f8fd;border-top:1px solid #d8e3f1;border-bottom:1px solid #d8e3f1;padding:28px 0;color:#071c3b;overflow:hidden}
+.ase-live-game-day:before{content:"";position:absolute;inset:0 auto 0 0;width:6px;background:#1768c5}
+.ase-live-game-day.delayed:before,.ase-live-game-day.lightning:before{background:#e39a22}
+.ase-live-game-day.live:before{background:#18a66a}
+.ase-live-game-day[hidden]{display:none!important}
+.ase-live-game-day-inner{display:grid;gap:16px}
+.ase-live-game-day-head{display:flex;justify-content:space-between;align-items:center;gap:24px}
+.ase-live-title-row{display:flex;align-items:center;gap:13px;min-width:0}
+.ase-live-status-dot{width:13px;height:13px;border-radius:50%;background:#1768c5;box-shadow:0 0 0 7px rgba(23,104,197,.11);flex:0 0 auto}
+.ase-live-game-day.delayed .ase-live-status-dot,.ase-live-game-day.lightning .ase-live-status-dot{background:#e39a22;box-shadow:0 0 0 7px rgba(227,154,34,.13)}
+.ase-live-game-day.live .ase-live-status-dot{background:#18a66a;box-shadow:0 0 0 7px rgba(24,166,106,.12)}
+.ase-live-kicker{display:block;color:#1558a7;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.14em;margin-bottom:3px}
+.ase-live-game-day.delayed .ase-live-kicker,.ase-live-game-day.lightning .ase-live-kicker{color:#9b5a00}
+.ase-live-game-day.live .ase-live-kicker{color:#087c4f}
+.ase-live-game-day h2{margin:0;font-size:clamp(22px,2.6vw,32px);line-height:1.08;letter-spacing:-.025em;color:#071c3b}
+.ase-live-message{margin:0;color:#53647c;max-width:900px;font-size:15px;line-height:1.55}
+.ase-live-game-day-stats{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.ase-live-game-day-stats span{background:#fff;border:1px solid #d2deed;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:800;color:#53647c;white-space:nowrap}
+.ase-live-game-day-stats b{color:#0a4f9f;margin-right:3px;font-size:14px}
+.ase-public-lightning{display:flex;align-items:center;gap:16px;flex-wrap:wrap;border-radius:14px;padding:14px 16px;background:#fff8eb;border:1px solid #edc878;color:#754400}
+.ase-public-lightning strong{font-size:14px}.ase-public-lightning span{font-weight:750}.ase-public-lightning small{color:#855d21}
+.ase-live-game-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.ase-live-game{background:#fff;border:1px solid #d2deed;border-radius:14px;padding:13px 14px;display:grid;grid-template-columns:1fr auto;gap:5px 12px;align-items:center;min-width:0;box-shadow:0 5px 18px rgba(11,40,79,.04)}
+.ase-live-game>div{display:grid;gap:2px}.ase-live-game span{font-size:11px;font-weight:900;color:#64748a;text-transform:uppercase;letter-spacing:.06em}
+.ase-live-game strong{font-size:19px;color:#071c3b}.ase-live-game em{font-style:normal;font-size:10px;font-weight:900;color:#0b5aab;background:#eaf3ff;border-radius:999px;padding:6px 9px}
+.ase-live-game.in-progress{border-color:#83d3ad;background:#fbfffd}.ase-live-game.in-progress em{background:#e2f7ec;color:#087c4f}
+.ase-live-game.delayed{border-color:#e5b761;background:#fffdfa}.ase-live-game.delayed em{background:#fff0d5;color:#9b5a00}
+.ase-live-game small{grid-column:1/-1;color:#6d7b8d;margin-top:2px}
+.ase-live-empty{display:flex;align-items:center;justify-content:space-between;gap:18px;background:#fff;border:1px solid #d2deed;border-radius:14px;padding:15px 17px;box-shadow:0 5px 18px rgba(11,40,79,.04)}
+.ase-live-empty>div{display:grid;gap:3px}.ase-live-empty strong{font-size:15px;color:#102a58}.ase-live-empty span{font-size:13px;color:#6b7b91}
+.ase-live-empty a{display:inline-flex;align-items:center;justify-content:center;border:1px solid #b9cee7;border-radius:10px;padding:9px 12px;color:#0b55a5;font-size:13px;font-weight:800;text-decoration:none;white-space:nowrap;background:#f8fbff}
+.ase-live-empty a:hover{background:#eaf3ff}
+.ase-live-footer{display:flex;justify-content:space-between;gap:16px;color:#78879b;font-size:11px}.ase-live-footer small{font-size:11px}.ase-live-footer span{text-align:right}
+@media(max-width:900px){.ase-live-game-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){
+ .ase-live-game-day{padding:21px 0}.ase-live-game-day:before{width:4px}
+ .ase-live-game-day-head{display:grid;gap:14px}.ase-live-game-day-stats{justify-content:flex-start}
+ .ase-live-game-grid{grid-template-columns:1fr}.ase-public-lightning{display:grid;gap:5px}
+ .ase-live-empty{align-items:flex-start;flex-direction:column}.ase-live-empty a{width:100%}
+ .ase-live-footer{display:grid;gap:3px}.ase-live-footer span{text-align:left}
+}
+
+
+
+/* V9.3.3 — Welcome / community mission section */
+#about .about-card{max-width:1080px}
+#about .about-card h2{max-width:820px;margin-left:auto;margin-right:auto}
+#aboutText{display:block;max-width:920px!important;margin:0 auto 18px!important;text-align:left}
+#aboutText .about-paragraph{display:block;margin:0 0 18px}
+#aboutText .about-paragraph:last-child{margin-bottom:0;font-weight:700;color:#173b6b}
+@media(max-width:760px){#aboutText{text-align:left!important}#aboutText .about-paragraph{margin-bottom:16px}}
+
+
+/* V9.3.4 — Tournament Admission + public navigation polish */
+.admission-nav-link{white-space:nowrap}
+.admission-nav-link.active,.admission-nav-link[aria-current="page"]{color:var(--yellow)}
+.events-admission-callout{max-width:980px;margin:0 auto 28px;display:flex;align-items:center;justify-content:space-between;gap:22px;padding:18px 20px;border-radius:16px;background:linear-gradient(135deg,#0d2d68,#1c5ab2);color:#fff;box-shadow:0 14px 34px rgba(18,64,137,.18)}
+.events-admission-callout span{display:grid;gap:5px}.events-admission-callout b{font-size:18px}.events-admission-callout small{font-size:13px;line-height:1.5;color:#dce9ff}.events-admission-callout strong{white-space:nowrap;font-size:13px;background:#fff;color:#164c99;padding:10px 13px;border-radius:10px}
+.admission-hero{position:relative;min-height:520px;display:flex;align-items:center;overflow:hidden;background:#081d45;color:#fff}
+.admission-hero::before{content:"";position:absolute;inset:0;background:linear-gradient(92deg,rgba(5,20,48,.97) 0%,rgba(10,40,88,.88) 48%,rgba(11,38,79,.58) 100%),url('/uploads/site/hero-aerial.jpg') center 42%/cover no-repeat;transform:scale(1.02)}
+.admission-hero::after{content:"";position:absolute;width:560px;height:560px;border-radius:50%;right:-220px;bottom:-300px;border:1px solid rgba(255,255,255,.13);box-shadow:0 0 0 70px rgba(255,255,255,.035),0 0 0 140px rgba(255,255,255,.02)}
+.admission-hero-inner{position:relative;z-index:2;padding:82px 0 78px}.admission-hero-copy{max-width:820px}
+.admission-hero h1{font-size:clamp(48px,7vw,84px);letter-spacing:-.055em;margin:8px 0 20px;text-shadow:0 12px 32px rgba(0,0,0,.3)}
+.admission-hero-copy>p:not(.page-kicker){max-width:760px;font-size:clamp(18px,2.1vw,23px);line-height:1.55;color:#e6efff;margin:0}
+.admission-inperson-pill{display:inline-flex;align-items:center;gap:10px;margin-top:28px;padding:11px 16px;border:1px solid rgba(255,255,255,.22);border-radius:999px;background:rgba(255,255,255,.1);backdrop-filter:blur(10px);font-size:13px;letter-spacing:.01em}
+.admission-inperson-pill span{width:9px;height:9px;border-radius:50%;background:#7ff0b9;box-shadow:0 0 0 6px rgba(127,240,185,.12)}
+.admission-summary-section{position:relative;z-index:4;margin-top:-58px;padding-bottom:42px}
+.admission-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.admission-stat-card{min-height:205px;padding:26px 28px;border:1px solid #d9e3f0;border-radius:22px;background:rgba(255,255,255,.98);box-shadow:0 20px 50px rgba(7,28,59,.13)}
+.admission-stat-card.primary{background:linear-gradient(145deg,#173f88,#0b285e);color:#fff;border-color:#274e93}
+.admission-stat-label{display:block;margin-bottom:16px;color:#62728a;font-size:11px;font-weight:950;letter-spacing:.12em;text-transform:uppercase}.admission-stat-card.primary .admission-stat-label{color:#bfd5ff}
+.admission-stat-card strong{display:block;color:#123f87;font-size:clamp(32px,4vw,48px);letter-spacing:-.04em;line-height:1}.admission-stat-card.primary strong{color:#fff}
+.admission-stat-card p{margin:14px 0 0;color:#66748a;font-size:14px;line-height:1.55}.admission-stat-card.primary p{color:#dbe8ff}
+.admission-section{padding:72px 0}.admission-two-col{display:grid;grid-template-columns:1.07fr .93fr;gap:34px;align-items:start}
+.admission-eyebrow{margin:0 0 10px;color:#1b5eb7;font-size:11px;font-weight:950;letter-spacing:.16em;text-transform:uppercase}
+.admission-copy-block{padding:20px 10px 10px 0}.admission-copy-block h2,.admission-section-head h2,.amenities-card h2,.enforcement-card h2,.admission-final h2{margin:0;color:#102b59;font-size:clamp(34px,4.6vw,54px);line-height:1.07;letter-spacing:-.045em}
+.admission-copy-block>p:not(.admission-eyebrow){font-size:17px;line-height:1.78;color:#526176;margin:22px 0}.admission-copy-block strong{color:#143f82}
+.admission-note{margin-top:26px;padding:18px 20px;border-left:4px solid #1b62bd;border-radius:0 14px 14px 0;background:#f0f5fc;color:#43536b;line-height:1.55}.admission-note b{color:#143f82}
+.admission-policy-card{position:relative;padding:34px;border-radius:24px;background:#0b214d;color:#fff;box-shadow:0 24px 54px rgba(7,28,59,.2);overflow:hidden}.admission-policy-card::after{content:"";position:absolute;right:-90px;top:-90px;width:240px;height:240px;border-radius:50%;background:rgba(62,128,221,.14)}
+.policy-chip{position:relative;z-index:2;display:inline-flex;padding:7px 10px;border-radius:999px;background:#eaf2ff;color:#174f9f;font-size:10px;font-weight:950;letter-spacing:.12em;text-transform:uppercase}.admission-policy-card h3{position:relative;z-index:2;margin:15px 0 24px;font-size:30px;letter-spacing:-.03em}
+.policy-row{position:relative;z-index:2;display:grid;grid-template-columns:38px 1fr;gap:14px;padding:15px 0;border-top:1px solid rgba(255,255,255,.13)}.policy-row>span{width:34px;height:34px;border-radius:10px;background:#173b7e;display:grid;place-items:center;color:#aecdff;font-size:11px;font-weight:900}.policy-row p{margin:0;color:#dbe6f8;font-size:14px;line-height:1.5}.policy-row b{color:#fff;font-size:15px}
+.admission-rules-section{padding:78px 0;background:linear-gradient(180deg,#f4f7fb,#edf3f9);border-top:1px solid #e2e8f0;border-bottom:1px solid #e0e7ef}.admission-section-head{max-width:850px;margin:0 auto 34px;text-align:center}.admission-section-head>p:last-child{max-width:680px;margin:16px auto 0;color:#637187;line-height:1.6}
+.conduct-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.conduct-grid article{padding:25px 22px;border:1px solid #dae4ef;border-radius:20px;background:#fff;box-shadow:0 12px 30px rgba(18,49,88,.06)}.conduct-grid article>span{display:inline-flex;margin-bottom:18px;padding:6px 9px;border-radius:8px;background:#edf4ff;color:#1959ab;font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.11em}.conduct-grid h3{margin:0 0 10px;color:#102c59;font-size:19px;line-height:1.22}.conduct-grid p{margin:0;color:#66758a;font-size:14px;line-height:1.6}
+.admission-amenities-section{padding:78px 0}.amenities-layout{align-items:stretch}.amenities-card{padding:12px 10px 8px 0}.amenities-card>p:not(.admission-eyebrow){color:#66758a;font-size:17px;line-height:1.7}.amenity-list{display:grid;gap:10px;margin-top:28px}.amenity-list>div{display:grid;gap:4px;padding:16px 17px;border:1px solid #dce5ef;border-radius:14px;background:#f9fbfe}.amenity-list b{color:#123a76}.amenity-list span{color:#69778b;font-size:13px;line-height:1.45}
+.admission-photo-card{min-height:540px;border-radius:26px;overflow:hidden;position:relative;background:linear-gradient(180deg,rgba(5,22,51,.08),rgba(5,22,51,.82)),url('/uploads/site/hero-aerial.jpg') center/cover no-repeat;box-shadow:0 25px 60px rgba(7,28,59,.18)}.admission-photo-card>div{position:absolute;left:30px;right:30px;bottom:30px;color:#fff}.admission-photo-card span{display:block;margin-bottom:7px;color:#d6e6ff;font-size:11px;font-weight:950;letter-spacing:.13em;text-transform:uppercase}.admission-photo-card strong{font-size:clamp(30px,4vw,48px);line-height:1.03;letter-spacing:-.045em}
+.enforcement-section{padding:0 0 78px}.enforcement-card{display:grid;grid-template-columns:.8fr 1.2fr;gap:34px;align-items:center;padding:42px 46px;border-radius:26px;background:linear-gradient(135deg,#071a3c,#102f67 70%,#173f83);color:#fff;box-shadow:0 24px 55px rgba(7,28,59,.18)}.enforcement-card .admission-eyebrow{color:#a9c8ff}.enforcement-card h2{color:#fff}.enforcement-card>p{margin:0;color:#d9e6f7;font-size:16px;line-height:1.72}.enforcement-card strong{color:#fff}
+.admission-final{padding:72px 0;text-align:center;background:#f4f7fb;border-top:1px solid #e0e7ef}.admission-final p{max-width:700px;margin:16px auto 0;color:#65738a;font-size:16px;line-height:1.6}
+@media(max-width:1120px){.top-nav .nav-group{gap:14px}.admission-nav-link{font-size:12px}}
+@media(max-width:900px){.events-admission-callout{align-items:flex-start;flex-direction:column}.events-admission-callout strong{width:100%;text-align:center}.admission-stat-grid{grid-template-columns:1fr}.admission-summary-section{margin-top:-36px}.admission-two-col,.enforcement-card{grid-template-columns:1fr}.conduct-grid{grid-template-columns:1fr 1fr}.admission-photo-card{min-height:420px}.admission-copy-block,.amenities-card{padding-right:0}}
+@media(max-width:620px){.admission-hero{min-height:500px}.admission-hero-inner{padding:68px 0 64px}.admission-hero h1{font-size:46px}.admission-hero-copy>p:not(.page-kicker){font-size:17px}.admission-inperson-pill{align-items:flex-start;border-radius:16px;line-height:1.4}.admission-summary-section{margin-top:-28px}.admission-stat-card{min-height:0;padding:23px}.admission-section,.admission-rules-section,.admission-amenities-section{padding:58px 0}.admission-two-col{gap:24px}.admission-policy-card{padding:25px 20px}.conduct-grid{grid-template-columns:1fr}.admission-section-head{text-align:left}.admission-section-head>p:last-child{margin-left:0}.admission-photo-card{min-height:350px}.admission-photo-card>div{left:22px;right:22px;bottom:22px}.enforcement-section{padding-bottom:58px}.enforcement-card{padding:30px 22px;gap:20px;border-radius:20px}.admission-final{padding:58px 0}}
