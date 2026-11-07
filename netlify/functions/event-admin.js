@@ -27,11 +27,15 @@ async function countsFor(ids){
 }
 function legacyToEvent(e){
   const title=clean(e.title,220),start=clean(e.startDate,10),end=clean(e.endDate||e.startDate,10);
+  const category=clean(e.category,120)||'Tournaments';
   const key=`legacy:${slugify(title)}:${start}`;
+  const lower=(category+' '+title).toLowerCase();
+  const registrationType=/camp|clinic|training|individual/.test(lower)?'individual':'team';
+  const noSignup=/private rental|rental|facility closure|closed/.test(lower);
   return {
-    source_key:key,slug:slugify(title+'-'+start),title,description:clean(e.description,8000),category:clean(e.category,120)||'Tournaments',sport:clean(e.category,120),event_kind:'Tournament',status:'published',is_public:true,featured:!!e.featured,
+    source_key:key,slug:slugify(title+'-'+start),title,description:clean(e.description,8000),category,sport:category,event_kind:'Tournament',status:'published',is_public:true,featured:!!e.featured,
     start_date:start,end_date:end,location_name:'Adventure Sports & Entertainment',location_address:clean(e.location,1000)||'515 Monmouth Rd, Building 200, Jackson Township, NJ 08527',price_display:clean(e.price,240)||'See event details',
-    divisions:[],signup_mode:e.register?'external':'none',registration_type:'team',registration_state:'auto',waitlist_enabled:true,external_registration_url:clean(e.register,1000)||null,
+    divisions:[],signup_mode:noSignup?'none':'internal',registration_type:registrationType,registration_state:'auto',waitlist_enabled:true,external_registration_url:clean(e.register,1000)||null,
     image_url:clean(e.image,1000)||null,logo_url:clean(e.logo,1000)||null,legacy_data:e
   };
 }
@@ -76,14 +80,18 @@ exports.handler=async event=>{try{
   }
   if(postAction==='import'){
     const incoming=Array.isArray(b.events)?b.events.slice(0,500):[];if(!incoming.length)throw error('No website events were provided.',400);
-    let imported=0,updated=0,skipped=0;
+    let skipped=0;
+    const now=new Date().toISOString();
+    const rows=[];
     for(const raw of incoming){
       const x=legacyToEvent(raw);if(!x.title||!x.start_date){skipped++;continue}
-      const {data:existing}=await supabase(`event_catalog?source_key=eq.${encodeURIComponent(x.source_key)}&select=id`);
-      if(existing?.[0]){x.updated_by=actor.user.id;x.updated_at=new Date().toISOString();await supabase(`event_catalog?id=eq.${encodeURIComponent(existing[0].id)}`,{method:'PATCH',body:x,headers:{Prefer:'return=minimal'}});updated++}
-      else{x.created_by=actor.user.id;x.updated_by=actor.user.id;await supabase('event_catalog',{method:'POST',body:x,headers:{Prefer:'return=minimal'}});imported++}
+      x.created_by=actor.user.id;x.updated_by=actor.user.id;x.updated_at=now;rows.push(x);
     }
-    await logEvent(event,actor,'events_imported','success',{imported,updated,skipped});return json(200,{ok:true,imported,updated,skipped});
+    if(!rows.length)throw error('No valid website events were found to import.',400);
+    // One bulk UPSERT instead of hundreds of sequential database calls. This avoids Netlify timeouts.
+    await supabase('event_catalog?on_conflict=source_key',{method:'POST',body:rows,headers:{Prefer:'resolution=merge-duplicates,return=minimal'}});
+    await logEvent(event,actor,'events_imported','success',{synced:rows.length,skipped});
+    return json(200,{ok:true,imported:rows.length,updated:0,synced:rows.length,skipped});
   }
   if(postAction==='registration-status'){
     const id=clean(b.registration_id,80),status=clean(b.status,40);if(!ID.test(id))throw error('Invalid registration ID.',400);if(!['pending','confirmed','waitlisted','cancelled'].includes(status))throw error('Invalid registration status.',400);

@@ -9,6 +9,11 @@ const post=body=>window.ASE_OPS.api(ENDPOINT,{method:'POST',headers:{'Content-Ty
 const toast=m=>window.ASE_OPS.toast?.(m);
 const fmtDate=v=>{if(!v)return 'No date';const d=new Date(v+'T12:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})};
 const statusLabel=v=>({draft:'Draft',published:'Published',cancelled:'Cancelled',completed:'Completed'}[v]||v||'Draft');
+const friendlyError=e=>{const m=String(e?.message||e||'Something went wrong.');if(/inactivity timeout|<html|page not found/i.test(m))return 'The event sync took too long. The new bulk-sync fix prevents this once deployed.';return m};
+async function websiteEventsSource(){
+  const r=await fetch('/content/events.json?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('Could not load the current website events file.');
+  const d=await r.json(),events=Array.isArray(d)?d:d.events;if(!Array.isArray(events))throw Error('The website events file is not in the expected format.');return events;
+}
 
 function setNotice(message,type='success'){
   const el=$('#eventManagerNotice');if(!el)return;el.textContent=message;el.className='publish-notice '+type;el.hidden=!message;
@@ -76,10 +81,20 @@ async function saveEvent(ev){
 }
 async function duplicateEvent(){if(!state.selected?.id)return;try{const d=await post({action:'duplicate',id:state.selected.id});toast('Event duplicated as a draft');await refreshEvents(false);openEvent(d.event.id)}catch(e){setNotice(e.message,'error')}}
 async function deleteEvent(){if(!state.selected?.id)return;if(!confirm(`Delete “${state.selected.title}” and all of its registrations? This cannot be undone.`))return;try{await post({action:'delete',id:state.selected.id});toast('Event deleted');state.selected=null;state.registrations=[];await refreshEvents(false);$('#eventEditorForm').hidden=true;$('#eventEditorEmpty').hidden=false}catch(e){setNotice(e.message,'error')}}
-async function importWebsiteEvents(){
-  if(!confirm('Import the events currently published in content/events.json? Existing imported events will be updated instead of duplicated.'))return;const btn=$('#eventImportButton');btn.disabled=true;btn.textContent='Importing…';
-  try{const r=await fetch('/content/events.json?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('Could not load the current website events file.');const d=await r.json(),events=Array.isArray(d)?d:d.events;if(!Array.isArray(events))throw Error('The website events file is not in the expected format.');const out=await post({action:'import',events});setNotice(`Import complete: ${out.imported} added, ${out.updated} updated, ${out.skipped} skipped.`);toast('Website events imported');await refreshEvents(false)}catch(e){setNotice(e.message,'error')}finally{btn.disabled=false;btn.textContent='Import Current Website Events'}
+async function syncWebsiteEvents({ask=false,silent=false}={}){
+  if(ask&&!confirm('Sync every event currently published in content/events.json into Event Management? Existing imported events will be updated instead of duplicated.'))return false;
+  const btn=$('#eventImportButton');if(btn){btn.disabled=true;btn.textContent='Syncing…'}
+  try{
+    if(!silent)setNotice('Syncing the events already published on the website…');
+    const events=await websiteEventsSource();
+    const out=await post({action:'import',events});
+    if(!silent)setNotice(`Sync complete: ${out.synced||out.imported||events.length} website events are now in Event Management.`);
+    toast(`${out.synced||out.imported||events.length} website events synced`);
+    return true;
+  }catch(e){setNotice(friendlyError(e),'error');return false}
+  finally{if(btn){btn.disabled=false;btn.textContent='Sync Website Events'}}
 }
+async function importWebsiteEvents(){const ok=await syncWebsiteEvents({ask:true});if(ok)await refreshEvents(false,false)}
 async function loadRegistrations(id){
   const body=$('#eventRegistrationRows');if(body)body.innerHTML='<tr><td colspan="7">Loading registrations…</td></tr>';try{const d=await window.ASE_OPS.api(ENDPOINT+'?action=registrations&event_id='+encodeURIComponent(id));state.registrations=d.registrations||[];renderRegistrations()}catch(e){if(body)body.innerHTML=`<tr><td colspan="7">${esc(e.message)}</td></tr>`}
 }
@@ -96,11 +111,17 @@ function closeRegistrationDetail(){$('#eventRegistrationModal').hidden=true;docu
 function exportCSV(){
   const regs=state.registrations||[];if(!regs.length)return toast('No registrations to export');const cols=['registration_number','status','registration_type','team_name','participant_name','organization_name','division','registrant_name','email','phone','city','state','created_at'];const q=v=>'"'+String(v??'').replaceAll('"','""')+'"';const csv=[cols.join(','),...regs.map(r=>cols.map(c=>q(r[c])).join(','))].join('\n');const blob=new Blob([csv],{type:'text/csv'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`${(state.selected?.slug||'event')}-registrations.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)
 }
-async function refreshEvents(preserve=true){
-  const d=await api('list');state.events=d.events||[];state.loaded=true;renderList();if(preserve&&state.selected?.id){const fresh=state.events.find(x=>x.id===state.selected.id);if(fresh){state.selected=JSON.parse(JSON.stringify(fresh));fillEditor(state.selected)}}
+async function refreshEvents(preserve=true,autoSync=true){
+  const d=await api('list');state.events=d.events||[];state.loaded=true;
+  if(autoSync&&state.events.length===0){
+    setNotice('Your event database is empty. Syncing every event already published on the website…');
+    const ok=await syncWebsiteEvents({silent:true});
+    if(ok)return refreshEvents(preserve,false);
+  }
+  renderList();if(preserve&&state.selected?.id){const fresh=state.events.find(x=>x.id===state.selected.id);if(fresh){state.selected=JSON.parse(JSON.stringify(fresh));fillEditor(state.selected)}}
 }
 async function load(){
-  if(state.loaded){renderList();return}const list=$('#eventManagerList');if(list)list.innerHTML='<div class="event-admin-empty"><b>Loading events…</b></div>';try{await refreshEvents(false)}catch(e){setNotice(e.message,'error');if(list)list.innerHTML=`<div class="event-admin-empty error"><b>Event database is not ready.</b><span>${esc(e.message)}</span><small>Run EVENT-ENGINE-SETUP.sql in Supabase, then press Refresh.</small></div>`}
+  if(state.loaded){renderList();return}const list=$('#eventManagerList');if(list)list.innerHTML='<div class="event-admin-empty"><b>Loading events…</b><span>If the database is empty, your published website events will sync automatically.</span></div>';try{await refreshEvents(false,true)}catch(e){const msg=friendlyError(e);setNotice(msg,'error');if(list)list.innerHTML=`<div class="event-admin-empty error"><b>Event database is not ready.</b><span>${esc(msg)}</span><small>Run EVENT-ENGINE-SETUP.sql in Supabase once, then press Refresh.</small></div>`}
 }
 function bind(){
   $('#eventNewButton')?.addEventListener('click',newEvent);$('#eventRefreshButton')?.addEventListener('click',()=>refreshEvents(false));$('#eventImportButton')?.addEventListener('click',importWebsiteEvents);$('#eventEditorForm')?.addEventListener('submit',saveEvent);$('#eventDuplicateButton')?.addEventListener('click',duplicateEvent);$('#eventDeleteButton')?.addEventListener('click',deleteEvent);$('#eventAddQuestion')?.addEventListener('click',addQuestion);$('#eventManagerSearch')?.addEventListener('input',renderList);$('#eventManagerStatusFilter')?.addEventListener('change',renderList);$('#eventManagerCategoryFilter')?.addEventListener('change',renderList);$('#eventRegistrationExport')?.addEventListener('click',exportCSV);$$('[data-event-editor-tab]').forEach(b=>b.onclick=()=>selectTab(b.dataset.eventEditorTab));['signup_mode','registration_type'].forEach(n=>editorField(n)?.addEventListener('change',updateModeUI));$$('[data-event-registration-close]').forEach(x=>x.onclick=closeRegistrationDetail);$('#eventRegistrationSave')?.addEventListener('click',saveRegistrationDetail);$('#eventRegistrationDelete')?.addEventListener('click',deleteRegistrationDetail);
