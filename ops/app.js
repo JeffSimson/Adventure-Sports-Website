@@ -5,7 +5,7 @@ const app=$('#app'), gate=$('#loginGate'), sidebar=$('#sidebar');
 const AUTH_KEY='ase_ops_identity_session_v2';
 const TRUSTED_DEVICE_KEY='ase_trusted_device_v1';
 const APP_VERSION='10.0.6';
-const APP_BUILD='10007';
+const APP_BUILD='10008';
 async function ensureFreshBuild(){
   try{
     const key='ase_ops_build',previous=localStorage.getItem(key);
@@ -82,7 +82,7 @@ async function api(url,options={}){
   for(let attempt=0;attempt<attempts;attempt++){
     try{
       const r=await fetch(url,{cache:'no-store',...options,headers:authHeaders(options.headers||{})});
-      let d={};const raw=await r.text();if(raw){try{d=JSON.parse(raw)}catch{d={error:/<html|<!doctype/i.test(raw)?'Operations backend endpoint is missing from this Netlify deploy. Deploy the complete V10.0.7 backend package.':raw.slice(0,300)}}}
+      let d={};const raw=await r.text();if(raw){try{d=JSON.parse(raw)}catch{d={error:/<html|<!doctype/i.test(raw)?'Operations backend endpoint is missing from this Netlify deploy. Deploy the complete V10.0.8 backend package.':raw.slice(0,300)}}}
       if(!r.ok){const error=Error(d.error||d.message||`Request failed (${r.status}).`);error.status=r.status;if(attempt+1<attempts&&[502,503,504].includes(r.status)){lastError=error;await new Promise(resolve=>setTimeout(resolve,450));continue}throw error}
       return d;
     }catch(error){lastError=error;if(attempt+1>=attempts)throw error;await new Promise(resolve=>setTimeout(resolve,450))}
@@ -116,7 +116,7 @@ function applyPermissions(){
 async function securityRequest(url,options={}){
   const s=await ensure();if(!s)throw Error('You are not signed in.');
   const r=await fetch(url,{cache:'no-store',...options,headers:authHeaders(options.headers||{})});
-  const raw=await r.text();let d={};if(raw){try{d=JSON.parse(raw)}catch{d={error:/<html|<!doctype/i.test(raw)?'Operations backend endpoint is missing from this Netlify deploy. Deploy the complete V10.0.7 backend package.':raw.slice(0,300)}}}
+  const raw=await r.text();let d={};if(raw){try{d=JSON.parse(raw)}catch{d={error:/<html|<!doctype/i.test(raw)?'Operations backend endpoint is missing from this Netlify deploy. Deploy the complete V10.0.8 backend package.':raw.slice(0,300)}}}
   if(!r.ok)throw Error(d.error||d.message||`Request failed (${r.status}).`);return d;
 }
 function openSecurityModal(info){

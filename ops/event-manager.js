@@ -70,6 +70,8 @@ function updatePreviewLink(){const a=$('#eventPreviewButton');if(!a)return;const
 function collect(){
   const e={...state.selected};
   ['title','short_title','description','category','sport','event_kind','status','start_date','end_date','start_time','end_time','timezone','location_name','location_address','price_display','signup_mode','registration_type','registration_state','external_registration_url','image_url','logo_url','banner_url','admission_price','admission_note','rules_url','waiver_url','contact_name','contact_email','contact_phone','seo_title','seo_description','admin_notes'].forEach(k=>e[k]=getField(k));
+  // Send blank optional database fields as null, never empty strings.
+  e.start_time=String(e.start_time||'').trim()||null;e.end_time=String(e.end_time||'').trim()||null;
   e.is_public=!!getField('is_public');e.featured=!!getField('featured');e.waitlist_enabled=!!getField('waitlist_enabled');e.capacity=getField('capacity')||null;e.event_fee=getField('event_fee')||null;
   e.divisions=String(getField('divisions')||'').split(',').map(x=>x.trim()).filter(Boolean);e.registration_questions=state.questions.map((q,i)=>({...q,id:q.id||`q${i+1}`,label:String(q.label||'').trim()})).filter(q=>q.label);
   const oa=getField('registration_open_at'),ca=getField('registration_close_at');e.registration_open_at=oa?new Date(oa).toISOString():null;e.registration_close_at=ca?new Date(ca).toISOString():null;

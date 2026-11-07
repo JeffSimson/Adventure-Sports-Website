@@ -12,9 +12,13 @@ function picked(input){const out={};for(const k of EVENT_FIELDS)if(Object.protot
 function normalizeEvent(input){
   const o=picked(input||{});
   for(const k of ['title','short_title','description','category','sport','event_kind','status','timezone','location_name','location_address','price_display','signup_mode','registration_type','registration_state','external_registration_url','image_url','logo_url','banner_url','admission_price','admission_note','rules_url','waiver_url','contact_name','contact_email','contact_phone','seo_title','seo_description','admin_notes','source_key'])if(k in o)o[k]=clean(o[k],k==='description'||k==='admin_notes'||k==='admission_note'?8000:1000)||null;
+  // PostgreSQL time/date/timestamp columns must receive NULL rather than an empty string.
+  for(const k of ['start_time','end_time'])if(k in o)o[k]=clean(o[k],32)||null;
+  for(const k of ['start_date','end_date'])if(k in o)o[k]=clean(o[k],16)||null;
+  for(const k of ['registration_open_at','registration_close_at'])if(k in o)o[k]=clean(o[k],64)||null;
   if('divisions'in o)o.divisions=normalizeArray(o.divisions);
   if('registration_questions'in o)o.registration_questions=Array.isArray(o.registration_questions)?o.registration_questions.slice(0,30).map((q,i)=>({id:clean(q.id,80)||`q${i+1}`,label:clean(q.label,180),type:['text','textarea','select','checkbox'].includes(q.type)?q.type:'text',required:!!q.required,options:normalizeArray(q.options)})).filter(q=>q.label):[];
-  if('capacity'in o)o.capacity=o.capacity?Math.max(1,Number(o.capacity)||1):null;
+  if('capacity'in o)o.capacity=o.capacity===''||o.capacity==null?null:Math.max(1,Number(o.capacity)||1);
   if('event_fee'in o)o.event_fee=o.event_fee===''||o.event_fee==null?null:Number(o.event_fee);
   if('is_public'in o)o.is_public=!!o.is_public;if('featured'in o)o.featured=!!o.featured;if('waitlist_enabled'in o)o.waitlist_enabled=!!o.waitlist_enabled;
   if(!o.slug&&o.title)o.slug=slugify(o.title+'-'+(o.start_date||''));else if(o.slug)o.slug=slugify(o.slug);

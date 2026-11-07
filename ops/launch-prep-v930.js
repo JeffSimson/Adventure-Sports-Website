@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-const BUILD='10007',VERSION='10.0.7',LAUNCH_API='/.netlify/functions/launch-settings',REGISTER_API='/.netlify/functions/notification-register',DATA_API='/.netlify/functions/notification-data';
+const BUILD='10008',VERSION='10.0.8',LAUNCH_API='/.netlify/functions/launch-settings',REGISTER_API='/.netlify/functions/notification-register',DATA_API='/.netlify/functions/notification-data';
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const role=()=>window.ASE_OPS?.role?.()||document.body.dataset.role||'';
