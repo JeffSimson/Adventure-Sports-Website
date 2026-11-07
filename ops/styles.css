@@ -2085,8 +2085,9 @@ html,body{max-width:100%;overflow-x:hidden}
 
 .event-registration-modal{position:fixed;inset:0;z-index:10050;display:grid;place-items:center;padding:18px}
 .event-registration-modal[hidden]{display:none!important}
-.event-registration-modal>.modal-backdrop{position:absolute;inset:0;background:rgba(3,17,36,.64);backdrop-filter:blur(5px)}
-.event-registration-detail-card{position:relative;z-index:1;width:min(820px,calc(100vw - 32px));max-height:min(880px,92vh);overflow:auto;background:#fff;border:1px solid rgba(214,225,236,.9);border-radius:22px;box-shadow:0 30px 80px rgba(2,18,38,.28)}
+.event-registration-modal{isolation:isolate;overflow:auto;overscroll-behavior:contain}
+.event-registration-modal>.modal-backdrop{position:absolute!important;inset:0;background:rgba(3,17,36,.64);backdrop-filter:blur(5px);z-index:0!important;cursor:pointer}
+.event-registration-detail-card{position:relative;z-index:2!important;width:min(820px,calc(100vw - 32px));max-height:min(880px,92vh);overflow:auto;background:#fff;border:1px solid rgba(214,225,236,.9);border-radius:22px;box-shadow:0 30px 80px rgba(2,18,38,.28)}
 .event-registration-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:22px 24px 18px;border-bottom:1px solid #e3eaf2;background:linear-gradient(135deg,#f8fbff,#fff)}
 .event-registration-modal-head h2{margin:2px 0 4px;color:#0d2949;letter-spacing:-.025em}.event-registration-modal-head p{margin:0;color:#75859a;font-size:12px}
 .event-registration-close{width:38px;height:38px;border-radius:12px;background:#f1f5f9;border:1px solid #dbe4ed;color:#35506e;font-size:22px}
@@ -2106,3 +2107,14 @@ body.modal-open{overflow:hidden}
 
 @media(max-width:900px){.event-registration-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.event-email-badge{display:none}.event-registration-table{overflow:auto}.event-registration-table table{min-width:780px}.event-editor-tabs{top:0}}
 @media(max-width:620px){.event-registration-stats{grid-template-columns:1fr 1fr}.event-registration-detail{padding:16px}.event-registration-modal-head{padding:18px}.event-reg-detail-grid{grid-template-columns:1fr}.event-registration-modal-actions{padding:14px 16px;display:grid}.event-registration-modal-actions>div{display:grid;grid-template-columns:1fr 1fr}.event-registration-modal-actions>button{width:100%}}
+
+
+/* V10.0.7B — signup detail modal layer + usability fix */
+.event-registration-modal{align-items:center!important;justify-items:center!important}
+.event-registration-detail-card{isolation:isolate;transform:translateZ(0);animation:eventRegModalIn .18s ease-out}
+@keyframes eventRegModalIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+.event-registration-modal-head{position:sticky;top:0;z-index:4}
+.event-registration-close{cursor:pointer;display:grid;place-items:center;flex:0 0 auto}
+.event-registration-close:hover{background:#e6eef7;color:#0d4f8e}
+.event-registration-detail-card:focus{outline:none}
+@media(max-width:760px){.event-registration-modal{padding:0!important;align-items:end!important}.event-registration-detail-card{width:100%!important;max-height:94dvh!important;border-radius:22px 22px 0 0!important}}
