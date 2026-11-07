@@ -1,0 +1,28 @@
+Adventure Sports V10.0.8 — Public Event Page Polish
+
+SAFE PUBLIC-SITE PATCH ONLY.
+This does not touch /ops, Netlify Functions, Supabase, authentication, or content/events.json.
+
+FILES INCLUDED:
+- event.html
+- style.css
+
+INSTALL:
+1. Back up your current event.html and style.css.
+2. Copy event.html and style.css into the ROOT of your Adventure Sports website repo.
+3. Replace the existing files when prompted.
+4. Commit in GitHub Desktop: V10.0.8 polish public event pages
+5. Push origin and let Netlify publish.
+6. Open any event in an Incognito window or hard refresh.
+
+CHANGES:
+- Removes the giant loading gap.
+- Compact loading/error state.
+- Cleaner navy event hero.
+- Better desktop and mobile spacing.
+- Premium event detail cards.
+- Four-column quick facts on large screens.
+- Cleaner Admission / Rules & Safety cards.
+- Better sticky registration card and form controls.
+- Green registration CTA.
+- No changes to event data or signup backend.
