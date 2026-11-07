@@ -2118,3 +2118,14 @@ body.modal-open{overflow:hidden}
 .event-registration-close:hover{background:#e6eef7;color:#0d4f8e}
 .event-registration-detail-card:focus{outline:none}
 @media(max-width:760px){.event-registration-modal{padding:0!important;align-items:end!important}.event-registration-detail-card{width:100%!important;max-height:94dvh!important;border-radius:22px 22px 0 0!important}}
+
+
+/* V10.0.8A — Upcoming/Past event library */
+.event-admin-browser-head{display:grid;gap:12px}
+.event-time-view-tabs{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:5px;background:#eef3f8;border:1px solid #dfe7f0;border-radius:12px}
+.event-time-view-tabs button{appearance:none;border:0;background:transparent;color:#607086;border-radius:9px;padding:9px 8px;font:inherit;font-size:12px;font-weight:850;cursor:pointer;transition:.15s ease;white-space:nowrap}
+.event-time-view-tabs button:hover{background:#f8fbff;color:#1a4e82}
+.event-time-view-tabs button.active{background:#fff;color:#0c5da8;box-shadow:0 2px 8px rgba(17,62,105,.10)}
+.event-time-view-tabs button span{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;margin-left:4px;padding:0 5px;border-radius:999px;background:#dbe6f2;color:#49647e;font-size:10px;font-weight:900}
+.event-time-view-tabs button.active span{background:#e4f2ff;color:#0c5da8}
+@media(max-width:620px){.event-time-view-tabs{grid-template-columns:1fr 1fr}.event-time-view-tabs button{font-size:11px;padding:9px 5px}}

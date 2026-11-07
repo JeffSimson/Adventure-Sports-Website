@@ -2,7 +2,7 @@
 'use strict';
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const ENDPOINT='/.netlify/functions/event-admin';
-const state={events:[],selected:null,registrations:[],loaded:false,questions:[]};
+const state={events:[],selected:null,registrations:[],loaded:false,questions:[],timeView:'upcoming'};
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const api=(action,options={})=>window.ASE_OPS.api(ENDPOINT+(action?'?action='+encodeURIComponent(action):''),options);
 const post=body=>window.ASE_OPS.api(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
@@ -22,13 +22,37 @@ function editorField(name){return $(`[name="${name}"]`,$('#eventEditorForm'))}
 function setField(name,value){const el=editorField(name);if(!el)return;if(el.type==='checkbox')el.checked=!!value;else el.value=value??''}
 function getField(name){const el=editorField(name);if(!el)return null;return el.type==='checkbox'?el.checked:el.value}
 function counts(e){const s=e.registration_stats||{};return {total:Number(s.total||0),confirmed:Number(s.confirmed||0),waitlisted:Number(s.waitlisted||0),pending:Number(s.pending||0)}}
+function todayKey(){
+  const parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).reduce((a,p)=>(a[p.type]=p.value,a),{});
+  return `${parts.year}-${parts.month}-${parts.day}`;
+}
+function isPastEvent(e){
+  const end=String(e.end_date||e.start_date||'').slice(0,10);
+  return !!end && /^\d{4}-\d{2}-\d{2}$/.test(end) && end<todayKey();
+}
+function eventsForView(view=state.timeView){
+  return state.events.filter(e=>view==='past'?isPastEvent(e):!isPastEvent(e));
+}
 function renderStats(){
-  const events=state.events, published=events.filter(e=>e.status==='published'&&e.is_public).length, internal=events.filter(e=>e.signup_mode==='internal').length, totalRegs=events.reduce((a,e)=>a+counts(e).total,0);
+  const events=eventsForView('upcoming'), published=events.filter(e=>e.status==='published'&&e.is_public).length, internal=events.filter(e=>e.signup_mode==='internal').length, totalRegs=events.reduce((a,e)=>a+counts(e).total,0);
   const map={eventStatTotal:events.length,eventStatPublished:published,eventStatInternal:internal,eventStatRegistrations:totalRegs};for(const [id,v] of Object.entries(map)){const el=$('#'+id);if(el)el.textContent=v}
+  const pastCount=$('#eventPastCount');if(pastCount)pastCount.textContent=state.events.filter(isPastEvent).length;
 }
 function filteredEvents(){
   const q=($('#eventManagerSearch')?.value||'').toLowerCase().trim(),status=$('#eventManagerStatusFilter')?.value||'all',sport=$('#eventManagerCategoryFilter')?.value||'all';
-  return state.events.filter(e=>(!q||[e.title,e.category,e.sport,e.description].some(x=>String(x||'').toLowerCase().includes(q)))&&(status==='all'||e.status===status)&&(sport==='all'||e.category===sport));
+  const rows=eventsForView().filter(e=>(!q||[e.title,e.category,e.sport,e.description].some(x=>String(x||'').toLowerCase().includes(q)))&&(status==='all'||e.status===status)&&(sport==='all'||e.category===sport));
+  return rows.sort((a,b)=>{
+    const ad=String((state.timeView==='past'?(a.end_date||a.start_date):(a.start_date||a.end_date))||'9999-12-31');
+    const bd=String((state.timeView==='past'?(b.end_date||b.start_date):(b.start_date||b.end_date))||'9999-12-31');
+    return state.timeView==='past'?bd.localeCompare(ad):ad.localeCompare(bd);
+  });
+}
+function setTimeView(view){
+  state.timeView=view==='past'?'past':'upcoming';
+  $('#eventUpcomingButton')?.classList.toggle('active',state.timeView==='upcoming');
+  $('#eventPastButton')?.classList.toggle('active',state.timeView==='past');
+  const title=$('#eventManagerLibraryTitle');if(title)title.textContent=state.timeView==='past'?'Past Events':'Upcoming Events';
+  renderList();
 }
 function renderFilters(){
   const el=$('#eventManagerCategoryFilter');if(!el)return;const current=el.value||'all',cats=[...new Set(state.events.map(e=>e.category).filter(Boolean))].sort();el.innerHTML='<option value="all">All categories</option>'+cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');if([...el.options].some(o=>o.value===current))el.value=current;
@@ -39,7 +63,7 @@ function renderList(){
     <div class="event-admin-card-top"><span class="event-status ${esc(e.status)}">${esc(statusLabel(e.status))}</span><span class="event-admin-date">${esc(fmtDate(e.start_date))}${e.end_date&&e.end_date!==e.start_date?' – '+esc(fmtDate(e.end_date)):''}</span></div>
     <strong>${esc(e.title)}</strong><small>${esc(e.category||e.sport||'Event')} • ${esc(e.signup_mode==='internal'?'Adventure Signup':e.signup_mode==='external'?'External signup':'No signup')}</small>
     <div class="event-admin-card-metrics"><span><b>${c.total}</b> signups</span>${e.capacity?`<span><b>${esc(e.capacity)}</b> capacity</span>`:''}</div>
-  </button>`}).join('')||'<div class="event-admin-empty"><b>No events match these filters.</b><span>Try another search or create a new event.</span></div>';
+  </button>`}).join('')||`<div class="event-admin-empty"><b>${state.timeView==='past'?'No past events match these filters.':'No upcoming events match these filters.'}</b><span>${state.timeView==='past'?'Try another search or return to Upcoming Events.':'Try another search or create a new event.'}</span></div>`;
   $$('[data-event-open]',list).forEach(b=>b.onclick=()=>openEvent(b.dataset.eventOpen));
 }
 function blankEvent(){
@@ -136,7 +160,7 @@ async function load(){
   if(state.loaded){renderList();return}const list=$('#eventManagerList');if(list)list.innerHTML='<div class="event-admin-empty"><b>Loading events…</b><span>If the database is empty, your published website events will sync automatically.</span></div>';try{await refreshEvents(false,true)}catch(e){const msg=friendlyError(e);setNotice(msg,'error');if(list)list.innerHTML=`<div class="event-admin-empty error"><b>Event database is not ready.</b><span>${esc(msg)}</span><small>Run EVENT-ENGINE-SETUP.sql in Supabase once, then press Refresh.</small></div>`}
 }
 function bind(){
-  $('#eventNewButton')?.addEventListener('click',newEvent);$('#eventRefreshButton')?.addEventListener('click',()=>refreshEvents(false));$('#eventImportButton')?.addEventListener('click',importWebsiteEvents);$('#eventEditorForm')?.addEventListener('submit',saveEvent);$('#eventDuplicateButton')?.addEventListener('click',duplicateEvent);$('#eventDeleteButton')?.addEventListener('click',deleteEvent);$('#eventAddQuestion')?.addEventListener('click',addQuestion);$('#eventManagerSearch')?.addEventListener('input',renderList);$('#eventManagerStatusFilter')?.addEventListener('change',renderList);$('#eventManagerCategoryFilter')?.addEventListener('change',renderList);$('#eventRegistrationExport')?.addEventListener('click',exportCSV);$$('[data-event-editor-tab]').forEach(b=>b.onclick=()=>selectTab(b.dataset.eventEditorTab));['signup_mode','registration_type'].forEach(n=>editorField(n)?.addEventListener('change',updateModeUI));$$('[data-event-registration-close]').forEach(x=>x.onclick=closeRegistrationDetail);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#eventRegistrationModal')?.hidden)closeRegistrationDetail()});$('#eventRegistrationSave')?.addEventListener('click',saveRegistrationDetail);$('#eventRegistrationDelete')?.addEventListener('click',deleteRegistrationDetail);
+  $('#eventNewButton')?.addEventListener('click',newEvent);$('#eventRefreshButton')?.addEventListener('click',()=>refreshEvents(false));$('#eventUpcomingButton')?.addEventListener('click',()=>setTimeView('upcoming'));$('#eventPastButton')?.addEventListener('click',()=>setTimeView('past'));$('#eventImportButton')?.addEventListener('click',importWebsiteEvents);$('#eventEditorForm')?.addEventListener('submit',saveEvent);$('#eventDuplicateButton')?.addEventListener('click',duplicateEvent);$('#eventDeleteButton')?.addEventListener('click',deleteEvent);$('#eventAddQuestion')?.addEventListener('click',addQuestion);$('#eventManagerSearch')?.addEventListener('input',renderList);$('#eventManagerStatusFilter')?.addEventListener('change',renderList);$('#eventManagerCategoryFilter')?.addEventListener('change',renderList);$('#eventRegistrationExport')?.addEventListener('click',exportCSV);$$('[data-event-editor-tab]').forEach(b=>b.onclick=()=>selectTab(b.dataset.eventEditorTab));['signup_mode','registration_type'].forEach(n=>editorField(n)?.addEventListener('change',updateModeUI));$$('[data-event-registration-close]').forEach(x=>x.onclick=closeRegistrationDetail);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#eventRegistrationModal')?.hidden)closeRegistrationDetail()});$('#eventRegistrationSave')?.addEventListener('click',saveRegistrationDetail);$('#eventRegistrationDelete')?.addEventListener('click',deleteRegistrationDetail);
 }
 document.addEventListener('DOMContentLoaded',bind);if(document.readyState!=='loading')bind();
 window.ASE_EVENT_MANAGER={load,refresh:()=>refreshEvents(false)};
