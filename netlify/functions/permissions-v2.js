@@ -1,7 +1,7 @@
 const {json,verifiedUser,requireRole}=require('./_role-auth');
 const {getStoreValue,setStoreValue}=require('./_v2-storage');
 const {appendAudit}=require('./_audit');
-const DEFAULT={owner:['dashboard','website','clover','staff','games','maintenance','weather','reports','kitchen','notifications','users','settings'],manager:['dashboard','clover','staff','games','maintenance','weather','reports','kitchen','notifications','users'],grounds:['maintenance','weather','notifications'],kitchen:['kitchen','weather','notifications'],cashier:['dashboard','notifications']};
+const DEFAULT={owner:['dashboard','website','eventsadmin','clover','staff','games','gamesmatrix','maintenance','weather','reports','incidents','kitchen','notifications','users','settings'],manager:['dashboard','eventsadmin','clover','staff','games','gamesmatrix','maintenance','weather','reports','incidents','kitchen','notifications','users'],grounds:['maintenance','weather','incidents','notifications'],kitchen:['kitchen','weather','incidents','notifications'],cashier:['dashboard','incidents','notifications']};
 exports.handler=async event=>{try{
   const actor=await verifiedUser(event);requireRole(actor,['owner','manager','grounds','kitchen','cashier']);
   if(event.httpMethod==='GET'){const p=await getStoreValue('ase-ops-v2','permissions',DEFAULT);p.owner=DEFAULT.owner;return json(200,{ok:true,permissions:p})}

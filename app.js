@@ -22,6 +22,26 @@ function staticHomeFallback(){
 const esc = (s="") => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 const img = (s="") => !s ? "" : (s.startsWith("/") || s.startsWith("http") ? s : "/" + s);
 async function getJSON(path){ const r = await fetch(path+"?v="+Date.now()); if(!r.ok) throw new Error(path); return r.json(); }
+function prettyEventDate(start,end){
+  if(!start)return '';
+  const a=new Date(start+'T12:00:00'),b=new Date((end||start)+'T12:00:00');
+  const same=start===(end||start),sameYear=a.getFullYear()===b.getFullYear(),sameMonth=sameYear&&a.getMonth()===b.getMonth();
+  const m=d=>d.toLocaleDateString('en-US',{month:'long'}),day=d=>d.getDate(),year=d=>d.getFullYear();
+  if(same)return `${m(a)} ${day(a)}, ${year(a)}`;
+  if(sameMonth)return `${m(a)} ${day(a)}–${day(b)}, ${year(a)}`;
+  if(sameYear)return `${m(a)} ${day(a)} – ${m(b)} ${day(b)}, ${year(a)}`;
+  return `${m(a)} ${day(a)}, ${year(a)} – ${m(b)} ${day(b)}, ${year(b)}`;
+}
+function normalizeDatabaseEvent(e){
+  return {...e,startDate:e.start_date,endDate:e.end_date,date:prettyEventDate(e.start_date,e.end_date),category:e.category||e.sport||'Tournaments',location:[e.location_name,e.location_address].filter(Boolean).join(' • '),price:e.price_display||'',logo:e.logo_url||e.image_url||'',image:e.image_url||e.logo_url||'',register:e.slug?`/event.html?event=${encodeURIComponent(e.slug)}`:(e.external_registration_url||''),directRegister:false,signupMode:e.signup_mode,registrationAvailability:e.registration_availability,registrationCount:Number(e.registration_count||0),capacity:e.capacity};
+}
+async function loadEventCatalog(){
+  try{
+    const r=await fetch('/.netlify/functions/public-events?upcoming=0&limit=500&t='+Date.now(),{cache:'no-store'});
+    if(r.ok){const d=await r.json();if(Array.isArray(d.events)&&d.events.length){const events=d.events.map(normalizeDatabaseEvent);return {categories:[...new Set(events.map(e=>e.category).filter(Boolean))].sort(),events,database:true}}}
+  }catch{}
+  const fallback=await getJSON('/content/events.json');return {...fallback,database:false};
+}
 
 function todayISO(){
   const d = new Date();
@@ -43,7 +63,7 @@ function renderFixedStatus(site){
   if ($('fixedAnnouncement')) $('fixedAnnouncement').textContent = site.announcement || '';
 }
 async function loadHome(){
-  const [site, eventsData, resData] = await Promise.all([getJSON('/content/site.json'), getJSON('/content/events.json'), getJSON('/content/resources.json')]);
+  const [site, eventsData, resData] = await Promise.all([getJSON('/content/site.json'), loadEventCatalog(), getJSON('/content/resources.json')]);
   renderFixedStatus(site);
   document.title = site.name;
   $('homeHero').style.backgroundImage = `linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.35)), url('${img(site.heroImage)}')`;
@@ -73,7 +93,7 @@ async function loadHome(){
   };
   $('categoryGrid').innerHTML = eventsData.categories.map(c => `<a class="category-card" href="/events.html?category=${encodeURIComponent(c)}"><img src="${catImages[c] || img(site.heroImage)}" alt="${esc(c)}"><span>${esc(c)}<br>Events</span></a>`).join('');
   const featured = sortEvents(filterEventsByTime(eventsData.events, false)).filter(e => e.featured).slice(0,4);
-  $('upcomingEvents').innerHTML = featured.map(e => `<div class="feature-card"><img src="${esc(img(e.logo || e.image))}" alt="${esc(e.title)}"><div><h3>${esc(e.title)}</h3><p><b>${esc(e.date)}</b></p><p>${esc(e.location || '')}</p></div><a class="btn red" href="${esc(e.register || '/events.html')}">View Event</a></div>`).join('');
+  $('upcomingEvents').innerHTML = featured.map(e => `<div class="feature-card"><img src="${esc(img(e.logo || e.image || '/uploads/site/adventure-logo.png'))}" alt="${esc(e.title)}"><div><h3>${esc(e.title)}</h3><p><b>${esc(e.date)}</b></p><p>${esc(e.location || '')}</p>${e.signupMode==='internal'?`<span class="event-engine-badge">Adventure Signup${e.capacity?` • ${e.registrationCount}/${e.capacity}`:''}</span>`:''}</div><a class="btn red" href="${esc(e.register || '/events.html')}">View Event</a></div>`).join('');
   $('locName').textContent = site.name;
   $('locAddress').innerHTML = `${esc(site.shortAddress)}<br>${esc(site.cityStateZip)}`;
   $('locHours').textContent = site.hours;
@@ -90,7 +110,7 @@ async function loadHome(){
   $('footerLogo').src = img(site.logo);
 }
 async function loadEvents(){
-  const [site, eventsData] = await Promise.all([getJSON('/content/site.json'), getJSON('/content/events.json')]);
+  const [site, eventsData] = await Promise.all([getJSON('/content/site.json'), loadEventCatalog()]);
   renderFixedStatus(site); if ($('pageLogo')) $('pageLogo').src = img(site.logo);
 
   const params = new URLSearchParams(location.search);
@@ -116,17 +136,20 @@ async function loadEvents(){
     }).join('') + '</div>';
 
   $('eventsList').innerHTML = events.map(e => {
-    const registerText = e.directRegister ? 'Register' : 'Event Info / Register';
-    return `<div class="feature-card">
-      <img src="${esc(img(e.logo || e.image))}" alt="${esc(e.title)}">
+    const databaseEvent=!!e.slug;
+    const registerText = databaseEvent ? 'View Event' : (e.directRegister ? 'Register' : 'Event Info / Register');
+    const signupBadge=e.signupMode==='internal'?`<span class="event-engine-badge">Adventure Signup${e.registrationAvailability==='waitlist'?' • Waitlist':e.capacity?` • ${e.registrationCount}/${e.capacity}`:''}</span>`:'';
+    return `<div class="feature-card event-list-card">
+      <img src="${esc(img(e.logo || e.image || '/uploads/site/adventure-logo.png'))}" alt="${esc(e.title)}">
       <div>
+        <div class="event-card-labels">${signupBadge}${e.status==='cancelled'?'<span class="event-cancelled-badge">Cancelled</span>':''}</div>
         <h3>${esc(e.title)}</h3>
         <p><b>${esc(e.category)} • ${esc(e.date)}</b></p>
         <p>${esc(e.description || '')}</p>
         <p>${esc(e.location || '')}</p>
         <p><b>${esc(e.price || '')}</b></p>
       </div>
-      <a class="btn red" href="${esc(e.register || '#')}" target="${(e.register||'').startsWith('http')?'_blank':'_self'}">${registerText}</a>
+      <a class="btn red" href="${esc(e.register || '#')}" target="${!databaseEvent&&(e.register||'').startsWith('http')?'_blank':'_self'}">${registerText}</a>
     </div>`;
   }).join('') || `<div class="card">No ${showPast ? 'past' : 'upcoming'} events found for this category.</div>`;
 }
