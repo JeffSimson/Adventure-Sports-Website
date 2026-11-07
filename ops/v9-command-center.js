@@ -2,17 +2,19 @@
 'use strict';
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const PREF='/.netlify/functions/dashboard-preferences';
+const OPS_SUMMARY='/.netlify/functions/operations-summary';
 const CARD_META={
- facility:{label:'Facility Status',icon:'●',go:'website'},weather:{label:'Weather',icon:'☁',go:'weather'},schedule:{label:'Schedule',icon:'▣',go:'games'},fields:{label:'Fields',icon:'◇',go:'maintenance'},staff:{label:'Employees',icon:'♙',go:'staff'},incidents:{label:'Incidents',icon:'!',go:'incidents'},workorders:{label:'Work Orders',icon:'⚒',go:'maintenance'},notifications:{label:'Notifications',icon:'◉',go:'notifications'},clover:{label:'Clover',icon:'$',go:'clover'},system:{label:'System Health',icon:'✓',go:'settings'}
+ facility:{label:'Facility Status',icon:'●',go:'website'},weather:{label:'Weather',icon:'☁',go:'weather'},schedule:{label:'Schedule',icon:'▣',go:'gamesmatrix'},fields:{label:'Fields',icon:'◇',go:'maintenance'},staff:{label:'Employees',icon:'♙',go:'staff'},incidents:{label:'Incidents',icon:'!',go:'incidents'},workorders:{label:'Work Orders',icon:'⚒',go:'maintenance'},notifications:{label:'Notifications',icon:'◉',go:'notifications'},clover:{label:'Clover',icon:'$',go:'clover'},system:{label:'System Health',icon:'✓',go:'settings'}
 };
 const role=()=>window.ASE_OPS?.role?.()||'cashier';
 const api=(u,o)=>window.ASE_OPS.api(u,o);
 const go=v=>document.querySelector(`.nav-item[data-view="${v}"]`)?.click();
+const openGameDay=()=>{if(window.ASE_GAME_DAY_OPEN)window.ASE_GAME_DAY_OPEN();else{go('gamesmatrix');setTimeout(()=>document.querySelector('[data-internal-target="gameday"]')?.click(),100)}};
 let prefs=null,events=[],monthCursor=new Date(),paletteIndex=0,v9Initialized=false;
 const setText=(selector,value)=>{const el=$(selector);if(el)el.textContent=value};
 
 function installNav(){
- const labels={dashboard:['⌂','Home'],games:['▣','Schedule'],maintenance:['◇','Fields & Work Orders'],staff:['♙','Employees'],incidents:['!','Incidents'],notifications:['◉','Notifications'],settings:['☰','Settings']};
+ const labels={dashboard:['⌂','Home'],games:['▣','Schedule'],gamesmatrix:['⚾','Games & Matrix'],maintenance:['◇','Fields & Work Orders'],staff:['♙','Employees'],incidents:['!','Incidents'],notifications:['◉','Notifications'],settings:['☰','Settings']};
  for(const [key,[icon,label]] of Object.entries(labels)){const b=$(`.nav-item[data-view="${key}"]`);if(b)b.innerHTML=`<span>${icon}</span>${label}`}
  const mobile=$('.mobile-header');if(mobile&&!$('#v9SearchButton')){const b=document.createElement('button');b.id='v9SearchButton';b.className='icon-button';b.type='button';b.setAttribute('aria-label','Search commands');b.textContent='⌕';mobile.appendChild(b)}
 }
@@ -29,7 +31,7 @@ function dashboardMarkup(){return `<section id="v9Dashboard" class="v9-dashboard
  <div class="v9-card-grid">
   <button data-v9-card="facility" data-v9-go="website" class="v9-home-card"><span class="v9-card-icon">●</span><small>Facility</small><strong id="v9Facility">Loading…</strong><em id="v9Announcement">Public status</em></button>
   <button data-v9-card="weather" data-v9-go="weather" class="v9-home-card"><span class="v9-card-icon">☁</span><small>Weather</small><strong id="v9Weather">Loading…</strong><em id="v9WeatherNote">Jackson, NJ</em></button>
-  <button data-v9-card="schedule" data-v9-go="games" class="v9-home-card"><span class="v9-card-icon">▣</span><small>Today’s Schedule</small><strong id="v9Schedule">Loading…</strong><em id="v9ScheduleNote">Website events + games</em></button>
+  <button data-v9-card="schedule" data-v9-go="gamesmatrix" class="v9-home-card"><span class="v9-card-icon">▣</span><small>Today’s Schedule</small><strong id="v9Schedule">Loading…</strong><em id="v9ScheduleNote">Website events + games</em></button>
   <button data-v9-card="fields" data-v9-go="maintenance" class="v9-home-card"><span class="v9-card-icon">◇</span><small>Fields</small><strong id="v9Fields">8 fields</strong><em id="v9FieldsNote">Tap for readiness</em></button>
   <button data-v9-card="staff" data-v9-go="staff" class="v9-home-card"><span class="v9-card-icon">♙</span><small>Employees</small><strong id="v9Staff">View staff</strong><em>Coverage and profiles</em></button>
   <button data-v9-card="incidents" data-v9-go="incidents" class="v9-home-card"><span class="v9-card-icon">!</span><small>Incidents</small><strong id="v9Incidents">Create or review</strong><em>Confidential reports</em></button>
@@ -38,29 +40,58 @@ function dashboardMarkup(){return `<section id="v9Dashboard" class="v9-dashboard
   <button data-v9-card="clover" data-v9-go="clover" class="v9-home-card"><span class="v9-card-icon">$</span><small>Clover</small><strong id="v9Clover">Sales & tips</strong><em>Owner controls</em></button>
   <button data-v9-card="system" data-v9-go="settings" class="v9-home-card"><span class="v9-card-icon">✓</span><small>System Health</small><strong id="v9System">Checking…</strong><em id="v9SystemNote">Connected services</em></button>
  </div>
- <section class="v9-focus-panel"><div class="panel-head"><div><p class="eyebrow">Today</p><h2>What needs attention</h2></div><button class="secondary-btn" id="v9RefreshHome" type="button">Refresh</button></div><div id="v9FocusList" class="v9-focus-list"><p>Loading today’s schedule and facility status…</p></div></section>
+ <div class="v91-ops-grid" aria-live="polite">
+  <button class="v91-ops-card" data-v9-go="gamesmatrix"><span>Today’s Games</span><strong id="v91TodayGames">—</strong><small id="v91TodayGamesNote">Loading live matrix</small></button>
+  <button class="v91-ops-card" data-v9-go="gamesmatrix"><span>Fields In Use</span><strong id="v91FieldsInUse">—</strong><small id="v91FieldsInUseNote">Checking current game times</small></button>
+  <button class="v91-ops-card" data-v9-go="gamesmatrix"><span>Fields Opening Soon</span><strong id="v91OpeningSoon">—</strong><small id="v91OpeningSoonNote">Based on game and cleanup time</small></button>
+  <button class="v91-ops-card" data-v9-go="weather"><span>Active Weather Alerts</span><strong id="v91WeatherAlerts">—</strong><small id="v91WeatherAlertsNote">Checking official alerts</small></button>
+  <button class="v91-ops-card" data-v9-go="maintenance"><span>Overdue Work Orders</span><strong id="v91OverdueWork">—</strong><small id="v91OverdueWorkNote">Checking open work</small></button>
+  <button class="v91-ops-card" data-v9-go="clover"><span>Clover Status</span><strong id="v91CloverStatus">—</strong><small id="v91CloverStatusNote">Checking POS connection</small></button>
+ </div>
+ <div class="v91-live-sections">
+  <section class="panel"><div class="panel-head"><div><p class="eyebrow">Live matrix</p><h2>Today’s Games & Fields</h2></div><button class="secondary-btn compact-btn" data-open-game-day>Open Game Day</button></div><div id="v91GameList" class="v91-live-list"><p class="v91-empty">Loading game times…</p></div></section>
+  <section class="panel"><div class="panel-head"><div><p class="eyebrow">Attention</p><h2>Weather, Work & Systems</h2></div><button class="secondary-btn compact-btn" id="v9RefreshHome" type="button">Refresh</button></div><div id="v91AttentionList" class="v91-live-list"><p class="v91-empty">Checking operations…</p></div></section>
+ </div>
+ <section class="v9-focus-panel"><div class="panel-head"><div><p class="eyebrow">Website calendar</p><h2>Upcoming Facility Events</h2></div></div><div id="v9FocusList" class="v9-focus-list"><p>Loading website events…</p></div></section>
  </section>`}
-function replaceDashboard(){const old=$('[data-view-panel="dashboard"]');if(!old)return;old.innerHTML=dashboardMarkup();$$('[data-v9-go]').forEach(b=>b.onclick=()=>go(b.dataset.v9Go));$('#v9DesktopSearch').onclick=openPalette;$('#v9RefreshHome').onclick=refreshHome;}
+function replaceDashboard(){const old=$('[data-view-panel="dashboard"]');if(!old)return;old.innerHTML=dashboardMarkup();$$('[data-v9-go]').forEach(b=>b.onclick=()=>go(b.dataset.v9Go));$$('[data-open-game-day]').forEach(b=>b.onclick=openGameDay);$('#v9DesktopSearch').onclick=openPalette;$('#v9RefreshHome').onclick=refreshHome;}
 
 async function refreshHome(){
  if(!$('#v9Dashboard'))return;
  try{
   const site=await fetch('/content/site.json',{cache:'no-store'}).then(r=>r.json());
-  setText('#v9Facility',site.fieldStatus||site.status||'OPEN');
-  setText('#v9Announcement',site.announcement||'No public announcement');
+  setText('#v9Facility',site.fieldStatus||site.status||'OPEN');setText('#v9Announcement',site.announcement||'No public announcement');
  }catch{}
  try{
-  const wx=await api('/.netlify/functions/weather-center');const c=wx.current||{};
-  setText('#v9Weather',c.temperature!=null?`${Math.round(c.temperature)}°F`:(c.temp!=null?`${Math.round(c.temp)}°F`:'Weather ready'));
-  setText('#v9WeatherNote',c.shortForecast||c.condition||wx.source||'Forecast available');
+  const wx=await api('/.netlify/functions/weather-center'),c=wx.current||{};
+  setText('#v9Weather',c.temperature_2m!=null?`${Math.round(c.temperature_2m)}°F`:(c.temperature!=null?`${Math.round(c.temperature)}°F`:'Weather ready'));
+  setText('#v9WeatherNote',wx.alerts?.[0]?.event||wx.source||'Forecast available');
  }catch{setText('#v9Weather','Backup ready')}
  try{
-  await loadEvents();const today=new Date().toISOString().slice(0,10);const todayEvents=events.filter(e=>e.startDate<=today&&e.endDate>=today);
-  setText('#v9Schedule',todayEvents.length?`${todayEvents.length} event${todayEvents.length===1?'':'s'} today`:'No website events today');
-  setText('#v9ScheduleNote',todayEvents[0]?.title||'View calendar and games');renderFocus(todayEvents);
+  await loadEvents();const today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date()),todayEvents=events.filter(e=>e.startDate<=today&&e.endDate>=today);
+  setText('#v9Schedule',todayEvents.length?`${todayEvents.length} website event${todayEvents.length===1?'':'s'}`:'No website events today');setText('#v9ScheduleNote',todayEvents[0]?.title||'Open live games and matrix');renderFocus(todayEvents);
  }catch{}
- setText('#v9System','Online');setText('#v9SystemNote','Security, database and weather connected');
+ try{renderOperationsSummary(await api(OPS_SUMMARY+'?v='+Date.now()))}catch(e){renderOperationsSummaryError(e)}
+ setText('#v9System','Online');setText('#v9SystemNote','Operations services checked live');
 }
+function localTime(value){if(!value)return'—';const d=new Date(value);return Number.isNaN(d.getTime())?'—':d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}
+function renderOperationsSummary(d){
+ const t=d.today||{},weather=d.weather||{},work=d.workOrders||{},clover=d.clover||{};
+ setText('#v91TodayGames',String(t.gameCount||0));setText('#v91TodayGamesNote',t.firstStart?`${localTime(t.firstStart)} first pitch · ${localTime(t.lastStart)} last start`:'No games scheduled today');
+ setText('#v91FieldsInUse',String(t.fieldsInUse?.length||0));setText('#v91FieldsInUseNote',t.fieldsInUse?.length?t.fieldsInUse.map(x=>x.field).join(', '):'No fields currently in a game');
+ setText('#v91OpeningSoon',String(t.fieldsOpeningSoon?.length||0));setText('#v91OpeningSoonNote',t.fieldsOpeningSoon?.[0]?`${t.fieldsOpeningSoon[0].field} around ${localTime(t.fieldsOpeningSoon[0].opensAt)}`:'No field releases in the next 3 hours');
+ setText('#v91WeatherAlerts',String(weather.count||0));setText('#v91WeatherAlertsNote',weather.activeAlerts?.[0]?.event||'No active official alerts');
+ setText('#v91OverdueWork',String(work.overdue||0));setText('#v91OverdueWorkNote',work.overdue?`${work.overdue} of ${work.open||0} open work orders overdue`:`${work.open||0} open work orders · none overdue`);
+ setText('#v91CloverStatus',clover.label||'Unknown');setText('#v91CloverStatusNote',clover.merchant|| (clover.visible===false?'Visible to management':'POS connection check'));
+ setText('#v9Schedule',`${t.gameCount||0} game${t.gameCount===1?'':'s'} today`);setText('#v9ScheduleNote',d.matrix?.name||'Live tournament matrix');
+ setText('#v9Fields',`${t.fieldsInUse?.length||0} in use`);setText('#v9FieldsNote',t.fieldsOpeningSoon?.length?`${t.fieldsOpeningSoon.length} opening soon`:'View field readiness');
+ setText('#v9WorkOrders',work.overdue?`${work.overdue} overdue`:`${work.open||0} open`);
+ setText('#v9Clover',clover.label||'Unknown');
+ const alerts=$('#v9AlertZone');if(alerts){const rows=[];if(t.lightning?.active)rows.push(`<button class="v9-live-alert urgent" data-open-game-day><b>⚡ Lightning hold active</b><span>${t.lightning.status==='clear-ready'?'Clear period complete — management confirmation required':'Outdoor play is paused'}</span></button>`);if(t.delayedGames?.length)rows.push(`<button class="v9-live-alert warning" data-open-game-day><b>${t.delayedGames.length} delayed game${t.delayedGames.length===1?'':'s'}</b><span>Open Game Day Control for updated fields and times.</span></button>`);if(t.cleanupNeeded?.length)rows.push(`<button class="v9-live-alert warning" data-open-game-day><b>${t.cleanupNeeded.length} field cleanup task${t.cleanupNeeded.length===1?'':'s'}</b><span>${t.cleanupNeeded.map(x=>x.field).join(', ')}</span></button>`);if(t.setupNeeded?.length)rows.push(`<button class="v9-live-alert warning" data-open-game-day><b>${t.setupNeeded.length} field setup change${t.setupNeeded.length===1?'':'s'}</b><span>${t.setupNeeded.map(x=>x.field).join(', ')}</span></button>`);alerts.innerHTML=rows.join('');$$('[data-open-game-day]',alerts).forEach(b=>b.onclick=openGameDay)}
+ const gameBox=$('#v91GameList');if(gameBox){const rows=[];(t.delayedGames||[]).slice(0,6).forEach(x=>rows.push(`<button class="v91-live-row" data-open-game-day><span><b>Field ${esc(x.field)} · Delayed</b><small>${esc(x.time)}${x.note?` · ${esc(x.note)}`:''}</small></span><em class="warn">DELAYED</em></button>`));(t.fieldsInUse||[]).forEach(x=>rows.push(`<button class="v91-live-row" data-open-game-day><span><b>Field ${esc(x.field)} · In Use</b><small>${esc(x.label||'Game in progress')}</small></span><em>LIVE</em></button>`));(t.fieldsOpeningSoon||[]).slice(0,6).forEach(x=>rows.push(`<button class="v91-live-row" data-open-game-day><span><b>Field ${esc(x.field)} opens soon</b><small>Expected around ${esc(localTime(x.opensAt))}</small></span><em>${esc(localTime(x.opensAt))}</em></button>`));if(!rows.length)(t.games||[]).filter(x=>!['complete','canceled'].includes(x.status)).slice(0,8).forEach(x=>rows.push(`<button class="v91-live-row" data-open-game-day><span><b>Field ${esc(x.field)}</b><small>${esc(x.time)}</small></span><em>${esc(String(x.status||x.time).toUpperCase())}</em></button>`));gameBox.innerHTML=rows.join('')||'<p class="v91-empty">No tournament games scheduled today.</p>';$$('[data-open-game-day]',gameBox).forEach(b=>b.onclick=openGameDay)}
+ const attention=$('#v91AttentionList');if(attention){const rows=[];(weather.activeAlerts||[]).slice(0,3).forEach(x=>rows.push(`<button class="v91-live-row" data-v9-go="weather"><span><b>${esc(x.event)}</b><small>${esc(x.headline||'Official weather alert is active')}</small></span><em class="warn">WEATHER</em></button>`));(work.items||[]).slice(0,4).forEach(x=>rows.push(`<button class="v91-live-row" data-v9-go="maintenance"><span><b>${esc(x.title||'Overdue work order')}</b><small>${x.field_id?`Field ${esc(x.field_id)} · `:''}${Math.max(1,Math.round((x.overdueMinutes||0)/60))} hour(s) overdue</small></span><em class="warn">OVERDUE</em></button>`));rows.push(`<button class="v91-live-row" data-v9-go="clover"><span><b>Clover POS</b><small>${esc(clover.merchant||clover.label||'Status unavailable')}</small></span><em class="${clover.status==='live'?'':'warn'}">${esc(String(clover.label||'Unknown').toUpperCase())}</em></button>`);attention.innerHTML=rows.join('');$$('[data-v9-go]',attention).forEach(b=>b.onclick=()=>go(b.dataset.v9Go))}
+}
+function renderOperationsSummaryError(e){setText('#v91TodayGames','—');setText('#v91FieldsInUse','—');setText('#v91OpeningSoon','—');setText('#v91WeatherAlerts','—');setText('#v91OverdueWork','—');setText('#v91CloverStatus','Check');const box=$('#v91AttentionList');if(box)box.innerHTML=`<p class="v91-empty">${esc(e?.message||'Live operations summary is temporarily unavailable.')}</p>`}
 function renderFocus(todayEvents){const box=$('#v9FocusList');if(!box)return;const items=[];todayEvents.slice(0,3).forEach(e=>items.push(`<button data-open-event="${events.indexOf(e)}"><span>▣</span><div><b>${esc(e.title)}</b><small>${esc(e.category||'Event')} · ${esc(e.date||'Today')}</small></div><em>View</em></button>`));items.push(`<button data-focus-go="maintenance"><span>◇</span><div><b>Check field readiness</b><small>Inspections, issues, equipment and work orders</small></div><em>Open</em></button>`);items.push(`<button data-focus-go="notifications"><span>◉</span><div><b>Review notifications</b><small>Manual alerts and automatic notification controls</small></div><em>Open</em></button>`);box.innerHTML=items.join('');$$('[data-focus-go]',box).forEach(b=>b.onclick=()=>go(b.dataset.focusGo));$$('[data-open-event]',box).forEach(b=>b.onclick=()=>{go('games');setTimeout(()=>openEvent(Number(b.dataset.openEvent)),100)});}
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 
@@ -68,22 +99,33 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 async function loadEvents(){if(events.length)return events;const d=await fetch('/content/events.json',{cache:'no-store'}).then(r=>r.json());events=(d.events||[]).map(e=>({...e,startDate:e.startDate||e.start_date,endDate:e.endDate||e.end_date||e.startDate||e.start_date})).filter(e=>e.startDate);return events}
 function scheduleMarkup(){return `<section id="v9ScheduleCenter" class="v9-schedule-center">
  <div class="v9-module-head"><div><p class="eyebrow">Website-linked calendar</p><h1>Schedule</h1><p>Events update from the same calendar used on adventurenj.com.</p></div><button id="v9ScheduleToday" class="secondary-btn">Today</button></div>
- <div class="v9-segmented"><button class="active" data-v9-schedule-tab="agenda">Upcoming</button><button data-v9-schedule-tab="month">Month</button><button data-v9-schedule-tab="games">Games & Matrix</button></div>
+ <div class="v9-segmented v9-schedule-two-tabs"><button class="active" data-v9-schedule-tab="agenda">Upcoming</button><button data-v9-schedule-tab="month">Month</button></div>
  <div data-v9-schedule-panel="agenda" class="v9-schedule-panel active"><div id="v9UpcomingEvents" class="v9-event-list"></div></div>
  <div data-v9-schedule-panel="month" class="v9-schedule-panel"><div class="v9-calendar-head"><button id="v9PrevMonth">‹</button><h2 id="v9MonthLabel"></h2><button id="v9NextMonth">›</button></div><div class="v9-calendar-week"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div><div id="v9Calendar" class="v9-calendar"></div></div>
- <div data-v9-schedule-panel="games" class="v9-schedule-panel"><div id="v9ExistingGamesHost"></div></div>
  </section><div id="v9EventModal" class="v9-modal" hidden><div class="v9-modal-backdrop"></div><section class="v9-modal-card"><header><div><p class="eyebrow">Event Details</p><h2 id="v9EventTitle"></h2></div><button id="v9EventClose">×</button></header><div id="v9EventBody"></div></section></div>`}
-function enhanceSchedule(){const view=$('[data-view-panel="games"]');if(!view)return;const existing=[...view.childNodes];view.innerHTML=scheduleMarkup();const host=$('#v9ExistingGamesHost');existing.forEach(n=>host.appendChild(n));$$('[data-v9-schedule-tab]').forEach(b=>b.onclick=()=>scheduleTab(b.dataset.v9ScheduleTab));$('#v9PrevMonth').onclick=()=>{monthCursor.setMonth(monthCursor.getMonth()-1);renderCalendar()};$('#v9NextMonth').onclick=()=>{monthCursor.setMonth(monthCursor.getMonth()+1);renderCalendar()};$('#v9ScheduleToday').onclick=()=>{monthCursor=new Date();scheduleTab('agenda');renderCalendar()};$('#v9EventClose').onclick=closeEvent;$('#v9EventModal .v9-modal-backdrop').onclick=closeEvent;loadEvents().then(()=>{renderAgenda();renderCalendar()})}
-function scheduleTab(name){$$('[data-v9-schedule-tab]').forEach(b=>b.classList.toggle('active',b.dataset.v9ScheduleTab===name));$$('[data-v9-schedule-panel]').forEach(p=>p.classList.toggle('active',p.dataset.v9SchedulePanel===name));}
+function enhanceSchedule(){
+ const view=$('[data-view-panel="games"]');if(!view)return;
+ view.innerHTML=scheduleMarkup();
+ $$('[data-v9-schedule-tab]').forEach(b=>b.addEventListener('click',()=>scheduleTab(b.dataset.v9ScheduleTab)));
+ $('#v9PrevMonth').onclick=()=>{monthCursor.setMonth(monthCursor.getMonth()-1);renderCalendar()};
+ $('#v9NextMonth').onclick=()=>{monthCursor.setMonth(monthCursor.getMonth()+1);renderCalendar()};
+ $('#v9ScheduleToday').onclick=()=>{monthCursor=new Date();scheduleTab('agenda');renderCalendar()};
+ $('#v9EventClose').onclick=closeEvent;$('#v9EventModal .v9-modal-backdrop').onclick=closeEvent;
+ loadEvents().then(()=>{renderAgenda();renderCalendar()});
+}
+function scheduleTab(name){
+ $$('[data-v9-schedule-tab]').forEach(b=>b.classList.toggle('active',b.dataset.v9ScheduleTab===name));
+ $$('[data-v9-schedule-panel]').forEach(p=>p.classList.toggle('active',p.dataset.v9SchedulePanel===name));
+}
 function renderAgenda(){const box=$('#v9UpcomingEvents');if(!box)return;const today=new Date().toISOString().slice(0,10),up=events.filter(e=>e.endDate>=today).sort((a,b)=>a.startDate.localeCompare(b.startDate)).slice(0,60);box.innerHTML=up.length?up.map((e,i)=>`<button class="v9-event-card" data-event-index="${events.indexOf(e)}"><div class="v9-event-date"><b>${new Date(e.startDate+'T12:00:00').toLocaleDateString('en-US',{month:'short'})}</b><strong>${new Date(e.startDate+'T12:00:00').getDate()}</strong></div><div><span>${esc(e.category||'Event')}</span><h3>${esc(e.title)}</h3><p>${esc(e.date||`${e.startDate} – ${e.endDate}`)}</p></div><em>›</em></button>`).join(''):'<p class="v9-empty">No upcoming website events.</p>';$$('[data-event-index]',box).forEach(b=>b.onclick=()=>openEvent(Number(b.dataset.eventIndex)))}
 function renderCalendar(){const box=$('#v9Calendar');if(!box)return;const y=monthCursor.getFullYear(),m=monthCursor.getMonth(),first=new Date(y,m,1),last=new Date(y,m+1,0);$('#v9MonthLabel').textContent=first.toLocaleDateString('en-US',{month:'long',year:'numeric'});const cells=[];for(let i=0;i<first.getDay();i++)cells.push('<span class="v9-calendar-empty"></span>');for(let d=1;d<=last.getDate();d++){const iso=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,dayEvents=events.filter(e=>e.startDate<=iso&&e.endDate>=iso);cells.push(`<button class="v9-calendar-day ${dayEvents.length?'has-events':''}" data-date="${iso}"><b>${d}</b>${dayEvents.slice(0,2).map(e=>`<small>${esc(e.title)}</small>`).join('')}${dayEvents.length>2?`<em>+${dayEvents.length-2} more</em>`:''}</button>`)}box.innerHTML=cells.join('');$$('.v9-calendar-day.has-events',box).forEach(b=>b.onclick=()=>{const e=events.find(x=>x.startDate<=b.dataset.date&&x.endDate>=b.dataset.date);openEvent(events.indexOf(e))})}
-function openEvent(i){const e=events[i];if(!e)return;$('#v9EventTitle').textContent=e.title;$('#v9EventBody').innerHTML=`<div class="v9-event-detail"><span class="viz-badge">${esc(e.category||'Event')}</span><h3>${esc(e.date||`${e.startDate} – ${e.endDate}`)}</h3><p>${esc(e.description||'No event description has been added.')}</p><dl><div><dt>Location</dt><dd>${esc(e.location||'Adventure Sports & Entertainment')}</dd></div><div><dt>Dates</dt><dd>${esc(e.startDate)} through ${esc(e.endDate)}</dd></div><div><dt>Price</dt><dd>${esc(e.price||'See event details')}</dd></div></dl><div class="v9-event-actions">${e.register?`<a class="primary-btn" href="${esc(e.register)}" target="_blank" rel="noopener">Registration ↗</a>`:''}<button class="secondary-btn" data-event-games>Open Games & Matrix</button></div></div>`;$('#v9EventModal').hidden=false;document.body.classList.add('v9-modal-open');$('[data-event-games]')?.addEventListener('click',()=>{closeEvent();scheduleTab('games')})}
+function openEvent(i){const e=events[i];if(!e)return;$('#v9EventTitle').textContent=e.title;$('#v9EventBody').innerHTML=`<div class="v9-event-detail"><span class="viz-badge">${esc(e.category||'Event')}</span><h3>${esc(e.date||`${e.startDate} – ${e.endDate}`)}</h3><p>${esc(e.description||'No event description has been added.')}</p><dl><div><dt>Location</dt><dd>${esc(e.location||'Adventure Sports & Entertainment')}</dd></div><div><dt>Dates</dt><dd>${esc(e.startDate)} through ${esc(e.endDate)}</dd></div><div><dt>Price</dt><dd>${esc(e.price||'See event details')}</dd></div></dl><div class="v9-event-actions">${e.register?`<a class="primary-btn" href="${esc(e.register)}" target="_blank" rel="noopener">Registration ↗</a>`:''}<button class="secondary-btn" data-event-games>Open Games & Matrix</button></div></div>`;$('#v9EventModal').hidden=false;document.body.classList.add('v9-modal-open');$('[data-event-games]')?.addEventListener('click',()=>{closeEvent();go('gamesmatrix')})}
 function closeEvent(){$('#v9EventModal').hidden=true;document.body.classList.remove('v9-modal-open')}
 
 // Command palette
 function paletteMarkup(){return `<div id="v9Palette" class="v9-palette" hidden><div class="v9-palette-backdrop"></div><section class="v9-palette-card"><div class="v9-palette-input"><span>⌕</span><input id="v9PaletteInput" placeholder="Search or run a command…" autocomplete="off"><kbd>ESC</kbd></div><div id="v9PaletteResults" class="v9-palette-results"></div></section></div>`}
 function commands(){const c=[
- {label:'Open Home',hint:'Dashboard',icon:'⌂',view:'dashboard'}, {label:'View today’s schedule',hint:'Website events and games',icon:'▣',view:'games'}, {label:'Open Fields',hint:'Readiness and inspections',icon:'◇',view:'maintenance'}, {label:'Create work order',hint:'Maintenance issue',icon:'⚒',view:'maintenance',after:()=>$('#addMaintenanceIssue')?.click()}, {label:'Create incident report',hint:'All employees',icon:'!',view:'incidents',after:()=>$('#incidentCreateButton')?.click()}, {label:'View employees',hint:'Staff coverage and profiles',icon:'♙',view:'staff'}, {label:'Send notification',hint:'Manual alert',icon:'◉',view:'notifications'}, {label:'Open Weather Center',hint:'Forecast and alerts',icon:'☁',view:'weather'}, {label:'System health',hint:'Owner settings',icon:'✓',view:'settings'}, {label:'Maintenance mode',hint:'Owner control',icon:'⚙',view:'settings'}
+ {label:'Open Home',hint:'Dashboard',icon:'⌂',view:'dashboard'}, {label:'View today’s schedule',hint:'Website events calendar',icon:'▣',view:'games'}, {label:'Open Games & Matrix',hint:'Live games and tournament editor',icon:'⚾',view:'gamesmatrix'}, {label:'Open Fields',hint:'Readiness and inspections',icon:'◇',view:'maintenance'}, {label:'Create work order',hint:'Maintenance issue',icon:'⚒',view:'maintenance',after:()=>$('#addMaintenanceIssue')?.click()}, {label:'Create incident report',hint:'All employees',icon:'!',view:'incidents',after:()=>$('#incidentCreateButton')?.click()}, {label:'View employees',hint:'Staff coverage and profiles',icon:'♙',view:'staff'}, {label:'Send notification',hint:'Manual alert',icon:'◉',view:'notifications'}, {label:'Open Weather Center',hint:'Forecast and alerts',icon:'☁',view:'weather'}, {label:'System health',hint:'Owner settings',icon:'✓',view:'settings'}, {label:'Maintenance mode',hint:'Owner control',icon:'⚙',view:'settings'}
  ];return c.filter(x=>$(`.nav-item[data-view="${x.view}"]`)&&!$(`.nav-item[data-view="${x.view}"]`).hidden)}
 function openPalette(){const p=$('#v9Palette');p.hidden=false;document.body.classList.add('v9-modal-open');const input=$('#v9PaletteInput');input.value='';renderPalette('');setTimeout(()=>input.focus(),10)}
 function closePalette(){$('#v9Palette').hidden=true;document.body.classList.remove('v9-modal-open')}

@@ -3,6 +3,7 @@ const {json,verifiedUser,requireRole}=require('./_role-auth');
 const {getStoreValue,setStoreValue}=require('./_v2-storage');
 const {appendAudit}=require('./_audit');
 const {sendFCM}=require('./_firebase-fcm');
+const {allowsRegistration,categoryFor}=require('./_notification-preferences');
 const clean=v=>String(v||'').trim();
 const fingerprint=v=>crypto.createHash('sha256').update(String(v||'')).digest('hex').slice(0,12);
 exports.handler=async event=>{try{
@@ -14,9 +15,8 @@ exports.handler=async event=>{try{
   if(!title||!body)return json(400,{error:'Title and message are required.'});
   const roles=Array.isArray(b.roles)?b.roles:[],users=Array.isArray(b.users)?b.users:[];
   const all=await getStoreValue('ase-notifications','registrations',[]);
-  const selected=all.filter(r=>r.enabled!==false&&(
-    b.audience==='everyone'||roles.includes(r.role)||(settings.allowIndividualTargeting&&users.includes(r.userId))
-  ));
+  const category=categoryFor({category:b.category,url:b.url,title});
+  const selected=all.filter(r=>(b.audience==='everyone'||roles.includes(r.role)||(settings.allowIndividualTargeting&&users.includes(r.userId)))&&allowsRegistration(r,{category,priority:b.priority||'normal',url:b.url,title}));
   const id=`n_${Date.now()}_${Math.random().toString(36).slice(2,7)}`;
   const payload={title,body,url:b.url||'/ops/',priority:b.priority||'normal',notificationId:id};
   const origin=`https://${event.headers?.host||event.headers?.Host||'adventurenj.com'}`;
@@ -42,7 +42,7 @@ exports.handler=async event=>{try{
   const sent=accepted.length,failed=failures.length;
   console.log(`[push ${id}] complete; accepted=${sent}; rejected=${failed}; invalidRemoved=${invalidTokens.length}. FCM acceptance confirms handoff, not on-device display.`);
   let history=await getStoreValue('ase-notifications','history',[]);
-  const record={id,title,body,audience:b.audience||'roles',roles,users,priority:b.priority||'normal',url:b.url||'/ops/',createdAt:new Date().toISOString(),createdBy:{id:actor.user.id,email:actor.user.email,name:actor.user.user_metadata?.full_name||actor.user.email,role:actor.role},targeted:selected.length,sent,failed,removedInvalid:invalidTokens.length,accepted:accepted.slice(0,50),failures:failures.slice(0,50)};
+  const record={id,title,body,category,audience:b.audience||'roles',roles,users,priority:b.priority||'normal',url:b.url||'/ops/',createdAt:new Date().toISOString(),createdBy:{id:actor.user.id,email:actor.user.email,name:actor.user.user_metadata?.full_name||actor.user.email,role:actor.role},targeted:selected.length,sent,failed,removedInvalid:invalidTokens.length,accepted:accepted.slice(0,50),failures:failures.slice(0,50)};
   history.unshift(record);history=history.slice(0,250);await setStoreValue('ase-notifications','history',history);
   await appendAudit(actor,'notification-sent',`Sent "${title}" to ${sent} device${sent===1?'':'s'}.`,'🔔');
   return json(200,{ok:true,record});

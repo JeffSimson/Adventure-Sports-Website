@@ -1,6 +1,15 @@
+const WORKER_VERSION='9300';
 
-importScripts('https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.12.5/firebase-messaging-compat.js');
+try {
+  importScripts('https://cdn.jsdelivr.net/npm/firebase@10.12.5/firebase-app-compat.js');
+} catch (error) {
+  importScripts('https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js');
+}
+try {
+  importScripts('https://cdn.jsdelivr.net/npm/firebase@10.12.5/firebase-messaging-compat.js');
+} catch (error) {
+  importScripts('https://www.gstatic.com/firebasejs/10.12.5/firebase-messaging-compat.js');
+}
 firebase.initializeApp({
   apiKey:'AIzaSyCJ2bzP2XdpSvbqdr4eg5ALHcQUBAFXQ1E',
   authDomain:'adventure-sports-operations.firebaseapp.com',
@@ -14,8 +23,8 @@ messaging.onBackgroundMessage(payload=>{
   const n=payload.notification||{},d=payload.data||{};
   self.registration.showNotification(n.title||'Adventure Sports',{
     body:n.body||'Open the Operations Hub for details.',
-    icon:'/uploads/branding/adventure-logo.png',
-    badge:'/uploads/branding/adventure-logo.png',
+    icon:'/uploads/branding/icon-192.png',
+    badge:'/uploads/branding/icon-192.png',
     tag:d.notificationId||'ase-notification',
     requireInteraction:d.priority==='emergency',
     data:{url:d.url||'/ops/'}

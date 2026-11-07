@@ -4,19 +4,17 @@ const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelect
 const app=$('#app'), gate=$('#loginGate'), sidebar=$('#sidebar');
 const AUTH_KEY='ase_ops_identity_session_v2';
 const TRUSTED_DEVICE_KEY='ase_trusted_device_v1';
-const APP_BUILD='905';
+const APP_VERSION='9.3.0';
+const APP_BUILD='9300';
 async function ensureFreshBuild(){
   try{
-    const key='ase_ops_build';
-    const previous=localStorage.getItem(key);
-    if(previous!==APP_BUILD){
-      localStorage.setItem(key,APP_BUILD);
-      if(previous){
-        const url=new URL(location.href);
-        url.searchParams.set('build',APP_BUILD);
-        location.replace(url.pathname+url.search+url.hash);
-        return false;
-      }
+    const key='ase_ops_build',previous=localStorage.getItem(key);
+    localStorage.setItem(key,APP_BUILD);
+    const remote=await fetch(`/ops/build.json?ts=${Date.now()}`,{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null);
+    const target=String(remote?.build||APP_BUILD);
+    if((previous&&previous!==APP_BUILD)||target!==APP_BUILD){
+      localStorage.setItem(key,target);
+      const url=new URL(location.href);url.searchParams.set('build',target);location.replace(url.pathname+url.search+url.hash);return false;
     }
   }catch{}
   return true;
@@ -33,15 +31,15 @@ const CLOVER='/.netlify/functions/clover-dashboard';
 
 const ROLE_LABELS={owner:'Owner',manager:'Manager',grounds:'Grounds Crew',kitchen:'Kitchen',cashier:'Cashier'};
 const DEFAULT_PERMISSIONS={
-  owner:['dashboard','website','clover','staff','games','maintenance','weather','reports','incidents','kitchen','notifications','users','settings'],
-  manager:['dashboard','clover','staff','games','maintenance','weather','reports','incidents','kitchen','notifications','users'],
+  owner:['dashboard','website','clover','staff','games','gamesmatrix','maintenance','weather','reports','incidents','kitchen','notifications','users','settings'],
+  manager:['dashboard','clover','staff','games','gamesmatrix','maintenance','weather','reports','incidents','kitchen','notifications','users'],
   grounds:['maintenance','weather','incidents','notifications'],
   kitchen:['kitchen','weather','incidents','notifications'],
   cashier:['dashboard','incidents','notifications']
 };
 const MODULES=[
   ['dashboard','Dashboard'],['website','Website Control'],['clover','Clover'],['staff','Staffing'],
-  ['games','Games'],['maintenance','Fields & Maintenance'],['weather','Weather Center'],
+  ['games','Games'],['gamesmatrix','Games & Matrix'],['maintenance','Fields & Maintenance'],['weather','Weather Center'],
   ['reports','Reports'],['incidents','Incident Reports'],['kitchen','Kitchen'],['notifications','Notifications'],['users','People & Permissions'],['settings','Settings']
 ];
 
@@ -79,10 +77,17 @@ async function refresh(s){if(!s?.token?.refresh_token)return null;const r=await 
 async function ensure(){if(session?.token?.access_token)return session;const s=read();if(!s)return null;try{const u=await identityUser(s.token.access_token);save(s.token,u);return session}catch{return refresh(s)}}
 async function api(url,options={}){
   const s=await ensure();if(!s)throw Error('You are not signed in.');
-  const r=await fetch(url,{cache:'no-store',...options,headers:authHeaders(options.headers||{})});
-  let d={};const raw=await r.text();if(raw){try{d=JSON.parse(raw)}catch{d={error:raw.slice(0,300)}}}
-  if(!r.ok)throw Error(d.error||d.message||`Request failed (${r.status}).`);
-  return d;
+  const method=String(options.method||'GET').toUpperCase(),attempts=method==='GET'?2:1;
+  let lastError=null;
+  for(let attempt=0;attempt<attempts;attempt++){
+    try{
+      const r=await fetch(url,{cache:'no-store',...options,headers:authHeaders(options.headers||{})});
+      let d={};const raw=await r.text();if(raw){try{d=JSON.parse(raw)}catch{d={error:raw.slice(0,300)}}}
+      if(!r.ok){const error=Error(d.error||d.message||`Request failed (${r.status}).`);error.status=r.status;if(attempt+1<attempts&&[502,503,504].includes(r.status)){lastError=error;await new Promise(resolve=>setTimeout(resolve,450));continue}throw error}
+      return d;
+    }catch(error){lastError=error;if(attempt+1>=attempts)throw error;await new Promise(resolve=>setTimeout(resolve,450))}
+  }
+  throw lastError||Error('The request could not be completed.');
 }
 function showGate(message='Enter the email and password from your invitation.'){if(app)app.hidden=true;if(gate)gate.hidden=false;if(timer)clearInterval(timer);const status=$('#loginStatus');if(status)status.textContent=message}
 function unauthorized(message){clear();showGate(message||'Your account does not have an assigned Adventure Sports role.');const status=$('#loginStatus');if(status)status.className='login-status error'}
@@ -148,7 +153,7 @@ async function loadProfile(){
   let d=await api(PROFILE);profile=d;renderMaintenanceState(d.system||{});
   await requireOwnerVerification(d);
   if(d.mfaRequired&&!d.mfaVerified){d=await api(PROFILE);profile=d;renderMaintenanceState(d.system||{})}
-  try{const p=await api(PERMS);permissions=p.permissions||permissions}catch{} Object.keys(DEFAULT_PERMISSIONS).forEach(r=>{permissions[r]=permissions[r]||[];if(!permissions[r].includes('incidents'))permissions[r].push('incidents')})
+  try{const p=await api(PERMS);permissions=p.permissions||permissions}catch{} Object.keys(DEFAULT_PERMISSIONS).forEach(r=>{permissions[r]=permissions[r]||[];if(!permissions[r].includes('incidents'))permissions[r].push('incidents')}); ['owner','manager'].forEach(r=>{permissions[r]=permissions[r]||[];if(!permissions[r].includes('gamesmatrix'))permissions[r].splice(Math.max(0,permissions[r].indexOf('games')+1),0,'gamesmatrix')})
   return d;
 }
 async function show(u){
@@ -347,5 +352,7 @@ $('#closeProfileModal').onclick=()=>closeModal('#profileModal');$('#inviteUserFo
 $('#profileForm').onsubmit=saveProfile;$('#toggleDisabledButton').onclick=toggleDisabled;$('#terminateFromProfile').onclick=terminateSelected;$('#sendRecoveryButton').onclick=sendRecovery;
 $('#savePermissions').onclick=savePermissions;$('#refreshAudit').onclick=loadAudit;
 $$('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModal('#'+m.id)}));
+window.addEventListener('pageshow',e=>{if(e.persisted)ensureFreshBuild()});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')ensureFreshBuild()});
 ensureFreshBuild().then(ok=>{if(ok)restore()});
 })();

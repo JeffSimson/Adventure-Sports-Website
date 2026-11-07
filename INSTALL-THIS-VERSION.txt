@@ -1,15 +1,11 @@
-Adventure Sports — App Admin + Classic Backup
+INSTALL ADVENTURE SPORTS V9.3.0
 
-Upload all contents to the root of the aseupgrade repository and replace existing files.
+1. Upload the entire ZIP to the same Netlify site.
+2. Wait for the deploy to complete.
+3. Open /ops/ and confirm the sidebar badge says V9.3.0.
+4. Fully close and reopen the Home Screen app.
+5. Open Settings > Launch Center and run Launch Preflight.
+6. Open Settings > System Tests and run the full diagnostics suite.
 
-NEW ADMIN
-https://adventurenj.com/admin/
-
-CLASSIC BACKUP
-https://adventurenj.com/admin-classic/
-
-The public website and admin now use the same Adventure Sports browser-tab logo.
-The admin browser title is Adventure Sports Admin.
-The new dashboard includes overview cards for field status, upcoming events, gallery photos and connection status.
-
-After Netlify deploys, use Command + Shift + R.
+Build: 9300
+Version: 9.3.0

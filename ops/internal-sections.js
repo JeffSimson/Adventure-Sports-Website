@@ -16,11 +16,27 @@ function makeTabs(view,items){
   });
   const anchor=view.querySelector('.page-head,.users-hero,.staff-hero,.weather-hero');
   anchor?.insertAdjacentElement('afterend',tabs);
-  tabs.addEventListener('click',e=>{
+  const activate=b=>{
+    if(!b||!tabs.contains(b))return;
+    const key=b.dataset.internalTarget;
+    $$('.internal-section-tab',tabs).forEach(x=>{
+      const on=x===b;x.classList.toggle('active',on);x.setAttribute('aria-selected',on?'true':'false');
+    });
+    $$(':scope > .internal-section-panel',view).forEach(x=>{
+      const on=x.dataset.internalPanel===key;x.classList.toggle('active',on);x.hidden=!on;
+    });
+    if(view.matches('[data-view-panel="games"]')){
+      requestAnimationFrame(()=>{
+        const target=view.querySelector(':scope > .internal-section-panel.active');
+        target?.scrollIntoView?.({behavior:'smooth',block:'start'});
+      });
+    }
+  };
+  tabs.addEventListener('click',e=>{const b=e.target.closest('[data-internal-target]');if(b){e.preventDefault();activate(b)}});
+  tabs.addEventListener('touchend',e=>{
     const b=e.target.closest('[data-internal-target]');if(!b)return;
-    $$('.internal-section-tab',tabs).forEach(x=>x.classList.toggle('active',x===b));
-    $$(':scope > .internal-section-panel',view).forEach(x=>{const on=x.dataset.internalPanel===b.dataset.internalTarget;x.classList.toggle('active',on);x.hidden=!on});
-  });
+    e.preventDefault();activate(b);
+  },{passive:false});
   return tabs;
 }
 function panel(view,key,nodes){
@@ -28,14 +44,29 @@ function panel(view,key,nodes){
   nodes.filter(Boolean).forEach(n=>p.appendChild(n));view.appendChild(p);return p;
 }
 function games(){
- const view=$('[data-view-panel="games"]');if(!view)return;
- const manager=$('#gamesMatrixManager');const r=role();const canManage=['owner','manager'].includes(r);
- const head=view.querySelector('.page-head');
- const general=[...view.children].filter(n=>n!==head&&n!==manager);
- const overview=panel(view,'overview',general);overview.classList.add('active');overview.hidden=false;
- if(canManage&&manager){manager.hidden=false;const mp=panel(view,'management',[manager]);mp.dataset.internalAccess='management';mp.hidden=true}
- else if(manager){manager.hidden=true}
- makeTabs(view,[{key:'overview',label:'Games & Fields'},...(canManage?[{key:'management',label:'Tournament Management',access:'management'}]:[])]);
+ const view=$('[data-view-panel="gamesmatrix"]');if(!view)return;
+ const tabs=view.querySelector(':scope > .gamesmatrix-section-tabs');
+ const managerPanel=view.querySelector(':scope > [data-internal-panel="management"]');
+ const managerTab=tabs?.querySelector('[data-internal-target="management"]');
+ const gameDayPanel=view.querySelector(':scope > [data-internal-panel="gameday"]');
+ const gameDayTab=tabs?.querySelector('[data-internal-target="gameday"]');
+ const canManage=managementAllowed();
+ if(!canManage){managerTab?.remove();managerPanel?.remove();gameDayTab?.remove();gameDayPanel?.remove()}
+ const activate=key=>{
+   const target=tabs?.querySelector(`[data-internal-target="${key}"]`);
+   if(!target||target.hidden)return;
+   $$('.internal-section-tab',tabs).forEach(x=>{const on=x===target;x.classList.toggle('active',on);x.setAttribute('aria-selected',on?'true':'false')});
+   $$(':scope > .internal-section-panel',view).forEach(x=>{const on=x.dataset.internalPanel===key;x.classList.toggle('active',on);x.hidden=!on});
+   requestAnimationFrame(()=>window.scrollTo({top:Math.max(0,view.getBoundingClientRect().top+window.scrollY-18),left:0,behavior:'auto'}));
+ };
+ if(tabs&&!tabs.dataset.bound){
+   tabs.dataset.bound='true';
+   tabs.addEventListener('click',e=>{const b=e.target.closest('[data-internal-target]');if(!b)return;e.preventDefault();activate(b.dataset.internalTarget)});
+   tabs.addEventListener('touchend',e=>{const b=e.target.closest('[data-internal-target]');if(!b)return;e.preventDefault();activate(b.dataset.internalTarget)},{passive:false});
+ }
+ window.ASE_GAMES_MATRIX_OPEN=()=>{document.querySelector('.nav-item[data-view="gamesmatrix"]')?.click();activate('management')};
+ window.ASE_GAME_DAY_OPEN=()=>{document.querySelector('.nav-item[data-view="gamesmatrix"]')?.click();activate('gameday')};
+ activate('overview');
 }
 function notifications(){
  const view=$('[data-view-panel="notifications"]');if(!view)return;
@@ -117,6 +148,7 @@ function weather(){
 function addAutoOpsTab(){
  const view=$('[data-view-panel="settings"]');
  const autoOps=$('#autoOpsSettings');
+ const systemTests=$('#systemTestCenter');
  if(!view||!autoOps)return;
  if(!ownerAllowed()){autoOps.remove();return}
  if(view.querySelector(':scope > .internal-section-panel[data-internal-panel="autoops"]'))return;
@@ -138,12 +170,14 @@ function settings(){
  const security=$('#securityCenter');
  const database=$('#databaseCenter');
  const autoOps=$('#autoOpsSettings');
+ const systemTests=$('#systemTestCenter');
  const account=panel(view,'account',[base]);account.classList.add('active');account.hidden=false;
  const items=[{key:'account',label:'Account & App'}];
  if(owner&&prefs){const p=panel(view,'visibility',[prefs]);p.hidden=true;items.push({key:'visibility',label:'Dashboard Access',access:'owner'})}
  if(owner&&security){security.hidden=false;const p=panel(view,'security',[security]);p.hidden=true;items.push({key:'security',label:'Security',access:'owner'})}else security?.remove();
  if(owner&&database){database.hidden=false;const p=panel(view,'database',[database]);p.hidden=true;items.push({key:'database',label:'Database',access:'owner'})}else database?.remove();
  if(owner&&autoOps){autoOps.hidden=false;const p=panel(view,'autoops',[autoOps]);p.hidden=true;items.push({key:'autoops',label:'Auto Ops Alerts',access:'owner'})}else if(autoOps&&!owner)autoOps.remove();
+ if(owner&&systemTests){systemTests.hidden=false;const p=panel(view,'systemtests',[systemTests]);p.hidden=true;items.push({key:'systemtests',label:'System Tests',access:'owner'})}else if(systemTests&&!owner)systemTests.remove();
  makeTabs(view,items);
 }
 

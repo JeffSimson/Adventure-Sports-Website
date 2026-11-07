@@ -13,7 +13,7 @@ const COLUMN_ALLOWLIST={
  fields:['name','code','status','surface_type','notes'],
  incident_reports:['occurred_at','location','area','incident_type','severity','people_involved','description','before_incident','incident_details','after_incident','responding_staff','parent_notified','coach_notified','manager_notified','first_aid_provided','ems_called','police_called','ambulance_requested','transported_to_hospital','actions_taken','action_items','needs_manager_review','needs_insurance_review','needs_maintenance_review','needs_employee_follow_up','internal_notes','manager_review_status','reviewed_at','report_locked','status','reported_by','reviewed_by'],
  maintenance_requests:['field_id','title','description','priority','status','assigned_to','due_at'],
- work_orders:['title','description','priority','status','field_id','equipment_id','assigned_to','due_at','completed_at'],
+ work_orders:['request_id','title','description','category','priority','status','assigned_to','scheduled_start','scheduled_end','completed_at','labor_hours','cost'],
  equipment:['name','category','serial_number','status','location','notes','purchase_date','purchase_cost'],
  inventory_items:['name','sku','category','quantity_on_hand','reorder_level','unit','location','cost_per_unit','active'],
  tournaments:['name','start_date','end_date','status','sport','notes'],
