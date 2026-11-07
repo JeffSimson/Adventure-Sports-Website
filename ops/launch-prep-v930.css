@@ -44,3 +44,6 @@ input,select,textarea,button{max-width:100%;font:inherit}
  .app-connection-banner,.app-update-banner,.global-error-panel{align-items:flex-start;flex-wrap:wrap}.app-connection-banner>div,.app-update-banner>div,.global-error-panel>div{min-width:calc(100% - 50px)}
 }
 @media(max-width:420px){.launch-metric-grid{grid-template-columns:1fr}.games-launch-tools{grid-template-columns:1fr}.launch-onboarding-brand{display:grid}.launch-onboarding-brand img{width:58px;height:58px}}
+
+/* V10.0.7A — non-blocking update notice */
+.app-update-banner .app-update-dismiss{border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;border-radius:10px;padding:9px 12px;font-weight:800;cursor:pointer}.app-update-banner .app-update-dismiss:hover{background:rgba(255,255,255,.1)}

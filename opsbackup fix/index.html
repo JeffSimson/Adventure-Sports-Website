@@ -1,0 +1,1117 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Adventure Sports Operations Hub</title><meta name="theme-color" content="#071c3b"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Adventure Sports"><meta name="format-detection" content="telephone=no"><meta name="application-name" content="Adventure Sports Operations Hub"><meta name="description" content="Adventure Sports secure operations and game-day management hub."><link rel="apple-touch-icon" sizes="192x192" href="/uploads/branding/icon-192.png"><link rel="apple-touch-startup-image" href="/uploads/branding/launch-390x844.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)"><link rel="manifest" href="/ops/manifest.webmanifest?v=10007"><link rel="icon" href="/uploads/branding/favicon.ico"><link rel="stylesheet" href="/ops/styles.css?v=10007"><link rel="stylesheet" href="/ops/launch-prep-v930.css?v=9300"></head><body>
+<div id="loginGate" class="login-gate" hidden><div class="login-card"><img src="/uploads/branding/adventure-logo.png" alt="Adventure Sports"><p class="eyebrow">Secure Management Portal</p><h1>Adventure Sports Operations Hub</h1><p>Sign in to manage the website and daily facility operations.</p><form id="loginForm" class="login-form"><label>Email address</label><input id="loginEmail" type="email" autocomplete="username" required><label>Password</label><input id="loginPassword" type="password" autocomplete="current-password" required><button id="loginButton" class="primary-btn">Sign In</button></form><p id="loginStatus" class="login-status">Enter the email and password used for the website admin.</p><a href="/admin/" class="secondary-btn login-fallback">Use Full Website Editor</a><a href="/" class="text-link">Return to public website</a></div></div>
+<div id="app" class="app-shell" hidden><aside class="sidebar" id="sidebar"><div class="brand-block"><img src="/uploads/branding/adventure-logo.png"><div><strong>Adventure Sports</strong><span>Operations Hub <b class="v71-badge">V10.0.7</b></span></div></div><nav class="main-nav">
+<button class="nav-item active" data-view="dashboard"><span>⌂</span>Operations Center</button>
+<button class="nav-item" data-view="website"><span>◈</span>Website</button>
+<button class="nav-item" data-view="eventsadmin"><span>◫</span>Events &amp; Signups</button>
+<button class="nav-item" data-view="clover"><span>$</span>Clover</button>
+<button class="nav-item" data-view="staff"><span>👥</span>Staff</button>
+<button class="nav-item" data-view="games"><span>⚾</span>Games</button>
+<button class="nav-item" data-view="gamesmatrix"><span>▦</span>Games & Matrix</button>
+<button class="nav-item" data-view="maintenance"><span>◇</span>Fields & Maintenance</button>
+<button class="nav-item" data-view="weather"><span>☁</span>Weather Center</button>
+<button class="nav-item" data-view="reports"><span>▥</span>Reports</button>
+<button class="nav-item" data-view="incidents"><span>⚠️</span>Incident Reports</button>
+<button class="nav-item" data-view="kitchen"><span>🍔</span>Kitchen</button>
+<button class="nav-item" data-view="notifications"><span>🔔</span>Notifications</button>
+<button class="nav-item" data-view="users"><span>♙</span>Team Management</button>
+<button class="nav-item" data-view="settings"><span>☰</span>Settings</button>
+</nav><div class="sidebar-role-card"><span class="avatar">A</span><div><strong id="sidebarUserName">Administrator</strong><small id="sidebarRoleName">Loading role…</small></div></div><div class="sidebar-footer"><a href="/" target="_blank">View Public Website ↗</a><button id="logoutButton">Sign Out</button></div></aside>
+<main class="main-area"><header class="mobile-header"><button id="menuButton" class="icon-button">☰</button><div><strong>Adventure Sports</strong><span>Operations Hub</span></div><button class="avatar">A</button></header>
+<section class="view active ops73" data-view-panel="dashboard">
+  <div class="ops73-topbar">
+    <div><p class="eyebrow">Adventure Sports Operations Center</p><h1><span id="greeting">Good Morning</span>, <span id="userName">Administrator</span></h1><p id="ops73DateLine">Loading today’s command overview…</p></div>
+    <div class="ops73-top-actions"><div class="ops73-clock"><strong id="ops73Clock">--:--</strong><span id="ops73Date">—</span></div><button class="ops73-emergency" id="ops73Emergency">⚠ Emergency Alert</button></div>
+  </div>
+
+  <div class="ops73-status-strip">
+    <button class="ops73-status-main" data-go="website"><span id="dashboardLiveDot" class="live-dot"></span><div><small>Facility Status</small><strong id="facilityStatus">Loading…</strong></div><span>Manage →</span></button>
+    <div class="ops73-announcement"><small>Public Announcement</small><p id="dashboardAnnouncement">Loading current announcement…</p></div>
+    <div class="ops73-system"><i></i><div><small>Operations Hub</small><strong>All systems online</strong></div></div>
+  </div>
+
+  <div class="ops73-kpis">
+    <button class="ops73-kpi sales" data-go="clover"><span>$</span><div><small>Net Sales Today</small><strong id="dashboardSales">Connecting…</strong><em id="dashboardSalesNote">Loading Clover</em></div></button>
+    <button class="ops73-kpi weather" data-go="weather"><span id="ops73WeatherIcon">☁</span><div><small>Weather Now</small><strong id="ops73Temp">Loading…</strong><em id="ops73WeatherText">Jackson, NJ</em></div></button>
+    <button class="ops73-kpi games" data-go="gamesmatrix"><span>⚾</span><div><small>Games Today</small><strong id="ops73Games">—</strong><em id="ops73GamesNote">Checking schedule</em></div></button>
+    <button class="ops73-kpi staff" data-go="staff"><span>👥</span><div><small>Staff Working Now</small><strong id="ops73Staff">—</strong><em id="ops73StaffNote">Checking coverage</em></div></button>
+    <button class="ops73-kpi maintenance" data-go="maintenance"><span>🛠</span><div><small>Maintenance Alerts</small><strong id="ops73Maintenance">—</strong><em id="ops73MaintenanceNote">Checking fields</em></div></button>
+  </div>
+
+  <div class="ops73-main-grid">
+    <article class="panel ops73-today">
+      <div class="panel-head"><div><p class="eyebrow">Live operations</p><h2>Today at Adventure</h2></div><span id="ops73LiveBadge" class="connection-badge ready">LIVE</span></div>
+      <div class="ops73-timeline" id="ops73Timeline">
+        <div class="ops73-timeline-empty">Loading today’s operational timeline…</div>
+      </div>
+      <div class="ops73-mini-grid">
+        <div><small>First Game</small><strong id="ops73FirstGame">—</strong></div><div><small>Last Start</small><strong id="ops73LastGame">—</strong></div><div><small>Active Fields</small><strong id="ops73Fields">—</strong></div><div><small>Closing Coverage</small><strong id="ops73Closing">—</strong></div>
+      </div>
+    </article>
+
+    <article class="panel ops73-checklist-card">
+      <div class="panel-head"><div><p class="eyebrow">Manager workflow</p><h2>Daily Operations Checklist</h2></div><strong id="ops73ChecklistProgress">0%</strong></div>
+      <div class="ops73-progress"><span id="ops73ChecklistBar"></span></div>
+      <div id="ops73Checklist" class="ops73-checklist"></div>
+      <button id="ops73ResetChecklist" class="secondary-btn compact-btn">Reset Today</button>
+    </article>
+  </div>
+
+  <div class="ops73-secondary-grid">
+    <article class="panel">
+      <div class="panel-head"><div><p class="eyebrow">Fast response</p><h2>Quick Actions</h2></div></div>
+      <div class="ops73-actions">
+        <button data-go="notifications"><span>🔔</span><b>Notify Staff</b><small>Send role-based alert</small></button>
+        <button data-go="website"><span>◈</span><b>Update Facility</b><small>Status & announcement</small></button>
+        <button data-go="gamesmatrix"><span>⚾</span><b>Games Center</b><small>Schedule and setups</small></button>
+        <button data-go="maintenance"><span>🛠</span><b>Report Issue</b><small>Fields or equipment</small></button>
+        <button data-go="staff"><span>👥</span><b>Staff Coverage</b><small>Today’s shifts</small></button>
+        <button data-go="weather"><span>🌦</span><b>Weather Center</b><small>Radar and safety</small></button>
+      </div>
+    </article>
+    <article class="panel ops73-health-card">
+      <div class="panel-head"><div><p class="eyebrow">Connected services</p><h2>System Health</h2></div><span class="health-pulse"></span></div>
+      <div class="health-list">
+        <button class="health-row" data-go="website"><span class="health-icon ready">✓</span><div><b>Website Controls</b><small>Public status connected</small></div><strong>Ready</strong></button>
+        <button class="health-row" data-go="clover"><span id="dashboardCloverHealthIcon" class="health-icon loading">↻</span><div><b>Clover POS</b><small id="dashboardCloverHealthText">Connecting securely</small></div><strong id="dashboardCloverHealth">Loading</strong></button>
+        <button class="health-row" data-go="notifications"><span class="health-icon ready">✓</span><div><b>Push Notifications</b><small>iPhone delivery active</small></div><strong>Ready</strong></button>
+        <button class="health-row" data-go="maintenance"><span id="dashboardInventoryIcon" class="health-icon ready">✓</span><div><b>Inventory</b><small id="dashboardInventoryText">Checking tracked items</small></div><strong id="dashboardInventoryCount">—</strong></button>
+      </div>
+    </article>
+  </div>
+
+  <div class="ops73-data-bridge" aria-hidden="true">
+    <span id="dashboardFrontGate">$0.00</span><span id="dashboardFrontGateShare"></span><span id="dashboardKitchen">$0.00</span><span id="dashboardKitchenShare"></span><span id="dashboardTransactions">0</span><span id="dashboardTicket"></span><span id="dashboardSalesProgress"></span><span id="dashboardUpdated"></span><div id="dashboardMiniChart"></div><div id="dashboardRecentOrders"></div>
+  </div>
+</section>
+<section class="view" data-view-panel="website"><div class="page-head"><div><p class="eyebrow">Website Manager</p><h1>Website Control Center</h1><p>Control exactly what visitors see on the public website.</p></div><div class="head-actions"><a class="secondary-btn" href="/admin/">Website Editor</a><a class="secondary-btn" href="/" target="_blank">View Live Site ↗</a></div></div><div id="publishNotice" class="publish-notice" hidden></div><div class="editor-layout"><form id="quickControlsForm" class="panel control-panel"><div class="panel-head"><div><p class="eyebrow">Public website controls</p><h2>Facility Update</h2></div><span id="editorState" class="connection-badge loading">Loading</span></div><fieldset class="status-fieldset"><legend>Facility Status</legend><div class="status-options"><label class="status-option open"><input type="radio" name="fieldStatus" value="OPEN"><span><b>Open</b><small>Operating normally</small></span></label><label class="status-option delayed"><input type="radio" name="fieldStatus" value="DELAYED"><span><b>Delayed</b><small>Games or opening delayed</small></span></label><label class="status-option closed"><input type="radio" name="fieldStatus" value="CLOSED"><span><b>Closed</b><small>Facility is closed</small></span></label><label class="status-option check"><input type="radio" name="fieldStatus" value="CHECK SCHEDULE"><span><b>Check Schedule</b><small>Review schedule</small></span></label></div></fieldset><div class="form-field"><div class="label-row"><label>Homepage Announcement</label><span id="announcementCount">0 / 240</span></div><textarea id="announcementInput" maxlength="240" rows="5"></textarea></div><div class="change-summary"><span>Current live status</span><strong id="currentLiveStatus">Loading…</strong><span>Unsaved changes</span><strong id="changeState">None</strong></div><div class="form-actions"><button id="resetControlsButton" class="secondary-btn" type="button">Reset Changes</button><button id="publishControlsButton" class="primary-btn">Publish Changes</button></div></form><aside class="preview-column"><article class="panel"><div class="panel-head"><div><p class="eyebrow">Live preview</p><h2>What visitors will see</h2></div></div><div id="sitePreview" class="site-preview"><div class="preview-status-row"><span id="previewDot" class="preview-dot"></span><strong id="previewStatus">OPEN</strong></div><p id="previewAnnouncement">Loading announcement…</p></div></article><article class="panel activity-panel"><p class="eyebrow">Publishing information</p><h2>Current Website File</h2><dl><div><dt>File</dt><dd>content/site.json</dd></div><div><dt>Signed in as</dt><dd id="publisherEmail">Loading…</dd></div><div><dt>Last loaded</dt><dd id="lastLoadedTime">—</dd></div></dl></article></aside></div></section>
+<section class="view event-manager-view" data-view-panel="eventsadmin">
+  <div class="page-head event-manager-head">
+    <div><p class="eyebrow">Event Management</p><h1>Events &amp; Signups</h1><p>Edit public events, control registration, and manage every team or individual signup from one place.</p></div>
+    <div class="head-actions"><button id="eventImportButton" class="secondary-btn" type="button">Sync Website Events</button><button id="eventRefreshButton" class="secondary-btn" type="button">Refresh</button><button id="eventNewButton" class="primary-btn" type="button">+ New Event</button></div>
+  </div>
+  <div id="eventManagerNotice" class="publish-notice" hidden></div>
+  <div class="event-admin-stats">
+    <article><span>All Events</span><strong id="eventStatTotal">0</strong><small>database records</small></article>
+    <article><span>Published</span><strong id="eventStatPublished">0</strong><small>visible on website</small></article>
+    <article><span>Adventure Signup</span><strong id="eventStatInternal">0</strong><small>using your signup engine</small></article>
+    <article><span>Total Signups</span><strong id="eventStatRegistrations">0</strong><small>across all events</small></article>
+  </div>
+  <div class="event-admin-workspace">
+    <aside class="panel event-admin-browser">
+      <div class="event-admin-browser-head"><div><p class="eyebrow">Event Library</p><h2>All Events</h2></div></div>
+      <div class="event-admin-filters"><label><span>Search</span><input id="eventManagerSearch" type="search" placeholder="Search events"></label><label><span>Status</span><select id="eventManagerStatusFilter"><option value="all">All statuses</option><option value="published">Published</option><option value="draft">Draft</option><option value="cancelled">Cancelled</option><option value="completed">Completed</option></select></label><label><span>Category</span><select id="eventManagerCategoryFilter"><option value="all">All categories</option></select></label></div>
+      <div id="eventManagerList" class="event-admin-list"><div class="event-admin-empty"><b>Open Events &amp; Signups to load your events.</b></div></div>
+    </aside>
+    <section class="panel event-admin-editor">
+      <div id="eventEditorEmpty" class="event-editor-empty"><div class="event-editor-empty-icon">✦</div><h2>Select an event to edit</h2><p>Choose an event from the left, or create a new one. Changes are stored in Supabase and published events update the website automatically.</p><button class="primary-btn" type="button" onclick="document.getElementById('eventNewButton').click()">Create Event</button></div>
+      <form id="eventEditorForm" hidden>
+        <div class="event-editor-head"><div><p class="eyebrow">Event Editor</p><h2 id="eventEditorTitle">Edit Event</h2><p id="eventEditorMeta">—</p></div><div class="event-editor-actions"><a id="eventPreviewButton" class="secondary-btn" href="/events.html" target="_blank">Preview Website ↗</a><button id="eventDuplicateButton" class="secondary-btn" type="button">Duplicate</button><button id="eventDeleteButton" class="danger-outline-btn owner-only" type="button">Delete</button><button id="eventSaveButton" class="primary-btn" type="submit">Save Event</button></div></div>
+        <div class="event-editor-tabs"><button type="button" class="active" data-event-editor-tab="basics">Basics</button><button type="button" data-event-editor-tab="registration">Registration</button><button type="button" data-event-editor-tab="website">Website &amp; Media</button><button type="button" data-event-editor-tab="policies">Admission &amp; Rules</button><button type="button" data-event-editor-tab="registrations">Signups</button></div>
+
+        <div class="event-editor-panel" data-event-editor-panel="basics">
+          <div class="event-form-grid">
+            <label class="wide"><span>Event Name *</span><input name="title" required placeholder="Adventure's Annual Bunny Hop"></label>
+            <label><span>Short Name</span><input name="short_title" placeholder="Bunny Hop"></label>
+            <label><span>Category</span><input name="category" list="eventCategoryOptions" placeholder="Softball"><datalist id="eventCategoryOptions"><option value="Baseball"><option value="Softball"><option value="Flag Football"><option value="Camps"><option value="Tournaments"><option value="Private Rentals"><option value="Other"></datalist></label>
+            <label><span>Sport</span><input name="sport" placeholder="Softball"></label>
+            <label><span>Event Type</span><select name="event_kind"><option>Tournament</option><option>League</option><option>Camp</option><option>Showcase</option><option>Clinic</option><option>Rental</option><option>Other</option></select></label>
+            <label><span>Start Date *</span><input name="start_date" type="date" required></label>
+            <label><span>End Date *</span><input name="end_date" type="date" required></label>
+            <label><span>Start Time</span><input name="start_time" type="time"></label>
+            <label><span>End Time</span><input name="end_time" type="time"></label>
+            <label><span>Status</span><select name="status"><option value="draft">Draft</option><option value="published">Published</option><option value="cancelled">Cancelled</option><option value="completed">Completed</option></select></label>
+            <label><span>Timezone</span><select name="timezone"><option value="America/New_York">Eastern Time</option></select></label>
+            <label class="wide"><span>Description</span><textarea name="description" rows="7" placeholder="Everything spectators and teams should know about this event."></textarea></label>
+            <label><span>Location Name</span><input name="location_name"></label>
+            <label class="wide"><span>Location Address</span><input name="location_address"></label>
+            <label><span>Display Price</span><input name="price_display" placeholder="$400 per team"></label>
+            <label><span>Event Fee (optional)</span><input name="event_fee" type="number" min="0" step="0.01" placeholder="400.00"></label>
+            <label class="wide"><span>Divisions / Age Groups</span><input name="divisions" placeholder="10U, 12U B, 12U C, 14U Open"><small>Separate divisions with commas.</small></label>
+          </div>
+          <div class="event-toggle-row"><label><input name="is_public" type="checkbox"> <span><b>Visible on public website</b><small>Published events appear automatically on adventurenj.com.</small></span></label><label><input name="featured" type="checkbox"> <span><b>Featured event</b><small>Eligible for homepage highlighting.</small></span></label></div>
+        </div>
+
+        <div class="event-editor-panel" data-event-editor-panel="registration" hidden>
+          <div class="event-section-callout"><div><span>Adventure Signup Engine</span><h3>Choose how people register</h3><p>You can keep an outside registration link, use Adventure's own signup form, or disable signup for informational events.</p></div></div>
+          <div class="event-form-grid">
+            <label><span>Signup Method</span><select name="signup_mode"><option value="internal">Adventure Signup</option><option value="external">External Registration Link</option><option value="none">No Registration</option></select></label>
+            <label data-signup-mode="internal"><span>Registration Type</span><select name="registration_type"><option value="team">Team Registration</option><option value="individual">Individual Registration</option></select><small id="registrationTypeHelp"></small></label>
+            <label data-signup-mode="external" class="wide"><span>External Registration URL</span><input name="external_registration_url" type="url" placeholder="https://..."></label>
+            <label data-signup-mode="internal"><span>Registration Control</span><select name="registration_state"><option value="auto">Automatic by dates</option><option value="open">Force Open</option><option value="closed">Force Closed</option></select></label>
+            <label data-signup-mode="internal"><span>Capacity</span><input name="capacity" type="number" min="1" placeholder="48"><small>Leave blank for unlimited.</small></label>
+            <label data-signup-mode="internal"><span>Registration Opens</span><input name="registration_open_at" type="datetime-local"></label>
+            <label data-signup-mode="internal"><span>Registration Closes</span><input name="registration_close_at" type="datetime-local"></label>
+          </div>
+          <div class="event-toggle-row" data-signup-mode="internal"><label><input name="waitlist_enabled" type="checkbox"> <span><b>Enable waitlist when full</b><small>New registrations automatically become waitlisted after capacity is reached.</small></span></label></div>
+          <section class="event-question-builder" data-signup-mode="internal"><div class="panel-head"><div><p class="eyebrow">Custom Fields</p><h3>Registration Questions</h3><p>Add event-specific questions without changing the signup engine.</p></div><button id="eventAddQuestion" class="secondary-btn" type="button">+ Add Question</button></div><div id="eventQuestionList"></div></section>
+        </div>
+
+        <div class="event-editor-panel" data-event-editor-panel="website" hidden>
+          <div class="event-form-grid">
+            <label class="wide"><span>Event Logo URL</span><input name="logo_url" placeholder="/uploads/event-logos/..."></label>
+            <label class="wide"><span>Card Image URL</span><input name="image_url" placeholder="/uploads/..."></label>
+            <label class="wide"><span>Banner Image URL</span><input name="banner_url" placeholder="/uploads/..."></label>
+            <label class="wide"><span>SEO Page Title</span><input name="seo_title" placeholder="Event Name | Adventure Sports"></label>
+            <label class="wide"><span>SEO Description</span><textarea name="seo_description" rows="3" placeholder="Short description used by search engines and link previews."></textarea></label>
+            <label><span>Contact Name</span><input name="contact_name"></label>
+            <label><span>Contact Email</span><input name="contact_email" type="email"><small>Public event contact. Signup notification emails also go to configured Adventure owner recipients.</small></label>
+            <label><span>Contact Phone</span><input name="contact_phone"></label>
+          </div>
+          <div class="event-live-explainer"><strong>Live website publishing</strong><p>Once this event is saved as <b>Published</b> and <b>Visible on public website</b>, changes appear from the database automatically. No JSON replacement or Netlify redeploy is needed.</p></div>
+        </div>
+
+        <div class="event-editor-panel" data-event-editor-panel="policies" hidden>
+          <div class="event-form-grid">
+            <label><span>Spectator Admission</span><input name="admission_price" placeholder="$10–$20 or See Admission Page"></label>
+            <label class="wide"><span>Admission Note</span><textarea name="admission_note" rows="4" placeholder="Event-specific admission details."></textarea></label>
+            <label class="wide"><span>Tournament / Event Rules URL</span><input name="rules_url" type="url" placeholder="https://..."></label>
+            <label class="wide"><span>Waiver URL</span><input name="waiver_url" type="url" placeholder="https://..."></label>
+            <label class="wide"><span>Internal Admin Notes</span><textarea name="admin_notes" rows="6" placeholder="Private notes for Adventure Sports staff. These never appear publicly."></textarea></label>
+          </div>
+          <a class="event-policy-link" href="/tournament-admission.html" target="_blank"><span><b>Default Tournament Admission Policy</b><small>Public admission, spectator conduct, clubhouse, and safety information.</small></span><strong>Open Page ↗</strong></a>
+        </div>
+
+        <div class="event-editor-panel event-signups-panel" data-event-editor-panel="registrations" hidden>
+          <div class="event-registration-head"><div><p class="eyebrow">Signup Management</p><h3>Registrations</h3><p id="eventRegistrationSummary">0 registrations</p></div><div class="event-registration-actions"><span class="event-email-badge">✉ Email alerts on new signups</span><button id="eventRegistrationExport" class="secondary-btn" type="button">Export CSV</button></div></div>
+          <div class="event-registration-stats">
+            <article><span>Total</span><strong id="eventRegTotal">0</strong><small>submitted</small></article>
+            <article><span>Confirmed</span><strong id="eventRegConfirmed">0</strong><small>active teams / people</small></article>
+            <article><span>Waitlisted</span><strong id="eventRegWaitlisted">0</strong><small>waiting for space</small></article>
+            <article><span>Cancelled</span><strong id="eventRegCancelled">0</strong><small>not active</small></article>
+          </div>
+          <div class="table-wrap event-registration-table"><table class="data-table"><thead><tr><th>Registration</th><th>Team / Participant</th><th>Division</th><th>Contact</th><th>Status</th><th></th></tr></thead><tbody id="eventRegistrationRows"><tr><td colspan="6" class="empty-row"><div class="event-signup-empty"><span>✦</span><b>No registrations yet</b><small>New website signups will appear here automatically.</small></div></td></tr></tbody></table></div>
+        </div>
+      </form>
+    </section>
+  </div>
+</section>
+
+<section class="view" data-view-panel="clover">
+<div class="page-head"><div><p class="eyebrow">Clover POS</p><h1>Clover Sales Center</h1><p id="cloverSubtitle">Secure live sales, revenue breakdowns and inventory.</p></div><div class="head-actions"><span id="cloverConnection" class="connection-badge loading">Connecting</span><button id="refreshClover" class="secondary-btn">Refresh</button></div></div>
+<div class="clover-toolbar panel"><div class="range-tabs"><button class="range-tab active" data-clover-range="today">Today</button><button class="range-tab" data-clover-range="yesterday">Yesterday</button><button class="range-tab" data-clover-range="week">This Week</button><button class="range-tab" data-clover-range="month">This Month</button><button class="range-tab" data-clover-range="custom">Custom</button></div><form id="cloverCustomRange" class="custom-range" hidden><label><span>Start</span><input id="cloverStartDate" type="date" required></label><label><span>End</span><input id="cloverEndDate" type="date" required></label><button class="primary-btn" type="submit">Apply</button></form><div class="clover-range-summary"><small>Viewing</small><strong id="cloverRangeLabel">Today</strong></div></div>
+<div id="cloverNotice" class="publish-notice" hidden></div>
+<div class="clover-kpi-grid"><article class="metric-card featured"><span class="metric-icon">$</span><small>Total Net Sales</small><strong id="cloverNetSales">$0.00</strong><em id="cloverRefunds">Refunds $0.00</em></article><article class="metric-card gate-card"><span class="metric-icon">🎟</span><small>Front Gate Sales</small><strong id="cloverFrontGateSales">$0.00</strong><em id="cloverFrontGatePercent">0% of net sales</em></article><article class="metric-card kitchen-card"><span class="metric-icon">🍔</span><small>Kitchen Sales</small><strong id="cloverKitchenSales">$0.00</strong><em id="cloverKitchenPercent">0% of net sales</em></article><article class="metric-card"><span class="metric-icon">#</span><small>Transactions</small><strong id="cloverTransactions">0</strong><em id="cloverOrders">0 Clover orders</em></article><article class="metric-card"><span class="metric-icon">Ø</span><small>Average Ticket</small><strong id="cloverAverageTicket">$0.00</strong><em>Gross sales ÷ transactions</em></article><article class="metric-card"><span class="metric-icon">↗</span><small>Gross Sales</small><strong id="cloverGrossSales">$0.00</strong><em id="cloverMerchant">Connecting…</em></article></div>
+<div class="clover-analytics-grid"><article class="panel"><div class="panel-head"><div><p class="eyebrow">Revenue trend</p><h2 id="cloverChartTitle">Sales by Hour</h2></div><span id="cloverUpdated" class="data-time">Waiting</span></div><div id="cloverSalesChart" class="bar-chart"><div class="chart-empty">Connecting to Clover…</div></div></article><article class="panel"><div class="panel-head"><div><p class="eyebrow">Sales mix</p><h2>Front Gate vs. Kitchen</h2></div></div><div class="sales-split-visual"><div class="split-ring" id="cloverSplitRing"><div><strong id="cloverSplitTotal">$0</strong><small>Net sales</small></div></div><div class="split-legend"><div><span class="legend-dot gate"></span><div><b>Front Gate</b><small id="cloverGateLegend">$0.00</small></div></div><div><span class="legend-dot kitchen"></span><div><b>Kitchen</b><small id="cloverKitchenLegend">$0.00</small></div></div></div></div></article></div>
+<div class="clover-grid"><article class="panel"><div class="panel-head"><div><p class="eyebrow">Live activity</p><h2>Recent Orders</h2></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Time</th><th>Order</th><th>Employee</th><th>Total</th></tr></thead><tbody id="recentOrdersBody"><tr><td colspan="4" class="empty-row">Connecting to Clover…</td></tr></tbody></table></div></article><article class="panel"><div class="panel-head"><div><p class="eyebrow">Performance</p><h2>Top Selling Items</h2></div></div><ol id="topItemsList" class="ranking-list"><li class="empty-list">Waiting for Clover data…</li></ol></article></div>
+<article class="panel"><div class="panel-head"><div><p class="eyebrow">Stock monitoring</p><h2>Low Inventory Alerts</h2></div><span class="progress-pill">20 or fewer</span></div><div id="inventoryAlerts" class="inventory-grid"><div class="inventory-empty">Checking inventory…</div></div></article><article id="cloverTipsPanel" class="panel clover-tips-panel" hidden data-internal-access="owner">
+  <div class="panel-head"><div><p class="eyebrow">Owner only</p><h2>Employee Tips</h2><p>Tip totals are read directly from Clover payments for the selected date range.</p></div><span class="privacy-lock">🔒 Owner only</span></div>
+  <div class="clover-tip-summary"><div><small>Total Clover Tips</small><strong id="cloverTipsTotal">$0.00</strong><em id="cloverTipsRange">Selected range</em></div><div><small>Employees With Tips</small><strong id="cloverTipsEmployees">0</strong><em>From Clover payment records</em></div></div>
+  <div class="table-wrap"><table class="data-table clover-tips-table"><thead><tr><th>Employee</th><th>Tip Transactions</th><th>Tips</th></tr></thead><tbody id="cloverTipsBody"><tr><td colspan="3" class="empty-row">Loading Clover tips…</td></tr></tbody></table></div>
+  <p id="cloverTipsNote" class="clover-tips-note">Only tips associated with Clover payments and employees can be displayed.</p>
+  <div id="cloverMappingPanel" class="clover-mapping-panel">
+    <div class="panel-head"><div><p class="eyebrow">Owner tools</p><h3>Clover Employee Diagnostics</h3><p>Shows whether tipped payments were matched through the payment or its order.</p></div><button id="refreshCloverMappings" class="secondary-btn compact-btn" type="button">Refresh</button></div>
+    <div id="cloverMappingStatus" class="database-empty">Load Clover data to view matching diagnostics.</div>
+  </div>
+</article></section>
+<section class="view staff-view" data-view-panel="staff">
+  <div class="staff-hero">
+    <div>
+      <p class="eyebrow">Staff Operations</p>
+      <h1>Daily Staff Command Center</h1>
+      <p>Live shift coverage built directly from the Base Schedule workbook.</p>
+    </div>
+    <div class="staff-hero-actions">
+      <label class="staff-date-control"><span>Schedule date</span><select id="staffDateSelect"></select></label>
+      <button id="staffTodayButton" class="secondary-btn">Today</button><button id="staffRefreshButton" class="secondary-btn">Refresh</button><div class="staff-live-state"><i id="staffLiveDot" class="staff-live-dot syncing"></i><span id="staffLiveText">Connecting…</span></div>
+    </div>
+  </div>
+
+  <div id="staffNotice" class="publish-notice" hidden></div>
+
+  <div class="staff-kpi-grid">
+    <article class="staff-kpi primary"><span class="staff-kpi-icon">👥</span><small>Scheduled</small><strong id="staffScheduledCount">0</strong><em id="staffScheduledNote">employees today</em></article>
+    <article class="staff-kpi live"><span class="staff-kpi-icon">●</span><small>Working Now</small><strong id="staffWorkingCount">0</strong><em id="staffWorkingNote">currently on shift</em></article>
+    <article class="staff-kpi"><span class="staff-kpi-icon">↗</span><small>Scheduled Later</small><strong id="staffLaterCount">0</strong><em>upcoming shifts</em></article>
+    <article class="staff-kpi"><span class="staff-kpi-icon">✓</span><small>Completed</small><strong id="staffCompletedCount">0</strong><em>finished shifts</em></article>
+    <article class="staff-kpi"><span class="staff-kpi-icon">⏱</span><small>Labor Hours</small><strong id="staffLaborHours">0</strong><em>total scheduled</em></article>
+    <article class="staff-kpi"><span class="staff-kpi-icon">🌙</span><small>Closing Staff</small><strong id="staffCloserCount">0</strong><em id="staffClosingTime">latest coverage</em></article>
+  </div>
+
+  <div class="staff-layout">
+    <section class="panel staff-main-panel">
+      <div class="panel-head staff-panel-head">
+        <div><p class="eyebrow">Selected day</p><h2 id="staffDayHeading">Daily Schedule</h2><p id="staffDaySummary">Loading shifts…</p></div>
+        <div class="staff-tools"><div class="staff-search"><span>⌕</span><input id="staffSearch" type="search" placeholder="Search employee or role"></div><select id="staffStatusFilter"><option value="all">All shifts</option><option value="working">Working now</option><option value="later">Scheduled later</option><option value="completed">Completed</option></select></div>
+      </div>
+      <div id="staffCoverageBar" class="staff-coverage-bar"></div>
+      <div id="staffShiftCards" class="staff-shift-cards"><div class="dashboard-empty">Loading Base Schedule…</div></div>
+    </section>
+
+    <aside class="staff-side-column">
+      <article class="panel staff-coverage-panel">
+        <div class="panel-head"><div><p class="eyebrow">Coverage</p><h2>Opening & Closing</h2></div></div>
+        <div class="coverage-summary"><div><span class="coverage-symbol morning">☀</span><div><small>First staff in</small><strong id="staffFirstIn">—</strong><p id="staffOpeners">No schedule loaded</p></div></div><div><span class="coverage-symbol night">☾</span><div><small>Last staff out</small><strong id="staffLastOut">—</strong><p id="staffClosers">No schedule loaded</p></div></div></div>
+      </article>
+
+      <article class="panel staff-timeline-panel">
+        <div class="panel-head"><div><p class="eyebrow">Day timeline</p><h2>Shift Starts</h2></div></div>
+        <div id="staffTimeline" class="staff-timeline"></div>
+      </article>
+
+      <article class="panel staff-source-panel">
+        <p class="eyebrow">Schedule source</p><h2>Base Schedule</h2><p>This page reads the live <b>Base Schedule</b> directly from Google Sheets and refreshes every 30 seconds.</p><dl><div><dt>Google Sheet tab</dt><dd id="staffSourceName">Base Schedule</dd></div><div><dt>Loaded dates</dt><dd id="staffLoadedDates">—</dd></div><div><dt>Last synced</dt><dd id="staffDataUpdated">—</dd></div></dl>
+      </article>
+    </aside>
+  </div>
+</section><section class="view" data-view-panel="games"></section>
+
+<section class="view games-view games-matrix-view" data-view-panel="gamesmatrix">
+  <div class="page-head games-page-head">
+    <div><p class="eyebrow">Owner &amp; Manager Tools</p><h1>Games &amp; Matrix</h1><p id="gamesSelectedDay">Live tournament schedule and matrix controls.</p></div>
+    <div class="head-actions"><button id="gamesTodayButton" class="primary-btn" type="button">Jump to Today</button><button class="secondary-btn" type="button" data-go="games">View Schedule</button></div>
+  </div>
+
+  <div class="internal-section-tabs gamesmatrix-section-tabs" role="tablist" aria-label="Games and matrix sections">
+    <button class="internal-section-tab active" type="button" role="tab" aria-selected="true" data-internal-target="overview">Games &amp; Fields</button>
+    <button class="internal-section-tab" type="button" role="tab" aria-selected="false" data-internal-target="gameday" data-internal-access="management">Game Day Control</button>
+    <button class="internal-section-tab" type="button" role="tab" aria-selected="false" data-internal-target="management" data-internal-access="management">Tournament Management</button>
+  </div>
+
+  <div class="internal-section-panel active" data-internal-panel="overview">
+    <div id="gamesSummary" class="games-summary-grid"></div><div id="gamesOpsAlert" class="games-ops-alert" hidden></div>
+    <div class="panel games-week-panel">
+      <div class="panel-head"><div><p class="eyebrow">Tournament matrix</p><h2>Weekly Game Schedule</h2></div><div id="gamesDayTabs" class="games-day-tabs"></div></div>
+      <div class="games-matrix-scroll-hint" aria-hidden="true"><span>Swipe or scroll sideways to view every field</span><span>↔</span></div>
+      <div id="gamesMatrix" class="games-matrix-wrap" data-no-drawer-swipe></div>
+    </div>
+    <div class="panel games-field-panel">
+      <div class="panel-head"><div><p class="eyebrow">Grounds setup</p><h2>Field Configuration</h2><p>Pitching distance, base distance, division, and required changes.</p></div></div>
+      <div id="gamesFieldCards" class="games-field-grid"></div>
+    </div>
+  </div>
+
+  <div class="internal-section-panel" data-internal-panel="gameday" data-internal-access="management" hidden>
+    <div id="gameDayControl" class="game-day-control">
+      <div class="panel game-day-hero">
+        <div>
+          <p class="eyebrow">Live Tournament Operations</p>
+          <h2>Game Day Control Center</h2>
+          <p>Control live game status, delays, field moves, weather holds, field readiness, and public updates from one screen.</p>
+        </div>
+        <div class="game-day-hero-actions">
+          <label><span>Control date</span><span class="date-input-shell"><input id="gameDayDate" type="date"></span></label>
+          <button id="gameDayToday" class="secondary-btn" type="button">Today</button>
+          <button id="gameDayRefresh" class="secondary-btn" type="button">Refresh</button>
+          <span id="gameDayLiveBadge" class="connection-badge loading">Loading</span>
+        </div>
+      </div>
+
+      <div id="gameDayNotice" class="publish-notice" hidden></div>
+
+      <div id="gameDayStats" class="game-day-stat-grid">
+        <article><span>Total Games</span><strong>—</strong><small>Loading live matrix</small></article>
+        <article><span>In Progress</span><strong>—</strong><small>Current field activity</small></article>
+        <article><span>Delayed</span><strong>—</strong><small>Schedule attention</small></article>
+        <article><span>Completed</span><strong>—</strong><small>Finished games</small></article>
+      </div>
+
+      <div class="game-day-primary-grid">
+        <section class="panel lightning-control-card" id="gameDayLightningCard">
+          <div class="panel-head">
+            <div><p class="eyebrow">Weather Safety</p><h3>Lightning Hold</h3><p>Start or restart the facility clearance timer, then confirm reopening after the clear period.</p></div>
+            <span id="gameDayLightningState" class="game-day-status-pill neutral">Inactive</span>
+          </div>
+          <div id="gameDayLightningTimer" class="lightning-timer"><strong>—</strong><span>No active hold</span></div>
+          <div class="lightning-controls">
+            <label><span>Clear period</span><select id="gameDayLightningMinutes"><option value="20">20 minutes</option><option value="30" selected>30 minutes</option><option value="45">45 minutes</option><option value="60">60 minutes</option></select></label>
+            <label class="game-day-inline-check"><input id="gameDayLightningNotify" type="checkbox" checked><span>Notify everyone + public board</span></label>
+          </div>
+          <div class="game-day-button-row">
+            <button id="gameDayLightningStart" class="warning-btn" type="button">Start Lightning Hold</button>
+            <button id="gameDayLightningRestart" class="secondary-btn" type="button">Restart Timer</button>
+            <button id="gameDayLightningResume" class="primary-btn" type="button">Confirm Clear & Resume</button>
+          </div>
+          <p class="game-day-safety-note"><b>Safety:</b> Timer completion does not automatically reopen fields. Management must confirm on-site conditions.</p>
+        </section>
+
+        <section class="panel game-day-delay-card">
+          <div class="panel-head"><div><p class="eyebrow">Schedule Control</p><h3>Delay Remaining Games</h3><p>Shift every remaining game on the selected day while keeping completed and canceled games unchanged.</p></div></div>
+          <div class="delay-quick-buttons">
+            <button type="button" data-delay-all="15">+15 Minutes</button>
+            <button type="button" data-delay-all="30">+30 Minutes</button>
+            <button type="button" data-delay-all="60">+60 Minutes</button>
+          </div>
+          <label class="game-day-inline-check"><input id="gameDayDelayNotify" type="checkbox" checked><span>Send update to all enrolled devices and the public board</span></label>
+          <label class="game-day-reason"><span>Delay note (optional)</span><input id="gameDayDelayReason" type="text" maxlength="180" placeholder="Example: Weather delay or previous games running long"></label>
+        </section>
+      </div>
+
+      <section class="panel game-day-games-panel">
+        <div class="panel-head game-day-list-head">
+          <div><p class="eyebrow">Live Game Board</p><h3>Games</h3><p>Update status or move any game to a new field and time.</p></div>
+          <div class="game-day-filters">
+            <label><span>Field</span><select id="gameDayFieldFilter"><option value="all">All fields</option></select></label>
+            <label><span>Status</span><select id="gameDayStatusFilter"><option value="all">All statuses</option><option value="upcoming">Upcoming</option><option value="in-progress">In progress</option><option value="delayed">Delayed</option><option value="complete">Complete</option><option value="canceled">Canceled</option></select></label>
+          </div>
+        </div>
+        <div id="gameDayGameList" class="game-day-game-list"><p class="dashboard-empty">Loading games…</p></div>
+      </section>
+
+      <div class="game-day-secondary-grid">
+        <section class="panel">
+          <div class="panel-head"><div><p class="eyebrow">Field Readiness</p><h3>Cleanup & Setup Changes</h3><p>See fields needing attention and mark each item ready when complete.</p></div></div>
+          <div id="gameDayFieldReadiness" class="game-day-field-readiness"><p class="dashboard-empty">Loading fields…</p></div>
+        </section>
+
+        <section class="panel game-day-broadcast-panel">
+          <div class="panel-head"><div><p class="eyebrow">One-Tap Updates</p><h3>Notify Staff, Managers, Teams & Public</h3><p>Send a push update and optionally publish the same message on adventurenj.com.</p></div></div>
+          <div class="broadcast-templates">
+            <button type="button" data-broadcast-template="schedule">Schedule Updated</button>
+            <button type="button" data-broadcast-template="delay">Games Delayed</button>
+            <button type="button" data-broadcast-template="resume">Play Resumed</button>
+            <button type="button" data-broadcast-template="field">Field Change</button>
+          </div>
+          <label><span>Title</span><input id="gameDayBroadcastTitle" type="text" maxlength="90" placeholder="Game day update"></label>
+          <label><span>Message</span><textarea id="gameDayBroadcastMessage" rows="4" maxlength="500" placeholder="Enter the update teams and staff should see."></textarea></label>
+          <div class="game-day-broadcast-options">
+            <label><span>Audience</span><select id="gameDayBroadcastAudience"><option value="management">Owners & managers</option><option value="staff">All staff</option><option value="everyone">Everyone enrolled</option><option value="teams-public">Teams & public (all enrolled + website)</option></select></label>
+            <label><span>Priority</span><select id="gameDayBroadcastPriority"><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select></label>
+            <label class="game-day-inline-check"><input id="gameDayBroadcastPublic" type="checkbox" checked><span>Show on public website</span></label>
+          </div>
+          <div class="game-day-button-row"><button id="gameDayBroadcastSend" class="primary-btn" type="button">Send Game Day Update</button><button id="gameDayClearPublic" class="secondary-btn" type="button">Clear Public Message</button></div>
+          <div id="gameDayPublicPreview" class="game-day-public-preview"><span>Public board preview</span><strong>No manual update posted</strong><p>The live schedule and active delays still appear automatically.</p></div>
+        </section>
+      </div>
+
+      <section class="panel game-day-audit-panel">
+        <div class="panel-head"><div><p class="eyebrow">Accountability</p><h3>Game Day Change History</h3><p>Every status, move, delay, weather hold, field task, and broadcast records who made it and when.</p></div></div>
+        <div id="gameDayAudit" class="game-day-audit-list"><p class="dashboard-empty">No game-day changes recorded yet.</p></div>
+      </section>
+    </div>
+  </div>
+
+  <div class="internal-section-panel" data-internal-panel="management" data-internal-access="management" hidden>
+    <div id="gamesMatrixManager" class="games-manager-suite">
+      <div class="panel games-manager-toolbar">
+        <div>
+          <p class="eyebrow">Owner &amp; Manager Tools</p>
+          <h2>Tournament Management</h2>
+          <p>Create, edit, save, copy, delete, and publish tournament schedules without redeploying the app.</p>
+        </div>
+        <div class="games-manager-actions">
+          <span id="gamesEditorState" class="connection-badge ready">Published</span>
+          <button id="gamesNewMatrixButton" class="secondary-btn" type="button">+ New Matrix</button>
+          <button id="gamesSaveDraftButton" class="secondary-btn" type="button">Save Draft</button>
+          <button id="gamesPublishMatrixButton" class="primary-btn" type="button">Publish Live</button>
+        </div>
+      </div>
+      <div id="gamesMatrixNotice" class="publish-notice" hidden></div>
+
+      <div class="games-builder-layout">
+        <aside class="panel games-library-panel">
+          <div class="panel-head"><div><p class="eyebrow">Saved schedules</p><h3>Matrix Library</h3></div></div>
+          <div id="gamesMatrixLibrary" class="matrix-library-list"><p class="empty-list">Loading saved matrices…</p></div>
+          <button id="gamesDeleteMatrixButton" class="danger-outline-btn games-delete-matrix" type="button">Delete Selected Matrix</button>
+          <details class="matrix-import-details">
+            <summary>Import TXT, CSV, or XLSX</summary>
+            <label class="games-manager-label" for="gamesMatrixText">Paste matrix schedule</label>
+            <textarea id="gamesMatrixText" rows="8" spellcheck="false" placeholder="Paste your TOURNAMENT FIELD MATRIX here."></textarea>
+            <div class="games-upload-row">
+              <label class="secondary-btn games-file-btn">Upload File<input id="gamesMatrixFile" type="file" accept=".txt,.csv,.xlsx,.xls"></label>
+              <span id="gamesMatrixFileName">TXT, CSV, or XLSX</span>
+            </div>
+            <div class="form-actions compact-actions">
+              <button id="gamesMatrixPreviewButton" class="secondary-btn" type="button">Preview Import</button>
+              <button id="gamesLoadImportButton" class="primary-btn" type="button" disabled>Load Into Editor</button>
+            </div>
+            <div id="gamesMatrixPreview" class="games-preview-card"><p>Imported schedules are loaded into the visual editor before publishing.</p></div>
+          </details>
+        </aside>
+
+        <section class="panel games-visual-builder">
+          <div class="games-builder-head">
+            <label class="games-builder-name"><span>Matrix name</span><input id="gamesEditorName" type="text" maxlength="100" placeholder="Tournament name"></label>
+            <div class="games-builder-range"><span>Date range</span><strong id="gamesEditorRange">—</strong><em id="gamesEditorLiveLabel" class="matrix-status live">LIVE</em></div>
+          </div>
+          <div id="gamesManagerMeta" class="games-manager-kpis"></div>
+
+          <section class="matrix-fields-section">
+            <div><h3>Fields included</h3><p>Select which complex fields are available in this tournament.</p></div>
+            <div id="gamesEditorFields" class="matrix-field-selector"></div>
+          </section>
+
+          <section class="matrix-days-section">
+            <div class="matrix-section-heading">
+              <div><h3>Tournament days</h3><p>Choose a date, then set every game time and field for that day.</p></div>
+              <button id="gamesAddDayButton" class="secondary-btn compact-btn" type="button">+ Add Day</button>
+            </div>
+            <div id="gamesEditorDayTabs" class="matrix-editor-days" data-no-drawer-swipe></div>
+          </section>
+
+          <section class="matrix-day-editor">
+            <div class="matrix-day-toolbar">
+              <label><span>Selected date</span><span class="date-input-shell"><input id="gamesEditorDate" type="date"></span></label>
+              <div>
+                <button id="gamesCopyDayButton" class="secondary-btn compact-btn" type="button">Copy Previous Day</button>
+                <button id="gamesDeleteDayButton" class="danger-outline-btn compact-btn" type="button">Delete Day</button>
+              </div>
+            </div>
+            <div id="gamesEditorSlots" class="matrix-slot-list"></div>
+            <button id="gamesAddSlotButton" class="matrix-add-slot" type="button">+ Add Game Time</button>
+          </section>
+        </section>
+      </div>
+
+      <div class="panel games-archive-panel">
+        <div class="panel-head"><div><p class="eyebrow">Version history</p><h3>Published Schedule Archive</h3><p>Republish a prior version if a schedule needs to be rolled back.</p></div></div>
+        <div id="gamesMatrixArchive"><p class="empty-list">No archived schedules yet.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="view maintenance-view" data-view-panel="maintenance">
+  <div class="maintenance-hero">
+    <div>
+      <p class="eyebrow">Facility Operations</p>
+      <h1>Field & Maintenance Command Center</h1>
+      <p>Inspect every field, complete daily duties, report problems, and track equipment from one screen.</p>
+    </div>
+    <div class="maintenance-hero-actions">
+      <label class="maintenance-date-control"><span>Work date</span><input id="maintenanceDate" type="date"></label>
+      <button id="maintenanceToday" class="secondary-btn" type="button">Today</button>
+      <button id="maintenanceRefresh" class="secondary-btn" type="button">Refresh</button>
+      <div class="maintenance-sync-state"><i id="maintenanceSyncDot" class="maintenance-sync-dot ready"></i><span id="maintenanceSyncText">Saved on this device</span></div>
+    </div>
+  </div>
+
+  <div id="maintenanceNotice" class="publish-notice" hidden></div>
+
+  <div class="maintenance-kpi-grid">
+    <article class="maintenance-kpi good"><span>✓</span><small>Fields Good</small><strong id="maintenanceGoodCount">8 / 8</strong><em>ready for play</em></article>
+    <article class="maintenance-kpi attention"><span>!</span><small>Needs Attention</small><strong id="maintenanceAttentionCount">0</strong><em>field items</em></article>
+    <article class="maintenance-kpi urgent"><span>⚠</span><small>Open Issues</small><strong id="maintenanceIssueCount">0</strong><em>not resolved</em></article>
+    <article class="maintenance-kpi"><span>⚙</span><small>Equipment Issues</small><strong id="maintenanceEquipmentCount">0</strong><em>need service</em></article>
+    <article class="maintenance-kpi"><span>☑</span><small>Completed Today</small><strong id="maintenanceCompletedCount">0</strong><em>checklist items</em></article>
+    <article class="maintenance-kpi readiness"><span>◆</span><small>Fields Ready</small><strong id="maintenanceReadyLabel">YES</strong><em id="maintenanceReadyNote">all fields operational</em></article>
+  </div>
+
+  <div class="maintenance-tabs" role="tablist" aria-label="Maintenance sections">
+    <button class="maintenance-tab active" data-maintenance-tab="fields" type="button">Field Status</button>
+    <button class="maintenance-tab" data-maintenance-tab="daily" type="button">Daily Checklist</button>
+    <button class="maintenance-tab" data-maintenance-tab="issues" type="button">Issues</button>
+    <button class="maintenance-tab" data-maintenance-tab="equipment" type="button">Equipment</button>
+    <button class="maintenance-tab" data-maintenance-tab="history" type="button">Activity</button>
+  </div>
+
+  <section class="maintenance-tab-panel active" data-maintenance-panel="fields">
+    <div class="maintenance-section-head">
+      <div><p class="eyebrow">Eight-field overview</p><h2>Field Readiness</h2><p>Tap a field to inspect pitching rubbers, bases, turf, rubber coverage, and closing duties.</p></div>
+      <div class="maintenance-legend"><span><i class="good"></i>Good</span><span><i class="attention"></i>Needs attention</span><span><i class="urgent"></i>Maintenance required</span></div>
+    </div>
+    <div id="maintenanceFieldGrid" class="maintenance-field-grid"></div>
+  </section>
+
+  <section class="maintenance-tab-panel" data-maintenance-panel="daily">
+    <div class="maintenance-two-column">
+      <article class="panel maintenance-checklist-panel">
+        <div class="panel-head"><div><p class="eyebrow">Facility opening</p><h2>Opening Checklist</h2></div><span id="openingProgress" class="progress-pill">0 / 8</span></div>
+        <div id="openingChecklist" class="maintenance-checklist"></div>
+      </article>
+      <article class="panel maintenance-checklist-panel">
+        <div class="panel-head"><div><p class="eyebrow">Facility closing</p><h2>Closing Checklist</h2></div><span id="closingProgress" class="progress-pill">0 / 10</span></div>
+        <div id="closingChecklist" class="maintenance-checklist"></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="maintenance-tab-panel" data-maintenance-panel="issues">
+    <div class="maintenance-section-head">
+      <div><p class="eyebrow">Problem tracking</p><h2>Open Maintenance Issues</h2><p>Report a problem and keep it visible until someone resolves it.</p></div>
+      <button id="addMaintenanceIssue" class="primary-btn" type="button">+ Report Issue</button>
+    </div>
+    <div class="maintenance-filter-row">
+      <div class="staff-search"><span>⌕</span><input id="maintenanceIssueSearch" type="search" placeholder="Search field, equipment, or issue"></div>
+      <select id="maintenanceIssueFilter"><option value="open">Open issues</option><option value="all">All issues</option><option value="high">High priority</option><option value="resolved">Resolved</option></select>
+    </div>
+    <div id="maintenanceIssueList" class="maintenance-issue-list"></div>
+  </section>
+
+  <section class="maintenance-tab-panel" data-maintenance-panel="equipment">
+    <div class="maintenance-section-head">
+      <div><p class="eyebrow">Asset condition</p><h2>Equipment Tracker</h2><p>Update hours, fuel, service status, and repair notes.</p></div>
+      <button id="addEquipment" class="primary-btn" type="button">+ Add Equipment</button>
+    </div>
+    <div id="maintenanceEquipmentGrid" class="maintenance-equipment-grid"></div>
+  </section>
+
+  <section class="maintenance-tab-panel" data-maintenance-panel="history">
+    <div class="maintenance-section-head">
+      <div><p class="eyebrow">Recorded changes</p><h2>Maintenance Activity</h2><p>Recent field checks, completed tasks, issue updates, and equipment changes.</p></div>
+      <button id="clearMaintenanceHistory" class="secondary-btn" type="button">Clear History</button>
+    </div>
+    <div id="maintenanceHistory" class="maintenance-history"></div>
+  </section>
+</section>
+
+<div id="fieldMaintenanceModal" class="maintenance-modal" hidden>
+  <div class="maintenance-modal-backdrop" data-close-maintenance-modal></div>
+  <section class="maintenance-modal-card" role="dialog" aria-modal="true" aria-labelledby="fieldModalTitle">
+    <header class="maintenance-modal-header">
+      <div><p class="eyebrow">Field inspection</p><h2 id="fieldModalTitle">Field A1</h2><p id="fieldModalSubtitle">Update field condition and checklist items.</p></div>
+      <button class="maintenance-modal-close" data-close-maintenance-modal type="button" aria-label="Close">×</button>
+    </header>
+    <div id="fieldModalBody" class="maintenance-modal-body"></div>
+    <footer class="maintenance-modal-footer">
+      <button class="secondary-btn" data-close-maintenance-modal type="button">Cancel</button>
+      <button id="saveFieldInspection" class="primary-btn" type="button">Save Inspection</button>
+    </footer>
+  </section>
+</div>
+
+<div id="maintenanceFormModal" class="maintenance-modal" hidden>
+  <div class="maintenance-modal-backdrop" data-close-form-modal></div>
+  <section class="maintenance-modal-card maintenance-form-modal-card" role="dialog" aria-modal="true" aria-labelledby="maintenanceFormTitle">
+    <header class="maintenance-modal-header">
+      <div><p class="eyebrow" id="maintenanceFormEyebrow">Maintenance</p><h2 id="maintenanceFormTitle">Report Issue</h2></div>
+      <button class="maintenance-modal-close" data-close-form-modal type="button" aria-label="Close">×</button>
+    </header>
+    <form id="maintenanceDynamicForm" class="maintenance-modal-body"></form>
+    <footer class="maintenance-modal-footer">
+      <button class="secondary-btn" data-close-form-modal type="button">Cancel</button>
+      <button id="saveMaintenanceForm" class="primary-btn" type="button">Save</button>
+    </footer>
+  </section>
+</div>
+
+<section class="view weather-view" data-view-panel="weather">
+  <div class="weather-hero">
+    <div>
+      <p class="eyebrow">Jackson, New Jersey</p>
+      <h1>Weather Operations Center</h1>
+      <p>Live operating conditions, hourly rain timing, wind and heat safety, radar, and field-status controls.</p>
+    </div>
+    <div class="weather-hero-actions">
+      <button id="weatherRefresh" class="secondary-btn" type="button">Refresh Weather</button>
+      <div class="weather-live-state">
+        <i id="weatherLiveDot" class="weather-live-dot loading"></i>
+        <span id="weatherLiveText">Loading live conditions…</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="weatherError" class="publish-notice" hidden></div><div id="weatherAlerts" class="weather-alerts" hidden></div>
+
+  <div class="weather-current-grid">
+    <article class="weather-current-main panel">
+      <div class="weather-current-heading">
+        <div>
+          <p class="eyebrow">Current conditions</p>
+          <h2 id="weatherCondition">Loading…</h2>
+          <p id="weatherUpdated">Waiting for weather data</p>
+        </div>
+        <div id="weatherIcon" class="weather-icon">☁</div>
+      </div>
+      <div class="weather-temperature-row">
+        <strong id="weatherTemperature">--°</strong>
+        <div>
+          <span>Feels like <b id="weatherFeels">--°</b></span>
+          <span>Today's high <b id="weatherHigh">--°</b></span>
+          <span>Today's low <b id="weatherLow">--°</b></span>
+        </div>
+      </div>
+    </article>
+
+    <article class="weather-metric-card">
+      <span>☂</span><small>Rain Chance</small><strong id="weatherRainChance">--%</strong><em id="weatherRainAmount">Next hour</em>
+    </article>
+    <article class="weather-metric-card">
+      <span>↗</span><small>Wind</small><strong id="weatherWind">-- mph</strong><em id="weatherGust">Gusts -- mph</em>
+    </article>
+    <article class="weather-metric-card">
+      <span>◌</span><small>Humidity</small><strong id="weatherHumidity">--%</strong><em id="weatherDewPoint">Dew point --°</em>
+    </article>
+    <article class="weather-metric-card">
+      <span>☀</span><small>UV Index</small><strong id="weatherUv">--</strong><em id="weatherUvLabel">Loading</em>
+    </article>
+    <article class="weather-metric-card">
+      <span>◐</span><small>Daylight</small><strong id="weatherSunset">--</strong><em id="weatherSunrise">Sunrise --</em>
+    </article>
+  </div>
+
+  <div class="weather-safety-grid">
+    <article id="weatherPlayStatusCard" class="weather-safety-card safe">
+      <div class="weather-safety-icon">✓</div>
+      <div>
+        <p class="eyebrow">Weather play status</p>
+        <h2 id="weatherPlayStatus">Safe to Play</h2>
+        <p id="weatherPlayReason">No major weather risk identified in the current forecast.</p>
+      </div>
+    </article>
+
+    <article id="weatherHeatCard" class="weather-safety-card safe">
+      <div class="weather-safety-icon">☀</div>
+      <div>
+        <p class="eyebrow">Heat safety</p>
+        <h2 id="weatherHeatStatus">Normal Conditions</h2>
+        <p id="weatherHeatReason">Standard hydration breaks.</p>
+      </div>
+    </article>
+
+    <article id="weatherWindCard" class="weather-safety-card safe">
+      <div class="weather-safety-icon">≋</div>
+      <div>
+        <p class="eyebrow">Wind safety</p>
+        <h2 id="weatherWindStatus">Normal Wind</h2>
+        <p id="weatherWindReason">No special action required.</p>
+      </div>
+    </article>
+  </div>
+
+  <div class="weather-tabs" role="tablist" aria-label="Weather sections">
+    <button class="weather-tab active" data-weather-tab="hourly" type="button">Hourly Timeline</button>
+    <button class="weather-tab" data-weather-tab="radar" type="button">Live Radar</button>
+    <button class="weather-tab" data-weather-tab="forecast" type="button">7-Day Forecast</button>
+    <button class="weather-tab" data-weather-tab="lightning" type="button">Lightning Timer</button>
+    <button class="weather-tab" data-weather-tab="fieldstatus" type="button">Field Status</button>
+  </div>
+
+  <section class="weather-tab-panel active" data-weather-panel="hourly">
+    <div class="weather-section-head">
+      <div><p class="eyebrow">Next 24 hours</p><h2>Hourly Weather Timeline</h2><p>See exactly when rain, wind, and temperature changes are expected.</p></div>
+      <div class="weather-hourly-legend"><span>Rain probability</span><span>Forecast conditions</span></div>
+    </div>
+    <div id="weatherHourlyList" class="weather-hourly-list">
+      <div class="dashboard-empty">Loading hourly forecast…</div>
+    </div>
+  </section>
+
+  <section class="weather-tab-panel" data-weather-panel="radar">
+    <div class="weather-section-head">
+      <div><p class="eyebrow">Precipitation radar</p><h2>Live Weather Radar</h2><p>Recent radar imagery centered on Adventure Sports in Jackson.</p></div>
+      <div class="weather-radar-controls">
+        <button id="weatherRadarRecenter" class="secondary-btn" type="button">⌖ Recenter</button>
+        <button id="weatherRadarLatest" class="secondary-btn" type="button">↻ Refresh Radar</button>
+        <a id="weatherRadarFull" class="secondary-btn" href="https://www.windy.com/40.115/-74.358?radar,40.115,-74.358,8" target="_blank" rel="noopener">Open Full Screen ↗</a>
+      </div>
+    </div>
+    <div class="weather-radar-shell">
+      <div id="weatherRadarMap" class="weather-radar-map" aria-label="Interactive weather radar"></div>
+      <div class="weather-radar-status"><span id="weatherRadarTime">Loading interactive radar…</span><span>Interactive radar: Windy</span></div>
+    </div>
+  </section>
+
+  <section class="weather-tab-panel" data-weather-panel="forecast">
+    <div class="weather-section-head">
+      <div><p class="eyebrow">Planning outlook</p><h2>7-Day Forecast</h2><p>Daily high, low, rain chance, wind, and operating outlook.</p></div>
+    </div>
+    <div id="weatherDailyGrid" class="weather-daily-grid">
+      <div class="dashboard-empty">Loading forecast…</div>
+    </div>
+  </section>
+
+  <section class="weather-tab-panel" data-weather-panel="lightning">
+    <div class="weather-lightning-layout">
+      <article class="panel weather-lightning-panel">
+        <p class="eyebrow">Manual safety control</p>
+        <h2>30-Minute Lightning Countdown</h2>
+        <p class="weather-lightning-warning"><b>This is a manual timer, not a lightning detector.</b> Start or restart it whenever lightning is observed or reported under your facility's safety policy.</p>
+        <div id="lightningTimerDisplay" class="lightning-timer-display">30:00</div>
+        <div id="lightningTimerStatus" class="lightning-timer-status ready">Ready to start</div>
+        <div class="lightning-timer-actions">
+          <button id="lightningStart" class="danger-btn" type="button">Clear Fields & Start Timer</button>
+          <button id="lightningRestart" class="secondary-btn" type="button">Restart 30 Minutes</button>
+          <button id="lightningReset" class="secondary-btn" type="button">Reset</button>
+        </div>
+      </article>
+      <article class="panel weather-lightning-log-panel">
+        <div class="panel-head"><div><p class="eyebrow">Safety record</p><h2>Lightning Timer Log</h2></div></div>
+        <div id="lightningLog" class="lightning-log"></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="weather-tab-panel" data-weather-panel="fieldstatus">
+    <div class="weather-section-head">
+      <div><p class="eyebrow">Public operating status</p><h2>Field Status Control</h2><p>Choose the operating status and copy the recommended announcement into the Website Control Center.</p></div>
+    </div>
+    <div class="weather-field-status-layout">
+      <article class="panel">
+        <div class="weather-status-options">
+          <button class="weather-status-option open active" data-weather-status="OPEN" type="button"><span>✓</span><div><b>Open</b><small>Operating normally</small></div></button>
+          <button class="weather-status-option delayed" data-weather-status="DELAYED" type="button"><span>!</span><div><b>Weather Delay</b><small>Play temporarily delayed</small></div></button>
+          <button class="weather-status-option closed" data-weather-status="CLOSED" type="button"><span>×</span><div><b>Closed</b><small>Facility closed for weather</small></div></button>
+          <button class="weather-status-option check" data-weather-status="CHECK SCHEDULE" type="button"><span>?</span><div><b>Check Schedule</b><small>Schedule updates may apply</small></div></button>
+        </div>
+      </article>
+      <article class="panel weather-announcement-panel">
+        <label for="weatherAnnouncement"><span>Recommended website announcement</span></label>
+        <textarea id="weatherAnnouncement" rows="6">All fields are open and operating as scheduled.</textarea>
+        <div class="weather-announcement-actions">
+          <button id="weatherCopyAnnouncement" class="secondary-btn" type="button">Copy Text</button>
+          <button id="weatherOpenWebsiteControl" class="primary-btn" type="button">Open Website Control</button>
+        </div>
+        <p>This does not publish automatically. Review the text in Website Control Center before publishing.</p>
+      </article>
+    </div>
+  </section>
+
+  <footer class="weather-source-note">
+    Forecast data from Open-Meteo. Interactive radar provided by Windy. Forecast-based safety indicators are decision support only and do not replace official warnings, local observations, or facility emergency procedures.
+  </footer>
+</section>
+
+<section class="view placeholder-view" data-view-panel="reports"><div class="empty-state"><span>▥</span><h1>Reports</h1><p>Daily and weekly operations reporting.</p><b>Module planned</b></div></section>
+<section class="view incident-hub-view" data-view-panel="incidents">
+  <div class="page-head"><div><p class="eyebrow">Safety & Documentation</p><h1>Incident Reports</h1><p>Every employee can create a report. Only Owners and Managers can view all submitted reports.</p></div><div class="head-actions"><button id="incidentStartReportSecondary" class="primary-btn" type="button">+ Create Incident Report</button></div></div>
+  <div class="incident-hub-tabs"><button class="incident-hub-tab active" data-incident-tab="create" type="button">Create Report</button><button class="incident-hub-tab" data-incident-tab="all" type="button">View All Reports</button></div>
+  <section class="incident-hub-panel" data-incident-panel="create">
+    <article class="panel incident-create-card"><div class="incident-create-icon">⚠️</div><div><p class="eyebrow">Available to All Employees</p><h2>Report an Incident</h2><p>Use the guided form to document what happened, who was involved, the response, and any required follow-up. Submitted reports are confidential and can only be reviewed by Owners and Managers.</p><div class="incident-create-points"><span>✓ Draft saves automatically</span><span>✓ Guided six-step form</span><span>✓ No photo required</span></div><button id="incidentStartReport" class="primary-btn" type="button">Start Incident Report</button></div></article>
+    <article id="incidentViewPermissionNote" class="panel incident-private-note"><b>🔒 Confidential reports</b><p>You can create and submit reports, but only Owners and Managers can open the full report history.</p></article>
+  </section>
+  <section class="incident-hub-panel" data-incident-panel="all" hidden>
+    <article class="panel"><div class="panel-head"><div><p class="eyebrow">Owner & Manager Access</p><h2>All Incident Reports</h2></div><span id="incidentHubState" class="connection-badge loading">Ready</span></div><div class="incident-hub-toolbar"><input id="incidentHubSearch" type="search" placeholder="Search incident number, location, person, or type"><button id="incidentHubRefresh" class="secondary-btn" type="button">Refresh</button></div><div id="incidentHubBody" class="incident-report-list"><div class="incident-list-empty">Select View All Reports to load confidential records.</div></div><div class="incident-hub-count" id="incidentHubCount">0 reports</div></article>
+  </section>
+</section>
+<section class="view kitchen-view" data-view-panel="kitchen">
+  <div class="page-head">
+    <div><p class="eyebrow">Kitchen Operations</p><h1>Kitchen Center</h1><p>Kitchen checklists, stock, prep notes, and closing information will live here.</p></div>
+  </div>
+  <div class="settings-grid">
+    <article class="panel"><h2>Kitchen Opening</h2><p>Opening checklist and prep assignments are ready for the next kitchen module.</p><span class="progress-pill">Module planned</span></article>
+    <article class="panel"><h2>Kitchen Inventory</h2><p>Track food, drinks, paper goods, and low-stock items.</p><span class="progress-pill">Module planned</span></article>
+  </div>
+</section>
+
+
+
+<section class="view notifications-view" data-view-panel="notifications">
+  <div class="users-hero notifications-hero">
+    <div>
+      <p class="eyebrow">V7 Communications</p>
+      <h1>Notification Command Center</h1>
+      <p>Send secure role-based alerts, control who can see operational information, and manage every enrolled device.</p>
+    </div>
+    <div class="hero-actions">
+      <button id="enableNotifications" class="secondary-btn" type="button">Enable on This Device</button>
+      <button id="refreshNotifications" class="primary-btn" type="button">Refresh</button>
+    </div>
+  </div>
+
+  <div id="notificationStatus" class="publish-notice" hidden></div>
+
+  <div class="notification-command-grid">
+    <article id="sendNotificationPanel" class="panel notification-composer">
+      <div class="panel-head">
+        <div><p class="eyebrow">Broadcast</p><h2>Send Staff Notification</h2><p>Only approved roles can send. Recipients are selected by their backend role.</p></div>
+        <span id="notificationPermissionBadge" class="role-badge">Checking access</span>
+      </div>
+      <form id="notificationForm" class="notification-form">
+        <div class="notification-template-row">
+          <button type="button" class="template-chip" data-template-title="Weather Delay" data-template-body="Games and operations are temporarily delayed due to weather. Please wait for the next update." data-template-priority="high">Weather Delay</button>
+          <button type="button" class="template-chip" data-template-title="Field Closed" data-template-body="The selected field is closed until further notice. Check the Operations Hub for updates." data-template-priority="high">Field Closed</button>
+          <button type="button" class="template-chip" data-template-title="Schedule Update" data-template-body="Your work schedule has been updated. Please open the Operations Hub and review the change." data-template-priority="normal">Schedule Update</button>
+          <button type="button" class="template-chip emergency" data-template-title="Emergency Alert" data-template-body="Important emergency update from Adventure Sports. Open the Operations Hub immediately for instructions." data-template-priority="emergency">Emergency</button>
+        </div>
+        <label><span>Notification title</span><input id="notificationTitle" maxlength="90" required placeholder="Example: Weather Delay"></label>
+        <label><span>Message</span><textarea id="notificationBody" maxlength="500" rows="4" required placeholder="Type the alert employees should receive"></textarea></label>
+        <div class="notification-form-grid">
+          <label><span>Priority</span><select id="notificationPriority"><option value="normal">Normal</option><option value="high">High</option><option value="emergency">Emergency</option></select></label>
+          <label><span>Open when tapped</span><select id="notificationUrl"><option value="/ops/">Operations Hub</option><option value="/ops/#weather">Weather Center</option><option value="/ops/#staff">Staff</option><option value="/">Public Website</option></select></label>
+        </div>
+        <fieldset class="audience-fieldset">
+          <legend>Send to</legend>
+          <label class="audience-option"><input type="radio" name="notificationAudience" value="everyone" checked><span><strong>Everyone</strong><small>All enrolled employees</small></span></label>
+          <label class="audience-option"><input type="radio" name="notificationAudience" value="roles"><span><strong>Selected roles</strong><small>Choose one or more roles below</small></span></label>
+          <div id="notificationRoleChoices" class="role-choice-grid">
+            <label><input type="checkbox" value="owner"> Owners</label>
+            <label><input type="checkbox" value="manager"> Managers</label>
+            <label><input type="checkbox" value="grounds"> Grounds</label>
+            <label><input type="checkbox" value="kitchen"> Kitchen</label>
+            <label><input type="checkbox" value="cashier"> Cashiers</label>
+          </div>
+        </fieldset>
+        <button id="sendNotificationButton" class="primary-btn notification-send-btn" type="submit">Send Notification</button>
+      </form>
+    </article>
+
+    <aside class="notification-side-stack">
+      <article class="panel device-card">
+        <p class="eyebrow">This device</p>
+        <h2>Push Status</h2>
+        <div class="device-status-line"><span id="deviceStatusDot" class="device-status-dot"></span><strong id="deviceStatusText">Checking browser…</strong></div>
+        <p id="deviceStatusHelp">Employees must install the app and allow notifications.</p>
+      </article>
+      <article class="panel privacy-card">
+        <p class="eyebrow">Privacy by role</p>
+        <h2>Staff Presence Is Restricted</h2>
+        <p>Clocked-in and staff-presence information is hidden from Grounds, Kitchen, and Cashier roles by default. Owners control this below.</p>
+        <span class="privacy-lock">🔒 Owner-controlled visibility</span>
+      </article>
+      <article class="panel">
+        <p class="eyebrow">Enrolled devices</p>
+        <h2 id="deviceCount">—</h2>
+        <p>Active phones, tablets, and computers registered to receive alerts.</p>
+      </article>
+    </aside>
+  </div>
+
+  <div class="notification-lower-grid">
+    <article class="panel">
+      <div class="panel-head"><div><p class="eyebrow">Recent broadcasts</p><h2>Notification History</h2></div></div>
+      <div id="notificationHistory" class="notification-history"><div class="dashboard-empty">Loading notifications…</div></div>
+    </article>
+    <article id="notificationAccessPanel" class="panel owner-only">
+      <div class="panel-head"><div><p class="eyebrow">Owner controls</p><h2>Visibility & Sending Power</h2><p>Control exactly what each role can see and who can broadcast alerts.</p></div><button id="saveNotificationAccess" class="primary-btn" type="button">Save Controls</button></div>
+      <div id="notificationAccessMatrix" class="notification-access-matrix"><div class="dashboard-empty">Loading controls…</div></div>
+    </article>
+  </div>
+
+  <article id="notificationDevicesPanel" class="panel owner-manager-only">
+    <div class="panel-head"><div><p class="eyebrow">Enrollment</p><h2>Registered Devices</h2><p>Device tokens are protected and never displayed.</p></div></div>
+    <div id="notificationDevices" class="notification-devices"><div class="dashboard-empty">Loading devices…</div></div>
+  </article>
+</section>
+
+<section class="view users-view" data-view-panel="users">
+  <div class="users-hero">
+    <div>
+      <p class="eyebrow">Identity & Access</p>
+      <h1>People & Permissions</h1>
+      <p>Invite employees, manage owners, control module access, and review every account change.</p>
+    </div>
+    <div class="hero-actions">
+      <button id="usersRefresh" class="secondary-btn" type="button">Refresh</button>
+      <button id="openInviteModal" class="primary-btn" type="button">Invite Employee</button>
+    </div>
+  </div>
+
+  <div id="usersNotice" class="publish-notice" hidden></div>
+
+  <div class="admin-tabs" role="tablist">
+    <button class="admin-tab active" data-admin-tab="people">People</button>
+    <button class="admin-tab owner-only" data-admin-tab="owners">Owners</button>
+    <button class="admin-tab owner-only" data-admin-tab="permissions">Permissions</button>
+    <button class="admin-tab owner-only" data-admin-tab="notification-access">Notification Access</button>
+    <button class="admin-tab owner-only" data-admin-tab="audit">Audit Log</button>
+  </div>
+
+  <section class="admin-panel active" data-admin-panel="people">
+    <div class="panel users-list-panel">
+      <div class="panel-head users-list-head">
+        <div><p class="eyebrow">Active, disabled, and invited accounts</p><h2>Employee Directory</h2><p id="usersSummary">Loading team…</p></div>
+        <div class="staff-search"><span>⌕</span><input id="usersSearch" type="search" placeholder="Search name, email, or role"></div>
+      </div>
+      <div id="usersList" class="users-list"><div class="dashboard-empty">Loading users…</div></div>
+    </div>
+  </section>
+
+  <section class="admin-panel owner-only" data-admin-panel="owners">
+    <div class="owner-management-grid">
+      <article class="panel">
+        <div class="panel-head"><div><p class="eyebrow">Protected administration</p><h2>Current Owners</h2><p>At least one active Owner must always remain.</p></div></div>
+        <div id="ownersList" class="owners-list"><div class="dashboard-empty">Loading owners…</div></div>
+      </article>
+      <article class="panel">
+        <p class="eyebrow">Add an Owner</p>
+        <h2>Promote an Existing User</h2>
+        <p class="muted-copy">Select a Manager, Grounds, or Kitchen account. The promotion is logged immediately.</p>
+        <form id="promoteOwnerForm" class="invite-user-form">
+          <label><span>User</span><select id="promoteOwnerUser" required></select></label>
+          <button class="primary-btn" type="submit">Promote to Owner</button>
+        </form>
+        <hr class="soft-rule">
+        <p class="eyebrow">New Owner</p>
+        <h2>Invite a New Owner</h2>
+        <form id="inviteOwnerForm" class="invite-user-form">
+          <label><span>Full name</span><input id="inviteOwnerName" required maxlength="80"></label>
+          <label><span>Email</span><input id="inviteOwnerEmail" type="email" required></label>
+          <button class="primary-btn" type="submit">Invite Owner</button>
+        </form>
+      </article>
+    </div>
+  </section>
+
+  <section class="admin-panel owner-only" data-admin-panel="permissions">
+    <div class="panel">
+      <div class="panel-head permission-head">
+        <div><p class="eyebrow">Role access</p><h2>Permission Matrix</h2><p>Choose which modules each role can open. Owner access stays protected.</p></div>
+        <button id="savePermissions" class="primary-btn" type="button">Save Permissions</button>
+      </div>
+      <div id="permissionMatrix" class="permission-matrix-wrap"><div class="dashboard-empty">Loading permissions…</div></div>
+    </div>
+  </section>
+
+
+  <section class="admin-panel owner-only" data-admin-panel="notification-access">
+    <div class="panel">
+      <div class="panel-head permission-head">
+        <div><p class="eyebrow">Role privacy and communication</p><h2>Notification Access Controls</h2><p>Manage who sees staff presence, delivery details, the operations feed, and notification history.</p></div>
+        <button class="primary-btn open-notification-controls" type="button">Open Notification Controls</button>
+      </div>
+      <div class="permission-explainer-grid">
+        <div><strong>Staff Presence</strong><p>Controls clocked-in and working-now information. Disabled for regular employees by default.</p></div>
+        <div><strong>Delivery Reports</strong><p>Controls recipient totals, sent counts, and failure counts.</p></div>
+        <div><strong>Operations Feed</strong><p>Controls access to internal updates and announcements.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="admin-panel owner-only" data-admin-panel="audit">
+    <div class="panel">
+      <div class="panel-head">
+        <div><p class="eyebrow">Security history</p><h2>Audit Log</h2><p>Invitations, role changes, owner changes, disables, re-enables, and terminations.</p></div>
+        <button id="refreshAudit" class="secondary-btn" type="button">Refresh Log</button>
+      </div>
+      <div id="auditList" class="audit-list"><div class="dashboard-empty">Loading activity…</div></div>
+    </div>
+  </section>
+
+  <div id="inviteModal" class="modal-backdrop" hidden>
+    <div class="modal-card">
+      <button id="closeInviteModal" class="modal-close" type="button">×</button>
+      <p class="eyebrow">New account</p>
+      <h2>Invite Employee</h2>
+      <form id="inviteUserForm" class="invite-user-form">
+        <label><span>Full name</span><input id="inviteName" type="text" maxlength="80" required placeholder="Employee name"></label>
+        <label><span>Email address</span><input id="inviteEmail" type="email" required placeholder="employee@example.com"></label>
+        <label><span>Role</span><select id="inviteRole" required></select></label>
+        <label><span>Phone (optional)</span><input id="invitePhone" type="tel" placeholder="(555) 555-5555"></label>
+        <label><span>Hire date (optional)</span><input id="inviteHireDate" type="date"></label>
+        <button id="inviteUserButton" class="primary-btn" type="submit">Send Invitation</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="profileModal" class="modal-backdrop" hidden>
+    <div class="modal-card large-modal">
+      <button id="closeProfileModal" class="modal-close" type="button">×</button>
+      <p class="eyebrow">Employee profile</p>
+      <h2 id="profileModalTitle">Manage User</h2>
+      <form id="profileForm" class="profile-form">
+        <input id="profileUserId" type="hidden">
+        <div class="profile-grid">
+          <label><span>Full name</span><input id="profileName" required></label>
+          <label><span>Email</span><input id="profileEmail" type="email" disabled></label>
+          <label><span>Phone</span><input id="profilePhone" type="tel"></label>
+          <label><span>Hire date</span><input id="profileHireDate" type="date"></label>
+          <label><span>Emergency contact</span><input id="profileEmergencyContact"></label>
+          <label><span>Emergency phone</span><input id="profileEmergencyPhone" type="tel"></label>
+          <label class="profile-span"><span>Internal notes</span><textarea id="profileNotes" rows="4"></textarea></label>
+        </div>
+        <div class="profile-actions">
+          <button class="primary-btn" type="submit">Save Profile</button>
+          <button id="sendRecoveryButton" class="secondary-btn" type="button">Send Password Reset</button>
+          <button id="toggleDisabledButton" class="warning-btn" type="button">Disable Account</button>
+          <button id="terminateFromProfile" class="user-terminate-btn" type="button">Terminate Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section class="view" data-view-panel="settings"><div class="page-head"><div><p class="eyebrow">Settings</p><h1>Operations Hub Settings</h1></div></div><div class="settings-grid"><article class="panel"><h2>Signed-in account</h2><p id="accountEmail">Loading…</p><span id="settingsRoleBadge" class="role-badge">Loading role</span><button id="settingsLogout" class="secondary-btn">Sign Out</button></article><article class="panel"><h2>Install on phone</h2><p>Use Add to Home Screen in Safari.</p><button id="settingsInstall" class="primary-btn">Install App</button></article></div>
+
+<article id="securityCenter" class="panel security-center owner-only">
+ <div class="panel-head"><div><p class="eyebrow">Owner Security</p><h2>Enterprise Security Center</h2><p>Email verification, system controls, audit activity, configuration checks, and encrypted-session revocation.</p></div><span id="securityStatusBadge" class="connection-badge loading">Checking</span></div>
+ <div class="security-grid">
+  <div class="security-stat"><span>🔐</span><div><small>Owner verification</small><strong id="securityMfaState">Email required</strong></div></div>
+  <div class="security-stat"><span>🗄️</span><div><small>Database health</small><strong id="securityDbState">Checking</strong></div></div>
+  <div class="security-stat"><span>🧰</span><div><small>Maintenance mode</small><strong id="securityMaintenanceState">Off</strong></div></div>
+  <div class="security-stat"><span>💾</span><div><small>Latest backup</small><strong id="securityBackupState">None</strong></div></div>
+ </div>
+ <div class="enterprise-security-actions">
+  <button id="securityRefresh" class="secondary-btn" type="button">Refresh Security Status</button>
+  <button id="securityBackup" class="primary-btn" type="button">Create Backup</button>
+  <button id="securityMaintenance" class="warning-btn" type="button">Turn On Maintenance Mode</button>
+  <button id="securityPanic" class="user-terminate-btn" type="button">Panic Lock All Owner Sessions</button>
+ </div>
+ <p id="securityProfileNotice" class="publish-notice" hidden></p>
+ <div class="security-dashboard-columns"><div><h3>Configuration</h3><div id="securityConfigList" class="security-event-list"></div></div><div><h3>Recent Security Events</h3><div id="securityEventsList" class="security-event-list"></div></div></div>
+ <div><h3>Backup History</h3><div id="securityBackupsList" class="security-event-list"></div></div>
+</article>
+<article id="databaseCenter" class="panel database-center database-center-v81" data-internal-access="owner">
+ <div class="database-center-heading"><div><p class="eyebrow">Owner Controls</p><h2>Database Center</h2><p>Manage approved operational records in a clean, protected workspace.</p></div><span id="databaseHealth" class="connection-badge loading">Connecting</span></div>
+ <div class="database-workspace">
+  <aside class="database-module-rail"><div class="database-rail-title"><span>Data Modules</span><small>Select a section</small></div><div id="databaseModuleNav" class="database-module-nav"></div></aside>
+  <section class="database-records-pane">
+   <div class="database-records-head"><div><small id="databaseModuleEyebrow">Database module</small><h3 id="databaseModuleTitle">Incident Reports</h3><p id="databaseModuleDescription">Protected operational records.</p></div><div class="database-head-actions"><button id="databaseExport" class="secondary-btn" type="button">Export CSV</button><button id="databaseAdd" class="primary-btn" type="button">+ Add Record</button></div></div>
+   <div class="database-toolbar-v81"><label class="database-mobile-module"><span>Module</span><select id="databaseTableSelect"></select></label><label class="database-search-control"><span>Search</span><input id="databaseSearch" type="search" placeholder="Search this module"></label><label><span>Filter</span><select id="databaseFilter"><option value="">All records</option><option value="open">Open</option><option value="in_progress">In progress</option><option value="closed">Closed</option><option value="active">Active</option></select></label><button id="databaseRefresh" class="secondary-btn" type="button">Refresh</button></div>
+   <div id="databaseNotice" class="database-inline-notice" hidden></div>
+   <div class="table-wrap database-table-wrap"><table class="data-table database-table"><thead id="databaseHead"></thead><tbody id="databaseBody"><tr><td class="empty-row">Select a module to load records.</td></tr></tbody></table></div>
+   <div class="database-pagination"><span id="databaseCount">0 records</span><div><button id="databasePrev" class="secondary-btn compact-btn" type="button">Previous</button><button id="databaseNext" class="secondary-btn compact-btn" type="button">Next</button></div></div>
+  </section>
+ </div>
+</article>
+<article id="systemTestCenter" class="panel system-test-center owner-only" data-internal-access="owner" hidden>
+ <div class="system-test-head">
+  <div><p class="eyebrow">Owner Diagnostics</p><h2>System Test Center</h2><p>Run live health checks and safe simulations without changing the published tournament matrix or sending alerts.</p></div>
+  <span id="systemTestOverallBadge" class="connection-badge loading">Not tested</span>
+ </div>
+ <div class="system-test-actions">
+  <button id="systemTestRun" class="primary-btn" type="button">Run Full System Test</button>
+  <button id="systemTestRefresh" class="secondary-btn" type="button">Load Last Results</button>
+  <button id="systemTestOpenGames" class="secondary-btn" type="button">Open Games &amp; Matrix</button>
+  <button id="systemTestOpenNotifications" class="secondary-btn" type="button">Open Notifications</button>
+ </div>
+ <div id="systemTestNotice" class="publish-notice" hidden></div>
+ <div class="system-test-summary">
+  <article><span>Last run</span><strong id="systemTestLastRun">Never</strong><small id="systemTestDuration">—</small></article>
+  <article><span>Passed</span><strong id="systemTestPassed">0</strong><small>working correctly</small></article>
+  <article><span>Attention</span><strong id="systemTestWarnings">0</strong><small>warnings to review</small></article>
+  <article><span>Failed</span><strong id="systemTestFailed">0</strong><small>requires action</small></article>
+ </div>
+ <div class="system-test-toolbar"><label><span>Filter results</span><select id="systemTestFilter"><option value="all">All checks</option><option value="fail">Failed</option><option value="warn">Warnings</option><option value="pass">Passed</option></select></label><p id="systemTestBuild">Build V9.3.0 · Live Game Day Control</p></div>
+ <div id="systemTestResults" class="system-test-results"><div class="system-test-empty"><b>No test results yet</b><p>Press Run Full System Test to check the live deployment.</p></div></div>
+ <div class="system-test-footnote"><b>Safe testing:</b> Matrix CRUD, duplicate-alert, and lightning-clear checks run as simulations. Live database, storage, Clover, weather, PWA, push, work-order, matrix, and automation checks are read-only except for a harmless diagnostics storage probe.</div>
+</article>
+<div id="databaseModal" class="modal-shell" hidden><div class="modal-backdrop" data-db-close></div><div class="modal-card database-modal-card"><div class="panel-head"><div><p class="eyebrow">Database Center</p><h2 id="databaseModalTitle">Edit Record</h2></div><button class="icon-button" data-db-close>×</button></div><form id="databaseForm" class="database-form"></form></div></div>
+</section></main></div>
+
+<div id="maintenanceSetupModal" class="modal-shell maintenance-setup-modal" hidden>
+ <div class="modal-backdrop" data-maintenance-setup-close></div>
+ <div class="modal-card maintenance-setup-card" role="dialog" aria-modal="true">
+  <div class="panel-head"><div><p class="eyebrow">Owner Control</p><h2>Start Maintenance Mode</h2><p>Tell staff why the system is paused and when you expect it back.</p></div><button class="icon-button" data-maintenance-setup-close>×</button></div>
+  <form id="maintenanceSetupForm" class="maintenance-setup-form">
+   <label><span>Reason</span><select id="maintenanceReason"><option>Database update</option><option>Security update</option><option>Scheduled maintenance</option><option>Emergency maintenance</option><option>Other</option></select><small>Shown to everyone while the Hub is locked.</small></label>
+   <label><span>Expected finish</span><input id="maintenanceExpectedEnd" type="datetime-local" required><small>Used for the countdown and progress bar.</small></label>
+   <label class="maintenance-message-field"><span>Message</span><textarea id="maintenanceMessage" rows="3">Adventure Sports Operations Hub is temporarily unavailable while maintenance is completed.</textarea></label>
+   <div class="form-actions"><button class="secondary-btn" type="button" data-maintenance-setup-close>Cancel</button><button class="warning-btn" type="submit">Start Maintenance Mode</button></div>
+  </form>
+ </div>
+</div>
+<div id="maintenanceLockScreen" class="maintenance-lock-screen" hidden>
+ <div class="maintenance-lock-backdrop"></div>
+ <section class="maintenance-lock-card" role="dialog" aria-modal="true">
+  <div class="maintenance-lock-icon">🛠</div><p class="eyebrow">Adventure Sports Operations Hub</p><h1>Maintenance Mode Enabled</h1>
+  <p id="maintenanceLockMessage">The system is temporarily unavailable while maintenance is completed.</p>
+  <div class="maintenance-lock-details"><div><small>Status</small><strong>Maintenance Active</strong></div><div><small>Reason</small><strong id="maintenanceLockReason">System maintenance</strong></div><div><small>Started</small><strong id="maintenanceLockStarted">—</strong></div><div><small>Expected finish</small><strong id="maintenanceLockEnd">—</strong></div></div>
+  <div class="maintenance-countdown"><span id="maintenanceCountdown">Estimating completion…</span><div class="maintenance-progress-track"><i id="maintenanceProgressBar"></i></div><small id="maintenanceProgressText">Only Owners can resume operations.</small></div>
+  <div class="maintenance-lock-actions"><button id="maintenanceResume" class="primary-btn owner-only" type="button">Resume Operations</button><button id="maintenanceLockLogout" class="secondary-btn" type="button">Sign Out</button></div>
+ </section>
+</div>
+<div id="securityModal" class="modal-shell security-modal" hidden>
+ <div class="modal-backdrop"></div>
+ <div class="modal-card security-modal-card" role="dialog" aria-modal="true" aria-labelledby="securityModalTitle">
+  <div class="security-shield">🔐</div>
+  <p class="eyebrow">Owner Verification</p>
+  <h2 id="securityModalTitle">Confirm it’s really you</h2>
+  <p id="securityModalText">Send a 6-digit code to your Owner email address.</p>
+  <div id="securityChannelChoices" class="security-channel-choices">
+   <button id="sendEmailCode" class="security-channel" type="button"><span>✉️</span><b>Send Email Code</b><small id="securityEmailDestination">Your account email</small></button>
+  </div>
+  <form id="securityCodeForm" hidden>
+   <label class="security-code-label"><span>Enter the 6-digit code</span><input id="securityCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000" required></label>
+   <label class="trusted-device-option"><input id="rememberTrustedDevice" type="checkbox"><span><b>Remember this device for 30 days</b><small>Only use this on your personal phone or computer. Panic Lock will revoke it.</small></span></label>
+   <p id="securityCodeNotice" class="login-status"></p>
+   <button id="verifySecurityCode" class="primary-btn" type="submit">Verify and Continue</button>
+   <button id="securityResend" class="secondary-btn" type="button">Send a New Code</button>
+  </form>
+ </div>
+</div>
+<div id="incidentWizard" class="modal incident-wizard-modal" hidden><div class="modal-backdrop"></div><section class="incident-wizard-card"><header class="incident-wizard-header"><div><p class="eyebrow">Incident Reports 2.0</p><h2 id="incidentWizardTitle">New Incident Report</h2><div class="incident-wizard-meta"><span id="incidentWizardNumber">Assigned after saving</span><span id="incidentDraftState">Draft saves automatically</span></div></div><button id="incidentWizardClose" class="icon-btn" type="button">×</button></header><div class="incident-stepper"><button class="incident-step-chip active" data-step-chip="1" type="button"><b>1</b><span>Basics</span></button><button class="incident-step-chip" data-step-chip="2" type="button"><b>2</b><span>People</span></button><button class="incident-step-chip" data-step-chip="3" type="button"><b>3</b><span>Timeline</span></button><button class="incident-step-chip" data-step-chip="4" type="button"><b>4</b><span>Response</span></button><button class="incident-step-chip" data-step-chip="5" type="button"><b>5</b><span>Actions</span></button><button class="incident-step-chip" data-step-chip="6" type="button"><b>6</b><span>Follow-Up</span></button></div><div id="incidentWizardBody" class="incident-wizard-body"><form id="incidentWizardForm"><section class="incident-step" data-step="1"><div class="incident-section-head"><h3>Basic Information</h3><p>Start with when, where, and what type of incident occurred.</p></div><div class="incident-form-grid"><label><span>Date & Time *</span><input name="occurred_at" type="datetime-local" required><small>When did the incident happen?</small></label><label><span>Location *</span><select name="location" required><option value="">Select a location</option><option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option><option>D1</option><option>D2</option><option>Arcade Area</option><option>Clubhouse</option><option>Kitchen</option><option>Parking Lot</option><option>Batting Cages</option><option>Front Gate</option><option>Maintenance Shop</option><option>Other</option></select><small>Choose the closest facility location.</small></label><label><span>Field / Area</span><input name="area" placeholder="Example: Claw machine row or third-base dugout"><small>More specific area when helpful.</small></label><label><span>Incident Type *</span><input name="incident_type" required placeholder="Example: Equipment Injury"><small>Use a short, clear title.</small></label><label><span>Severity</span><select name="severity"><option value="minor">Minor</option><option value="moderate">Moderate</option><option value="major">Major</option><option value="critical">Critical</option></select></label><label><span>Status</span><select name="status"><option value="open">Open</option><option value="in_progress">In Progress</option><option value="closed">Closed</option><option value="archived">Archived</option></select></label></div></section><section class="incident-step" data-step="2" hidden><div class="incident-section-head"><h3>People Involved</h3><p>Add each player, parent, witness, employee, coach, or other person separately.</p></div><div id="incidentPeopleList" class="incident-people-list"></div><button id="incidentAddPerson" class="secondary-btn" type="button">+ Add Another Person</button></section><section class="incident-step" data-step="3" hidden><div class="incident-section-head"><h3>Incident Timeline</h3><p>Separate the timeline so managers can quickly understand what happened.</p></div><div class="incident-timeline-fields"><label><span>Before the Incident</span><textarea name="before_incident" rows="4" placeholder="Example: The child was playing near the claw machines while the parent was speaking with family."></textarea></label><label><span>What Happened *</span><textarea name="incident_details" rows="7" required placeholder="Describe what happened, what was witnessed, and what each person reported."></textarea></label><label><span>After the Incident</span><textarea name="after_incident" rows="4" placeholder="Example: Staff responded, checked for injury, notified management, and secured the equipment."></textarea></label></div></section><section class="incident-step" data-step="4" hidden><div class="incident-section-head"><h3>Emergency & Staff Response</h3><p>Record who responded and which contacts or emergency services were involved.</p></div><label class="incident-full-field"><span>Responding Staff Member</span><input name="responding_staff" placeholder="Example: David Keimel"></label><div class="incident-toggle-grid"><label class="incident-toggle"><input name="parent_notified" type="checkbox"><span>Parent Notified</span></label><label class="incident-toggle"><input name="coach_notified" type="checkbox"><span>Coach Notified</span></label><label class="incident-toggle"><input name="manager_notified" type="checkbox"><span>Manager Notified</span></label><label class="incident-toggle"><input name="first_aid_provided" type="checkbox"><span>First Aid Provided</span></label><label class="incident-toggle"><input name="ems_called" type="checkbox"><span>EMS Called</span></label><label class="incident-toggle"><input name="police_called" type="checkbox"><span>Police Called</span></label><label class="incident-toggle"><input name="ambulance_requested" type="checkbox"><span>Ambulance Requested</span></label><label class="incident-toggle"><input name="transported_to_hospital" type="checkbox"><span>Transported to Hospital</span></label></div></section><section class="incident-step" data-step="5" hidden><div class="incident-section-head"><h3>Actions Taken</h3><p>Select every action completed after the incident.</p></div><div class="incident-action-grid"><label><input name="incident_action" value="Ice Pack Given" type="checkbox"><span>Ice Pack Given</span></label><label><input name="incident_action" value="Equipment Removed" type="checkbox"><span>Equipment Removed</span></label><label><input name="incident_action" value="Area Closed" type="checkbox"><span>Area Closed</span></label><label><input name="incident_action" value="Area Cleaned" type="checkbox"><span>Area Cleaned</span></label><label><input name="incident_action" value="Parent Contacted" type="checkbox"><span>Parent Contacted</span></label><label><input name="incident_action" value="Coach Contacted" type="checkbox"><span>Coach Contacted</span></label><label><input name="incident_action" value="Referee Contacted" type="checkbox"><span>Referee Contacted</span></label><label><input name="incident_action" value="Insurance Information Provided" type="checkbox"><span>Insurance Information Provided</span></label><label><input name="incident_action" value="Other" type="checkbox"><span>Other</span></label></div></section><section class="incident-step" data-step="6" hidden><div class="incident-section-head"><h3>Follow-Up & Review</h3><p>Flag anything management, insurance, maintenance, or employees still need to address.</p></div><div class="incident-toggle-grid follow-up"><label class="incident-toggle"><input name="needs_manager_review" type="checkbox"><span>Needs Manager Review</span></label><label class="incident-toggle"><input name="needs_insurance_review" type="checkbox"><span>Needs Insurance Review</span></label><label class="incident-toggle"><input name="needs_maintenance_review" type="checkbox"><span>Needs Maintenance Review</span></label><label class="incident-toggle"><input name="needs_employee_follow_up" type="checkbox"><span>Needs Employee Follow-Up</span></label></div><div class="incident-form-grid"><label><span>Manager Review Status</span><select name="manager_review_status"><option value="pending">Pending</option><option value="approved">Approved</option><option value="follow_up">Follow-Up Required</option></select></label><label><span>Lock Report</span><span class="incident-inline-check"><input name="report_locked" type="checkbox"> Prevent routine edits after approval</span></label><label class="wide"><span>Internal Notes</span><textarea name="internal_notes" rows="6" placeholder="Confidential notes, follow-up assignments, or insurance information."></textarea></label></div></section></form></div><footer class="incident-wizard-footer"><div><button id="incidentDelete" class="danger-outline-btn" type="button" hidden>Delete Report</button><button id="incidentPrint" class="secondary-btn" type="button" hidden>Print / Save PDF</button></div><div class="incident-footer-main"><button id="incidentSaveDraft" class="secondary-btn" type="button">Save Draft</button><button id="incidentCancel" class="secondary-btn" type="button">Cancel</button><button id="incidentBack" class="secondary-btn" type="button" hidden>Back</button><span id="incidentStepLabel">Step 1 of 6</span><button id="incidentNext" class="primary-btn" type="button">Next</button><button id="incidentSave" class="primary-btn" type="submit" form="incidentWizardForm" hidden>Save Incident Report</button></div></footer></section></div><div id="incidentViewer" class="modal incident-viewer-modal" hidden><div class="modal-backdrop"></div><section class="incident-viewer-card"><header><div><p class="eyebrow">Confidential Incident Record</p><h2>Incident Report</h2></div><button id="incidentViewerClose" class="icon-btn" type="button">×</button></header><div id="incidentViewerBody" class="incident-viewer-body"></div><footer><button id="incidentViewerEdit" class="secondary-btn" type="button">Edit Report</button><button id="incidentViewerPrint" class="primary-btn" type="button" onclick="window.print()">Print / Save PDF</button></footer></section></div><div id="eventRegistrationModal" class="modal event-registration-modal" hidden>
+  <div class="modal-backdrop" data-event-registration-close></div>
+  <section class="event-registration-detail-card">
+    <header class="event-registration-modal-head">
+      <div><p class="eyebrow">Registration Record</p><h2 id="eventRegistrationModalTitle">Registration Details</h2><p id="eventRegistrationModalMeta">Review and update this signup.</p></div>
+      <button class="icon-button event-registration-close" type="button" data-event-registration-close aria-label="Close">×</button>
+    </header>
+    <div id="eventRegistrationDetail" class="event-registration-detail"></div>
+    <footer class="event-registration-modal-actions">
+      <button id="eventRegistrationDelete" class="danger-outline-btn owner-only" type="button">Delete Registration</button>
+      <div><button class="secondary-btn" type="button" data-event-registration-close>Cancel</button><button id="eventRegistrationSave" class="primary-btn" type="button">Save Changes</button></div>
+    </footer>
+  </section>
+</div>
+<div id="toast" class="toast"></div><script src="/ops/dashboard-v2.js?v=9300"></script><script src="/ops/dashboard-v73.js?v=9300"></script><script src="/ops/clover-v2.js?v=9300"></script><script src="/ops/staff.js?v=9300"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"><script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script><script src="/ops/maintenance.js?v=9300"></script><script src="/ops/weather.js?v=9300"></script><script src="https://cdn.jsdelivr.net/npm/firebase@8.10.1/firebase-app.js" data-firebase-sdk="app"></script><script src="https://cdn.jsdelivr.net/npm/firebase@8.10.1/firebase-messaging.js" data-firebase-sdk="messaging"></script><script src="/ops/app.js?v=10007"></script><script src="/ops/event-manager.js?v=10007"></script><script src="/ops/supabase-data.js?v=9300"></script><script src="/ops/internal-sections.js?v=9300"></script><script src="/ops/database-center.js?v=9300"></script><script src="/ops/incident-reports-v82.js?v=9300"></script><script src="/ops/incident-hub-v823.js?v=9300"></script><script src="/ops/notifications-v7.js?v=9300"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="/ops/games-v71.js?v=9300"></script><script src="/ops/game-day-control.js?v=9300"></script><script src="/ops/phase-one-v71.js?v=9300"></script><script src="/ops/v9-command-center.js?v=9300"></script><script src="/ops/v9-operations-enhancements.js?v=9300"></script><script src="/ops/system-test-center.js?v=9300"></script><script src="/ops/launch-prep-v930.js?v=9300"></script></body></html>

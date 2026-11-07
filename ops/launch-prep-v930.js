@@ -1,18 +1,18 @@
 (()=>{
 'use strict';
-const BUILD='9300',VERSION='9.3.0',LAUNCH_API='/.netlify/functions/launch-settings',REGISTER_API='/.netlify/functions/notification-register',DATA_API='/.netlify/functions/notification-data';
+const BUILD='10007',VERSION='10.0.7',LAUNCH_API='/.netlify/functions/launch-settings',REGISTER_API='/.netlify/functions/notification-register',DATA_API='/.netlify/functions/notification-data';
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const role=()=>window.ASE_OPS?.role?.()||document.body.dataset.role||'';
 const api=(u,o)=>window.ASE_OPS?.api?.(u,o);
-let launchSettings=null,lastPreflight=null,booted=false,updateTimer=null;
+let launchSettings=null,lastPreflight=null,booted=false,updateTimer=null,pendingBuild=BUILD;
 
 function ensureChrome(){
  if(!$('#appConnectionBanner')){
   const b=document.createElement('div');b.id='appConnectionBanner';b.className='app-connection-banner';b.hidden=true;b.innerHTML='<span id="appConnectionIcon">!</span><div><b id="appConnectionTitle">Connection issue</b><small id="appConnectionText">Trying again…</small></div><button id="appConnectionRetry" type="button">Retry</button>';document.body.appendChild(b);$('#appConnectionRetry').onclick=()=>{b.hidden=true;window.dispatchEvent(new Event('online'));refreshActiveView()};
  }
  if(!$('#appUpdateBanner')){
-  const b=document.createElement('div');b.id='appUpdateBanner';b.className='app-update-banner';b.hidden=true;b.innerHTML='<div><b>New Operations Hub version available</b><span id="appUpdateText">Refresh to install the latest fixes.</span></div><button id="appUpdateNow" class="primary-btn compact-btn" type="button">Update Now</button>';document.body.appendChild(b);$('#appUpdateNow').onclick=hardRefresh;
+  const b=document.createElement('div');b.id='appUpdateBanner';b.className='app-update-banner';b.hidden=true;b.innerHTML='<div><b>New Operations Hub version available</b><span id="appUpdateText">Refresh to install the latest fixes.</span></div><button id="appUpdateDismiss" class="app-update-dismiss" type="button">Dismiss</button><button id="appUpdateNow" class="primary-btn compact-btn" type="button">Update Now</button>';document.body.appendChild(b);$('#appUpdateNow').onclick=hardRefresh;$('#appUpdateDismiss').onclick=()=>{try{sessionStorage.setItem('ase_ops_dismissed_build',pendingBuild)}catch{}b.hidden=true};
  }
  if(!$('#globalErrorPanel')){
   const b=document.createElement('div');b.id='globalErrorPanel';b.className='global-error-panel';b.hidden=true;b.innerHTML='<div><b>That section hit a problem</b><span id="globalErrorText">The rest of the Operations Hub is still available.</span></div><button id="globalErrorRetry" type="button">Retry</button><button id="globalErrorDismiss" type="button">Dismiss</button>';document.body.appendChild(b);$('#globalErrorRetry').onclick=()=>{b.hidden=true;refreshActiveView()};$('#globalErrorDismiss').onclick=()=>b.hidden=true;
@@ -24,8 +24,20 @@ function showConnection(online,message=''){
 }
 function reportError(message){const b=$('#globalErrorPanel');if(!b)return;$('#globalErrorText').textContent=String(message||'An unexpected error occurred.').slice(0,240);b.hidden=false}
 function refreshActiveView(){const active=$('.view.active')?.dataset.viewPanel;if(active)$(`.nav-item[data-view="${active}"]`)?.click()}
-function hardRefresh(){try{localStorage.setItem('ase_ops_build',BUILD)}catch{}const u=new URL(location.href);u.searchParams.set('build',Date.now());location.replace(u.pathname+u.search+u.hash)}
-async function checkVersion(){try{const remote=await fetch(`/ops/build.json?ts=${Date.now()}`,{cache:'no-store'}).then(r=>r.ok?r.json():null);if(!remote)return;const target=String(remote.build||BUILD),banner=$('#appUpdateBanner');if(target!==BUILD){$('#appUpdateText').textContent=`Build ${target} is ready. Your current build is ${BUILD}.`;banner.hidden=false}else banner.hidden=true}catch{}}
+async function hardRefresh(){
+ let target=pendingBuild||BUILD;
+ try{const remote=await fetch(`/ops/build.json?ts=${Date.now()}`,{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null);target=String(remote?.build||target)}catch{}
+ try{localStorage.setItem('ase_ops_build',target);sessionStorage.removeItem('ase_ops_dismissed_build')}catch{}
+ const u=new URL(location.href);u.searchParams.set('build',target);location.replace(u.pathname+u.search+u.hash)
+}
+async function checkVersion(){
+ try{
+  const remote=await fetch(`/ops/build.json?ts=${Date.now()}`,{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null);if(!remote)return;
+  const target=String(remote.build||BUILD),banner=$('#appUpdateBanner');pendingBuild=target;if(!banner)return;
+  let dismissed='';try{dismissed=sessionStorage.getItem('ase_ops_dismissed_build')||''}catch{}
+  if(target!==BUILD&&dismissed!==target){$('#appUpdateText').textContent=`Build ${target} is ready. You are on build ${BUILD}.`;banner.hidden=false}else banner.hidden=true;
+ }catch{}
+}
 
 function wireReliability(){
  ensureChrome();showConnection(navigator.onLine);
