@@ -1,8 +1,15 @@
-Adventure Sports V10.1.2 — Tournament Admission Style Restore
+Adventure Sports Global Favicon Patch
 
-Replace only these root files:
-- style.css
-- tournament-admission.html
+Copy ALL contents of this ZIP to the ROOT of the website repository.
 
-This restores the original premium Tournament Admission design while preserving the V10.1 premium event-page CSS and loader fixes.
-It does not touch Ops, Netlify functions, Supabase, events, or signup data.
+This installs:
+- /favicon.ico (automatic browser fallback for every route/page)
+- /favicon-16.png
+- /favicon-32.png
+- /favicon-192.png
+- /favicon-512.png
+- /apple-touch-icon.png
+- /site.webmanifest
+- matching copies under /uploads/branding/ for pages already using those paths
+
+This patch does not replace HTML, CSS, JavaScript, Ops, Supabase, or event data.
